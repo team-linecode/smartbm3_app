@@ -1,0 +1,115 @@
+<?php
+
+use App\Models\User;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Manage\BillController;
+use App\Http\Controllers\Manage\CostController;
+use App\Http\Controllers\Manage\RoleController;
+use App\Http\Controllers\Manage\UserController;
+use App\Http\Controllers\Manage\DashboardController;
+use App\Http\Controllers\Manage\DatatableController;
+use App\Http\Controllers\Manage\PermissionController;
+use App\Http\Controllers\Manage\TransactionController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+// update user
+Route::get('update_user', function () {
+    $users = User::where('role_id', 3)->where('nisn', '!=', null)->get();
+    foreach ($users as $user) {
+        $user->nip = null;
+        $user->update();
+    }
+    dd('ok');
+});
+
+Route::get('dates', function () {
+    $begin = new DateTime('2019-07-01');
+    $end = new DateTime('2020-07-01');
+
+    $begin2 = new DateTime('2020-07-01');
+    $end2 = new DateTime('2021-07-01');
+
+    $begin3 = new DateTime('2021-07-01');
+    $end3 = new DateTime('2022-07-01');
+
+    $interval = DateInterval::createFromDateString('1 months');
+    $period = new DatePeriod($begin, $interval, $end);
+    $period2 = new DatePeriod($begin2, $interval, $end2);
+    $period3 = new DatePeriod($begin3, $interval, $end3);
+
+    foreach ($period as $dt) {
+        echo $dt->format("F Y") . '<br />';
+    }
+    echo '===============================<br />';
+    foreach ($period2 as $dt2) {
+        echo $dt2->format("F Y") . '<br />';
+    }
+    echo '===============================<br />';
+    foreach ($period3 as $dt3) {
+        echo $dt3->format("F Y") . '<br />';
+    }
+});
+
+Route::get('/', [AuthController::class, 'login'])->name('auth.login');
+Route::post('/', [AuthController::class, 'post_login'])->name('auth.post_login');
+Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+Route::get('/forgot', [AuthController::class, 'forgot'])->name('auth.forgot');
+Route::get('/reset/{email}/{token}', [AuthController::class, 'reset'])->name('auth.reset');
+
+// Route [auth, master]
+Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
+    // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    // User
+    Route::get('/user/{role}', [UserController::class, 'index'])->name('user.index');
+    // Finance -> Transaction
+    Route::get('/finance/transaction', [TransactionController::class, 'index'])->name('finance.transaction.index');
+    Route::get('/finance/transaction/create', [TransactionController::class, 'create'])->name('finance.transaction.create');
+    Route::post('/finance/transaction/create', [TransactionController::class, 'store'])->name('finance.transaction.store');
+    Route::post('/finance/transaction/create/save_transaction', [TransactionController::class, 'save_transaction'])->name('finance.transaction.save_transaction');
+    Route::put('/finance/transaction/create/{transaction}/update_transaction', [TransactionController::class, 'update_transaction'])->name('finance.transaction.update_transaction');
+    Route::get('/finance/transaction/create_detail/{transaction}', [TransactionController::class, 'create_detail'])->name('finance.transaction.create_detail');
+    Route::delete('/finance/transaction/create_detail/{transaction_detail}/destroy', [TransactionController::class, 'detail_destroy'])->name('finance.transaction.detail.destroy');
+    Route::post('/finance/transaction/get_user', [TransactionController::class, 'get_user'])->name('finance.transaction.get_user');
+    Route::post('/finance/transaction/get_cost_detail', [TransactionController::class, 'get_cost_detail'])->name('finance.transaction.get_cost_detail');
+    Route::post('/finance/transaction/get_cost_amount', [TransactionController::class, 'get_cost_amount'])->name('finance.transaction.get_cost_amount');
+    Route::post('/finance/transaction/get_account_number', [TransactionController::class, 'get_account_number'])->name('finance.transaction.get_account_number');
+    // Finance -> Transaction -> Export
+    Route::get('/finance/transaction/{transaction}/print', [TransactionController::class, 'print'])->name('finance.transaction.print');
+    // Finance -> Bill
+    Route::get('/finance/bill', [BillController::class, 'index'])->name('finance.bill.index');
+    Route::get('/finance/bill/uid/{user}', [BillController::class, 'show'])->name('finance.bill.show');
+    // Finance -> Cost
+    Route::get('/finance/cost', [CostController::class, 'index'])->name('finance.cost.index');
+    Route::get('/finance/cost/ta/{schoolyear:slug}', [CostController::class, 'show'])->name('finance.cost.show');
+    Route::get('/finance/cost/ta/{schoolyear:slug}/detail/{cost:slug}', [CostController::class, 'detail'])->name('finance.cost.detail');
+    Route::get('/finance/cost/create/ta/{schoolyear:slug}/kategori/{cost_category}', [CostController::class, 'create'])->name('finance.cost.create');
+    Route::post('/finance/cost/create/ta/{schoolyear:slug}/kategori/{cost_category}', [CostController::class, 'store'])->name('finance.cost.store');
+    Route::get('/finance/cost/edit/ta/{schoolyear:slug}/biaya/{cost:slug}', [CostController::class, 'edit'])->name('finance.cost.edit');
+    Route::put('/finance/cost/edit/ta/{schoolyear:slug}/biaya/{cost:slug}', [CostController::class, 'update'])->name('finance.cost.update');
+    Route::delete('/finance/cost/ta/{schoolyear:slug}/biaya/{cost:slug}/destroy', [CostController::class, 'destroy'])->name('finance.cost.destroy');
+    // Role
+    Route::resource('/role', RoleController::class)->except('show');
+    // Permission
+    Route::resource('/permission', PermissionController::class)->except('show');
+});
+// End Route
+
+// Route [auth]
+Route::group(['middleware' => ['auth']], function () {
+    // Json DataTables
+    Route::get('/datatable.student_json', [DatatableController::class, 'student_json'])->name('datatable.student_json');
+    Route::get('/datatable.student_bill_json', [DatatableController::class, 'student_bill_json'])->name('datatable.student_bill_json');
+    Route::get('/datatable.teacher_json', [DatatableController::class, 'teacher_json'])->name('datatable.teacher_json');
+});
