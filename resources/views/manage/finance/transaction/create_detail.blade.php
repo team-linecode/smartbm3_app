@@ -374,7 +374,7 @@
                                     @endforeach
                                 @else
                                     <div class="alert alert-danger text-center">
-                                        Biaya Belum di Atur!
+                                        Biaya Belum di Atur!!
                                     </div>
                                 @endif
                             </thead>
