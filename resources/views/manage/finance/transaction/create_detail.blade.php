@@ -308,8 +308,27 @@
                     <a href="javascript:void(0)" class="btn btn-primary disabled"><i
                             class="ri-printer-line align-bottom me-1"></i> Cetak Invoice</a>
                 @endif
-                <a href="javascript:void(0);" class="btn btn-danger"><i class="ri-send-plane-fill align-bottom me-1"></i>
-                    Send Invoice</a>
+
+                @if ($trans->status == 'Paid')
+                    <a href="{{ whatsappTransaction([
+                        'invoice_id' => $trans->invoice_id,
+                        'name' => $trans->user->name,
+                        'classroom' => $trans->user->classroom->name,
+                        'expertise' => $trans->user->expertise->name,
+                        'date' => date('d-M-Y', strtotime($trans->date)),
+                        'payment_method' => $trans->payment_method->account,
+                        'details' => $trans->details->sortBy('cost_detail_id'),
+                    ]) }}"
+                        class="btn btn-danger" target="_blank">
+                        <i class="ri-send-plane-fill align-bottom me-1"></i>
+                        Kirim ke WhatsApp
+                    </a>
+                @else
+                    <a href="javascript:void(0);" class="btn btn-danger disabled">
+                        <i class="ri-send-plane-fill align-bottom me-1"></i>
+                        Kirim ke WhatsApp
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -326,32 +345,38 @@
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead>
-                                @foreach ($cost_spp->details as $cost_detail)
-                                    <tr>
-                                        <th class="table-light align-middle">
-                                            Kelas&nbsp;{{ $cost_detail->classroom->alias }}</th>
-                                        @if ($cost_detail->classroom->alias == '10')
-                                            @foreach (dateRange($trans->user->schoolyear->getYears(0), $trans->user->schoolyear->getYears(1)) as $ta_1)
-                                                <td class="py-5 {!! $cost_detail->markTransactionExists($trans->user->id, $ta_1, 'bg-soft-success text-success') !!}">
-                                                    {{ strftime('%B %Y', strtotime($ta_1)) }}</td>
-                                            @endforeach
-                                        @endif
+                                @if ($cost_spp)
+                                    @foreach ($cost_spp->details as $cost_detail)
+                                        <tr>
+                                            <th class="table-light align-middle">
+                                                Kelas&nbsp;{{ $cost_detail->classroom->alias }}</th>
+                                            @if ($cost_detail->classroom->alias == '10')
+                                                @foreach (dateRange($trans->user->schoolyear->getYears(0), $trans->user->schoolyear->getYears(1)) as $ta_1)
+                                                    <td class="py-5 {!! $cost_detail->markTransactionExists($trans->user->id, $ta_1, 'bg-soft-success text-success') !!}">
+                                                        {{ strftime('%B %Y', strtotime($ta_1)) }}</td>
+                                                @endforeach
+                                            @endif
 
-                                        @if ($cost_detail->classroom->alias == '11')
-                                            @foreach (dateRange($trans->user->schoolyear->getYears(1), $trans->user->schoolyear->getYears(2)) as $ta_2)
-                                                <td class="py-5 {!! $cost_detail->markTransactionExists($trans->user->id, $ta_2, 'bg-soft-success text-success') !!}">
-                                                    {{ strftime('%B %Y', strtotime($ta_2)) }}</td>
-                                            @endforeach
-                                        @endif
+                                            @if ($cost_detail->classroom->alias == '11')
+                                                @foreach (dateRange($trans->user->schoolyear->getYears(1), $trans->user->schoolyear->getYears(2)) as $ta_2)
+                                                    <td class="py-5 {!! $cost_detail->markTransactionExists($trans->user->id, $ta_2, 'bg-soft-success text-success') !!}">
+                                                        {{ strftime('%B %Y', strtotime($ta_2)) }}</td>
+                                                @endforeach
+                                            @endif
 
-                                        @if ($cost_detail->classroom->alias == '12')
-                                            @foreach (dateRange($trans->user->schoolyear->getYears(2), $trans->user->schoolyear->getYears(3)) as $ta_3)
-                                                <td class="py-5 {!! $cost_detail->markTransactionExists($trans->user->id, $ta_3, 'bg-soft-success text-success') !!}">
-                                                    {{ strftime('%B %Y', strtotime($ta_3)) }}</td>
-                                            @endforeach
-                                        @endif
-                                    </tr>
-                                @endforeach
+                                            @if ($cost_detail->classroom->alias == '12')
+                                                @foreach (dateRange($trans->user->schoolyear->getYears(2), $trans->user->schoolyear->getYears(3)) as $ta_3)
+                                                    <td class="py-5 {!! $cost_detail->markTransactionExists($trans->user->id, $ta_3, 'bg-soft-success text-success') !!}">
+                                                        {{ strftime('%B %Y', strtotime($ta_3)) }}</td>
+                                                @endforeach
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <div class="alert alert-danger text-center">
+                                        Biaya Belum di Atur!
+                                    </div>
+                                @endif
                             </thead>
                         </table>
                     </div>

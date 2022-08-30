@@ -2,8 +2,6 @@
 
 @section('content')
 
-<!-- @include('component.form-error') -->
-
 <div class="card">
     <div class="card-header">
         <div class="d-flex align-items-center">

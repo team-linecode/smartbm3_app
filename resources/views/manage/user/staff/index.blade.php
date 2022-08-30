@@ -1,4 +1,4 @@
-@extends('layouts.manage', ['title' => 'Data ' . $role_alias])
+@extends('layouts.manage', ['title' => 'Data Staff'])
 
 @push('include-style')
 @include('component.datatables-style')
@@ -12,7 +12,7 @@
     <div class="card-header">
         <div class="d-flex flex-column flex-sm-row flex-md-row align-items-md-center justify-content-between">
             <div class="">
-                <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Data {{ $role_alias }}</h4>
+                <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Data Staff</h4>
             </div>
             <div class="text-center">
                 <a href="" class="btn btn-primary">Tambah</a>
@@ -26,8 +26,6 @@
                     <tr>
                         <th scope="col">No.</th>
                         <th scope="col">Nama</th>
-                        <th scope="col">Kelas</th>
-                        <th scope="col">Jurusan</th>
                         <th scope="col">Username</th>
                         <th scope="col">Kata Sandi</th>
                         <th scope="col">Opsi</th>
@@ -51,7 +49,7 @@
         let table = $('.dt-serverside').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('datatable.student_json') }}",
+            ajax: "{{ route('datatable.staff_json') }}",
             columns: [{
                     data: 'DT_RowIndex',
                     name: 'id',
@@ -59,14 +57,6 @@
                 {
                     data: 'name',
                     name: 'name',
-                },
-                {
-                    data: 'classroom.name',
-                    name: 'classroom.name',
-                },
-                {
-                    data: 'expertise.name',
-                    name: 'expertise.name',
                 },
                 {
                     data: 'username',
@@ -84,11 +74,7 @@
                     searchable: false
                 }
             ],
-            "order": [
-                [2, "ASC"],
-                [3, "ASC"],
-                [1, "ASC"],
-            ],
+            "order": [[1, "ASC"]],
         });
     });
 </script>

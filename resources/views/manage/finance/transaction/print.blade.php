@@ -58,7 +58,7 @@
     </style>
 </head>
 
-<body onload="window.print()">
+<body onload="window.print(); window.close();">
     <div class="header d-flex justify-content-between mb-3">
         <div>
             <div class="d-flex align-items-center">

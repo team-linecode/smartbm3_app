@@ -50,7 +50,7 @@
                                     <img src="/vendor/manage/assets/images/logo-light.png" alt="" height="20">
                                 </a>
                             </div>
-                            <p class="mt-3 fs-15 fw-medium">Mahir IT, Ya BM3</p>
+                            <p class="mt-3 fs-15 fw-medium">Managed by SMK BINA MANDIRI MULTIMEDIA</p>
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center">
-                            <p class="mb-0 text-muted">&copy; {{ date('Y') }} [company]. Crafted with <i class="mdi mdi-heart text-danger"></i> by [developer]</p>
+                            <p class="mb-0 text-muted">&copy; {{ date('Y') }} SMK BINA MANDIRI MULTIMEDIA. Crafted with <i class="mdi mdi-heart text-danger"></i> by BM3_TECH</p>
                         </div>
                     </div>
                 </div>

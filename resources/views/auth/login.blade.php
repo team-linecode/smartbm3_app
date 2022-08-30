@@ -18,7 +18,7 @@
 
                         <div class="mb-3">
                             <label for="username" class="form-label">Email / Username</label>
-                            <input type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" id="username" name="username" placeholder="emailkamu@gmail.com" value="{{ old('username') }}">
+                            <input type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" id="username" name="username" placeholder="emailkamu@gmail.com" value="{{ old('username') }}" tabindex="1">
                             @error('username')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -29,19 +29,19 @@
                                 <a href="{{ route('auth.forgot') }}" class="text-muted">Lupa kata sandi?</a>
                             </div>
                             <label for="password" class="form-label">Kata Sandi</label>
-                            <input type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password" name="password" placeholder="Masukkan kata sandi">
+                            <input type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password" name="password" placeholder="Masukkan kata sandi" tabindex="2">
                             @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="auth-remember-check" name="remember">
+                            <input class="form-check-input" type="checkbox" id="auth-remember-check" name="remember" tabindex="3">
                             <label class="form-check-label" for="auth-remember-check">Ingat saya</label>
                         </div>
 
                         <div class="mt-4">
-                            <button class="btn btn-primary w-100" type="submit">Masuk</button>
+                            <button class="btn btn-primary w-100" type="submit" tabindex="4">Masuk</button>
                         </div>
                     </form>
                 </div>
