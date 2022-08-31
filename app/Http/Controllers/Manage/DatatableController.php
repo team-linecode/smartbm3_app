@@ -99,16 +99,20 @@ class DatatableController extends Controller
                             <span class="bg-light rounded px-2 d-none">' . $row->no_encrypt . '</span>
                         </div>';
             })
-            ->addColumn('action', function () {
+            ->addColumn('action', function ($row) {
                 $btn = '<div class="d-flex gap-2">
                             <div class="detail">
                                 <a href="" class="btn btn-sm btn-primary">Detail</a>
                             </div>
                             <div class="edit">
-                                <a href="" class="btn btn-sm btn-success">Edit</a>
+                                <a href="' . route('app.teacher.edit', $row->id) . '" class="btn btn-sm btn-success">Edit</a>
                             </div>
                             <div class="remove">
-                                <button class="btn btn-sm btn-danger c-delete">Hapus</button>
+                                <form action="' . route('app.teacher.destroy', $row->id) . '" method="post">
+                                    ' . csrf_field() . '
+                                    ' . method_field("DELETE") . '
+                                    <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>
+                                </form>
                             </div>
                         </div>';
 

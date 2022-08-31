@@ -20,6 +20,10 @@ body::-webkit-scrollbar-thumb:hover {
     margin-bottom: 0 !important;
 }
 
+.choices__list--single .choices__item {
+    white-space: nowrap;
+}
+
 @media (max-width: 575px) {
     .card-header .btn {
         padding: 0.25rem 0.5rem;

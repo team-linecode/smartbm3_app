@@ -77,9 +77,23 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
     // User
+    // Teacher
     Route::resource('/user/teacher', TeacherController::class);
+    Route::get('/user/teacher/{teacher}/change_password', [TeacherController::class, 'change_password'])->name('teacher.change_password');
+    Route::put('/user/teacher/{teacher}/save_password', [TeacherController::class, 'save_password'])->name('teacher.save_password');
+    Route::post('/user/teacher/{teacher}/create_lesson', [TeacherController::class, 'create_lesson'])->name('teacher.create_lesson');
+    Route::post('/user/teacher/{teacher}/{lesson_id}/destroy_lesson', [TeacherController::class, 'destroy_lesson'])->name('teacher.destroy_lesson');
+    Route::post('/user/teacher/{teacher}/destroy_all_lesson', [TeacherController::class, 'destroy_all_lesson'])->name('teacher.destroy_all_lesson');
+    // Session
+    Route::post('/user/teacher/create_lesson_sess', [TeacherController::class, 'create_lesson_sess'])->name('teacher.create_lesson_sess');
+    Route::post('/user/teacher/{lesson_id}/destroy_lesson_sess', [TeacherController::class, 'destroy_lesson_sess'])->name('teacher.destroy_lesson_sess');
+    Route::post('/user/teacher/destroy_all_lesson_sess', [TeacherController::class, 'destroy_all_lesson_sess'])->name('teacher.destroy_all_lesson_sess');
+    Route::get('/user/teacher/{teacher}/destroy_image', [TeacherController::class, 'destroy_image'])->name('teacher.destroy_image');
+
+    // Student
     Route::resource('/user/student', StudentController::class);
     Route::get('/user/student/{student}/destroy_image', [StudentController::class, 'destroy_image'])->name('student.destroy_image');
+
     Route::resource('/user/staff', StaffController::class);
 
     // Finance -> Transaction

@@ -15,7 +15,7 @@
                 <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Data Guru</h4>
             </div>
             <div class="text-center">
-                <a href="" class="btn btn-primary">Tambah</a>
+                <a href="{{ route('app.teacher.create') }}" class="btn btn-primary">Tambah</a>
             </div>
         </div>
     </div>

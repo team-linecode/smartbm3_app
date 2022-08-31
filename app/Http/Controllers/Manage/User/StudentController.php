@@ -20,7 +20,7 @@ class StudentController extends Controller
         return view('manage.user.student.index');
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize('developer access');
 
@@ -69,7 +69,7 @@ class StudentController extends Controller
 
         User::create($request->all());
 
-        return redirect(route('app.student.index'))->with('success', 'Siswa berhasil disimpan');
+        return redirect(route('app.student.index'))->with('success', 'Siswa berhasil ditambahkan');
     }
 
     public function edit(User $student)
@@ -105,11 +105,8 @@ class StudentController extends Controller
 
         $request->validate($rules);
 
-        if ($student->image != NULL) {
-            Storage::disk('public')->delete($student->image);
-        }
-
         if ($request->hasFile('picture')) {
+            Storage::disk('public')->delete($student->image);
             $request['image'] = $request->file('picture')->store('users', 'public');
         }
 
@@ -137,12 +134,10 @@ class StudentController extends Controller
 
     public function destroy_image(User $student)
     {
-        if ($student->image != NULL) {
-            $student->image = NULL;
-            $student->update();
+        Storage::disk('public')->delete($student->image);
 
-            Storage::disk('public')->delete($student->image);
-        }
+        $student->image = NULL;
+        $student->update();
 
         return back()->with('success', 'Foto berhasil dihapus');
     }
