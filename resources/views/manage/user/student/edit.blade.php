@@ -92,7 +92,7 @@
                                         <label for="password" class="form-label mt-2">Password</label>
                                     </div>
                                     <div class="col-sm-9">
-                                        <a href="" class="btn btn-primary"><i
+                                        <a href="{{ route('app.student.change_password', $student->id) }}" class="btn btn-primary"><i
                                                 class="ri ri-lock-line align-bottom"></i> Ganti Password</a>
                                     </div>
                                 </div>

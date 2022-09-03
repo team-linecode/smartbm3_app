@@ -188,27 +188,33 @@
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link {{ set_active('app.dashboard.index') }}"
+                            <a class="nav-link menu-link {{ set_active('app') }}"
                                 href="{{ route('app.dashboard.index') }}">
                                 <i class="ri-dashboard-2-line"></i> <span data-key="t-landing">Dashboard</span>
                             </a>
                         </li>
                         @can('developer access')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app/form_teacher', 'app/form_teacher/*']) }}"
+                                    href="{{ route('app.form_teacher.index') }}">
+                                    <i class="ri-home-5-line"></i> <span data-key="t-landing">Wali Kelas</span>
+                                </a>
+                            </li>
                             <li class="menu-title"><span data-key="t-menu">User</span></li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.staff.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/user/staff', 'app/user/staff/*']) }}"
                                     href="{{ route('app.staff.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.teacher.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/user/teacher', 'app/user/teacher/*']) }}"
                                     href="{{ route('app.teacher.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Guru</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.student.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/user/student', 'app/user/student/*']) }}"
                                     href="{{ route('app.student.index') }}">
                                     <i class="ri-group-line"></i> <span data-key="t-landing">Siswa/Siswi</span>
                                 </a>
@@ -216,13 +222,13 @@
 
                             <li class="menu-title"><span data-key="t-menu">Role & Permission</span></li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.role.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/role', 'app/role/*']) }}"
                                     href="{{ route('app.role.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Role</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.permission.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/permission', 'app/permission/*']) }}"
                                     href="{{ route('app.permission.index') }}">
                                     <i class="ri-group-line"></i> <span data-key="t-landing">Permission</span>
                                 </a>
@@ -231,42 +237,42 @@
                         @can('finance access')
                             <li class="menu-title"><span data-key="t-menu">Keuangan</span></li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.finance.transaction.create') }}"
+                                <a class="nav-link menu-link {{ set_active('app/finance/transaction/create') }}"
                                     href="{{ route('app.finance.transaction.create') }}">
                                     <i class="ri-exchange-line"></i> <span data-key="t-landing">Pembayaran</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.finance.transaction.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/finance/transaction', 'app/finance/transaction/create_detail/*']) }}"
                                     href="{{ route('app.finance.transaction.index') }}">
                                     <i class="ri-exchange-line"></i> <span data-key="t-landing">Data Transaksi</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.finance.bill.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/finance/bill', 'app/finance/bill/*']) }}"
                                     href="{{ route('app.finance.bill.index') }}">
                                     <i class="ri-funds-line"></i> <span data-key="t-landing">Tagihan Siswa/i</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.finance.cost.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/finance/cost', 'app/finance/cost/*']) }}"
                                     href="{{ route('app.finance.cost.index') }}">
                                     <i class="ri-money-dollar-circle-line"></i> <span data-key="t-landing">Biaya
                                         Sekolah</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.finance.report.index') }}"
+                                <a class="nav-link menu-link {{ set_active(['app/finance/report/transaction']) }}"
                                     href="#sidebarReport" data-bs-toggle="collapse" role="button" aria-expanded="false"
                                     aria-controls="sidebarReport">
                                     <i class="ri-file-list-3-line"></i> <span data-key="t-report">Laporan</span>
                                 </a>
-                                <div class="collapse menu-dropdown {{ set_active('app.finance.report.index', 'show') }}"
+                                <div class="collapse menu-dropdown {{ set_active('app/finance/report/transaction', 'show') }}"
                                     id="sidebarReport">
                                     <ul class="nav nav-sm flex-column">
                                         <li class="nav-item">
                                             <a href="{{ route('app.finance.report.index', 'transaction') }}"
-                                                class="nav-link {{ request()->is('app/finance/report/transaction') ? 'active' : '' }}"
+                                                class="nav-link {{ set_active('app/finance/report/transaction') }}"
                                                 data-key="t-transaction"> Transaksi</a>
                                         </li>
                                     </ul>

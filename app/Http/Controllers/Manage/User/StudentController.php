@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Manage\User;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Group;
 use App\Models\Classroom;
 use App\Models\Expertise;
-use App\Models\Group;
 use App\Models\Schoolyear;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
@@ -130,6 +131,32 @@ class StudentController extends Controller
         $student->delete();
 
         return redirect(route('app.student.index'))->with('success', 'Siswa berhasil dihapus');
+    }
+
+    public function change_password(User $student)
+    {
+        return view('manage.user.student.change_password', [
+            'student' => $student
+        ]);
+    }
+
+    public function save_password(User $student, Request $request)
+    {
+        $request->validate([
+            'old_password' => 'required',
+            'password' => 'required|min:4|same:re_password',
+            're_password' => 'required'
+        ]);
+
+        if (Hash::check($request->old_password, $student->password)) {
+            $student->password = bcrypt($request->password);
+            $student->no_encrypt = $request->password;
+            $student->update();
+
+            return redirect(route('app.student.edit', $student->id))->with('success', 'Password berhasil diubah');
+        } else {
+            return back()->with('error', 'Password lama salah');
+        }
     }
 
     public function destroy_image(User $student)

@@ -9,6 +9,7 @@ use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
+use App\Http\Controllers\Manage\FormTeacherController;
 use App\Http\Controllers\Manage\PermissionController;
 use App\Http\Controllers\Manage\ReportController;
 use App\Http\Controllers\Manage\TransactionController;
@@ -75,6 +76,8 @@ Route::get('/reset/{email}/{token}', [AuthController::class, 'reset'])->name('au
 Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    // Form Teacher
+    Route::resource('/form_teacher', FormTeacherController::class)->except('show');
 
     // User
     // Teacher
@@ -92,6 +95,8 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
 
     // Student
     Route::resource('/user/student', StudentController::class);
+    Route::get('/user/student/{student}/change_password', [StudentController::class, 'change_password'])->name('student.change_password');
+    Route::put('/user/student/{student}/save_password', [StudentController::class, 'save_password'])->name('student.save_password');
     Route::get('/user/student/{student}/destroy_image', [StudentController::class, 'destroy_image'])->name('student.destroy_image');
 
     Route::resource('/user/staff', StaffController::class);
