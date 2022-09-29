@@ -91,6 +91,9 @@ class DatatableController extends Controller
                         Nip: ' . (!is_null($row->nip) ? $row->nip : '<span class="text-danger">tidak ada</span>') .
                     '</small>';
             })
+            ->editColumn('last_education', function ($row) {
+                return $row->last_education->alias ?? '-';
+            })
             ->editColumn('password', function ($row) {
                 return '<div class="display-password d-flex">
                             <button class="btn py-0 px-2 btn-display-password">
@@ -127,7 +130,7 @@ class DatatableController extends Controller
         $this->authorize('developer access');
 
         return DataTables::of(User::whereHas('role', function ($q) {
-            $q->where('name', 'staff');
+            $q->whereIn('name', ['staff', 'finance']);
         })->limit(1))
             ->addIndexColumn()
             ->editColumn('name', function ($row) {
@@ -135,6 +138,9 @@ class DatatableController extends Controller
                     <small class="text-muted">
                         Nip: ' . (!is_null($row->nip) ? $row->nip : '<span class="text-danger">tidak ada</span>') .
                     '</small>';
+            })
+            ->editColumn('last_education', function ($row) {
+                return $row->last_education->alias ?? '-';
             })
             ->editColumn('password', function ($row) {
                 return '<div class="display-password d-flex">
@@ -144,16 +150,17 @@ class DatatableController extends Controller
                             <span class="bg-light rounded px-2 d-none">' . $row->no_encrypt . '</span>
                         </div>';
             })
-            ->addColumn('action', function () {
+            ->addColumn('action', function ($row) {
                 $btn = '<div class="d-flex gap-2">
-                            <div class="detail">
-                                <a href="" class="btn btn-sm btn-primary">Detail</a>
-                            </div>
                             <div class="edit">
-                                <a href="" class="btn btn-sm btn-success">Edit</a>
+                                <a href="' . route('app.staff.edit', $row->id) . '" class="btn btn-sm btn-success">Edit</a>
                             </div>
                             <div class="remove">
-                                <button class="btn btn-sm btn-danger c-delete">Hapus</button>
+                                <form action="' . route('app.staff.destroy', $row->id) . '" method="post">
+                                    ' . csrf_field() . '
+                                    ' . method_field("DELETE") . '
+                                    <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>
+                                </form>
                             </div>
                         </div>';
 

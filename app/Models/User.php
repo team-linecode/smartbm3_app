@@ -29,6 +29,7 @@ class User extends Authenticatable
         'group_id',
         'schoolyear_id',
         'alumni',
+        'last_education_id',
         'role_id',
         'classroom_id',
         'expertise_id',
@@ -60,6 +61,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Lesson::class, 'lesson_teacher')->withPivot('hours');
     }
 
+    public function positions()
+    {
+        return $this->belongsToMany(Position::class);
+    }
+
     public function role()
     {
         return $this->belongsTo(Role::class);
@@ -88,6 +94,11 @@ class User extends Authenticatable
     public function group()
     {
         return $this->belongsTo(Group::class);
+    }
+
+    public function last_education()
+    {
+        return $this->belongsTo(LastEducation::class);
     }
 
     public function myClass($alias = false)

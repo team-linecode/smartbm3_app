@@ -26,6 +26,7 @@
                     <tr>
                         <th scope="col">No.</th>
                         <th scope="col">Nama</th>
+                        <th scope="col">Pendidikan</th>
                         <th scope="col">Username</th>
                         <th scope="col">Kata Sandi</th>
                         <th scope="col">Opsi</th>
@@ -57,6 +58,10 @@
                 {
                     data: 'name',
                     name: 'name',
+                },
+                {
+                    data: 'last_education',
+                    name: 'last_education',
                 },
                 {
                     data: 'username',

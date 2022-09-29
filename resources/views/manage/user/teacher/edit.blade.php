@@ -92,8 +92,32 @@
                                         <label for="password" class="form-label mt-2">Password</label>
                                     </div>
                                     <div class="col-sm-9">
-                                        <a href="{{ route('app.teacher.change_password', $teacher->id) }}" class="btn btn-primary"><i
-                                                class="ri ri-lock-line align-bottom"></i> Ganti Password</a>
+                                        <a href="{{ route('app.teacher.change_password', $teacher->id) }}"
+                                            class="btn btn-primary"><i class="ri ri-lock-line align-bottom"></i> Ganti
+                                            Password</a>
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-sm-3">
+                                        <label for="last_education" class="form-label">Pend. Terakhir</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <select class="form-select" name="last_education"
+                                            id="last_education">
+                                            <option value="">Pend. Terakhir</option>
+                                            @foreach ($last_educations as $last_education)
+                                                <option value="{{ $last_education->id }}"
+                                                    {{ select_old($last_education->id, old('last_education'), true, $teacher->last_education_id) }}>
+                                                    {{ $last_education->name }} | {{ $last_education->alias }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('last_education')
+                                            <div class="small text-danger mt-1">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
 

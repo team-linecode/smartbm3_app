@@ -7,6 +7,7 @@ use App\Models\Lesson;
 use Illuminate\Http\Request;
 use App\Models\LessonTeacher;
 use App\Http\Controllers\Controller;
+use App\Models\LastEducation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,6 +26,7 @@ class TeacherController extends Controller
 
         return view('manage.user.teacher.create', [
             'lessons' => Lesson::all(),
+            'last_educations' => LastEducation::all(),
         ]);
     }
 
@@ -35,6 +37,7 @@ class TeacherController extends Controller
             'username' => 'required|unique:users,username',
             'password' => 'required|min:4|same:re-password',
             're-password' => 'required',
+            'last_education' => 'required',
             'picture' => 'image|max:1024'
         ];
 
@@ -47,6 +50,7 @@ class TeacherController extends Controller
 
         $request['no_encrypt'] = $request->password;
         $request['password'] = bcrypt($request->password);
+        $request['last_education_id'] = $request->last_education;
         $request['role_id'] = 2;
 
         if ($request->hasFile('picture')) {
@@ -71,7 +75,8 @@ class TeacherController extends Controller
 
         return view('manage.user.teacher.edit', [
             'teacher' => $teacher,
-            'lessons' => Lesson::all()
+            'lessons' => Lesson::all(),
+            'last_educations' => LastEducation::all()
         ]);
     }
 
@@ -80,6 +85,7 @@ class TeacherController extends Controller
         $rules = [
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $teacher->id,
+            'last_education' => 'required',
             'picture' => 'image|max:1024'
         ];
 
@@ -89,6 +95,8 @@ class TeacherController extends Controller
         }
 
         $request->validate($rules);
+
+        $request['last_education_id'] = $request->last_education;
 
         if ($request->hasFile('picture')) {
             Storage::disk('public')->delete($teacher->image);

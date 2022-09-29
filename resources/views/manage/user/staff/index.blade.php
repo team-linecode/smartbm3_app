@@ -15,7 +15,7 @@
                 <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Data Staff</h4>
             </div>
             <div class="text-center">
-                <a href="" class="btn btn-primary">Tambah</a>
+                <a href="{{ route('app.staff.create') }}" class="btn btn-primary">Tambah</a>
             </div>
         </div>
     </div>
@@ -26,6 +26,7 @@
                     <tr>
                         <th scope="col">No.</th>
                         <th scope="col">Nama</th>
+                        <th scope="col">Pendidikan</th>
                         <th scope="col">Username</th>
                         <th scope="col">Kata Sandi</th>
                         <th scope="col">Opsi</th>
@@ -57,6 +58,10 @@
                 {
                     data: 'name',
                     name: 'name',
+                },
+                {
+                    data: 'last_education',
+                    name: 'last_education',
                 },
                 {
                     data: 'username',

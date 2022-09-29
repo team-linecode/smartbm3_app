@@ -1106,7 +1106,7 @@
         }),
         window.addEventListener("resize", i),
         i(),
-        Waves.init(),
+        // comment 1 : Waves.init(),
         document.addEventListener("scroll", function () {
             var a;
             (a = document.getElementById("page-topbar")),

@@ -118,6 +118,29 @@
 
                                 <div class="row align-items-center mb-3">
                                     <div class="col-sm-3">
+                                        <label for="last_education" class="form-label">Pend. Terakhir</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <select class="form-select @error('re-password') is-invalid @enderror"
+                                            name="last_education" id="last_education">
+                                            <option value="">Pend. Terakhir</option>
+                                            @foreach ($last_educations as $last_education)
+                                                <option value="{{ $last_education->id }}"
+                                                    {{ select_old($last_education->id, old('last_education')) }}>
+                                                    {{ $last_education->name }} | {{ $last_education->alias }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('last_education')
+                                            <div class="invalid-feedback">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-sm-3">
                                         <label for="picture" class="form-label">Foto</label>
                                     </div>
                                     <div class="col-sm-9">
@@ -143,7 +166,7 @@
                                 <div class="row mb-3">
                                     <div class="col-6 col-lg-5">
                                         <div class="mb-3">
-                                            <select class="form-control" data-choices name="lesson" id="lesson">
+                                            <select class="form-select" name="lesson" id="lesson">
                                                 <option value="">Mata Pelajaran</option>
                                                 @foreach ($lessons as $lesson)
                                                     <option value="{{ $lesson->id }}"
@@ -203,8 +226,9 @@
                                                                 method="post">
                                                                 @csrf
                                                                 <button type="button"
-                                                                    class="btn btn-danger btn-sm c-delete"><i
-                                                                        class="ri ri-delete-bin-line"></i></button>
+                                                                    class="btn btn-danger btn-sm c-delete">
+                                                                    <i class="ri ri-delete-bin-line"></i>
+                                                                </button>
                                                             </form>
                                                         </div>
                                                     </td>

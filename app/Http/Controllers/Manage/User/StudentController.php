@@ -21,7 +21,7 @@ class StudentController extends Controller
         return view('manage.user.student.index');
     }
 
-    public function create(Request $request)
+    public function create()
     {
         $this->authorize('developer access');
 

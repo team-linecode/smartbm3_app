@@ -26,6 +26,8 @@ class CreateUsersTable extends Migration
             $table->foreignId('group_id');
             $table->foreignId('schoolyear_id');
             $table->enum('alumni', [0, 1]);
+            $table->foreignId('last_education_id')->nullable();
+            $table->foreignId('role_id');
             $table->foreignId('classroom_id');
             $table->foreignId('expertise_id');
             $table->string('verify_token');

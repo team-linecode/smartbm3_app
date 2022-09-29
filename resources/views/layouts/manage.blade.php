@@ -13,6 +13,8 @@
 
     <!-- Sweet Alert Css-->
     <link href="/vendor/manage/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <!-- Select2 Css -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     @stack('include-style')
 
@@ -188,33 +190,69 @@
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link {{ set_active('app') }}"
+                            <a class="nav-link menu-link {{ set_active('app.dashboard.index') }}"
                                 href="{{ route('app.dashboard.index') }}">
                                 <i class="ri-dashboard-2-line"></i> <span data-key="t-landing">Dashboard</span>
                             </a>
                         </li>
                         @can('developer access')
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/form_teacher', 'app/form_teacher/*']) }}"
-                                    href="{{ route('app.form_teacher.index') }}">
-                                    <i class="ri-home-5-line"></i> <span data-key="t-landing">Wali Kelas</span>
+                                <a class="nav-link menu-link {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*']) }}"
+                                    href="#sidebarSalary" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                                    aria-controls="sidebarSalary">
+                                    <i class="ri-money-dollar-circle-line"></i> <span
+                                        data-key="t-report">Penggajian</span>
                                 </a>
+                                <div class="collapse menu-dropdown {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*'], 'show') }}"
+                                    id="sidebarSalary">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('app.salaries.index') }}"
+                                                class="nav-link {{ set_active('app.salaries*') }}"
+                                                data-key="t-transaction"> Input Penggajian</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('app.salary_cut.index') }}"
+                                                class="nav-link {{ set_active('app.salary_cut*') }}"
+                                                data-key="t-transaction"> Potongan
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('app.allowance.index') }}"
+                                                class="nav-link {{ set_active('app.allowance*') }}"
+                                                data-key="t-transaction"> Tunjangan
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('app.last_education.index') }}"
+                                                class="nav-link {{ set_active('app.last_education*') }}"
+                                                data-key="t-transaction"> Data Pend. Terakhir
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('app.position.index') }}"
+                                                class="nav-link {{ set_active('app.position*') }}"
+                                                data-key="t-transaction"> Data Jabatan
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
                             <li class="menu-title"><span data-key="t-menu">User</span></li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/user/staff', 'app/user/staff/*']) }}"
+                                <a class="nav-link menu-link {{ set_active(['app.staff*']) }}"
                                     href="{{ route('app.staff.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/user/teacher', 'app/user/teacher/*']) }}"
+                                <a class="nav-link menu-link {{ set_active('app.teacher*') }}"
                                     href="{{ route('app.teacher.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Guru</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/user/student', 'app/user/student/*']) }}"
+                                <a class="nav-link menu-link {{ set_active(['app.student*']) }}"
                                     href="{{ route('app.student.index') }}">
                                     <i class="ri-group-line"></i> <span data-key="t-landing">Siswa/Siswi</span>
                                 </a>
@@ -350,32 +388,18 @@
     </div>
     <!-- END layout-wrapper -->
 
-    <!--start back-to-top-->
-    <!-- <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
-            <i class="ri-arrow-up-line"></i>
-        </button> -->
-    <!--end back-to-top-->
-
-    <div class="customizer-setting d-none d-md-block">
-        <div class="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2" data-bs-toggle="offcanvas"
-            data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
-            <i class='mdi mdi-spin mdi-cog-outline fs-22'></i>
-        </div>
-    </div>
-
-    @include('component.theme')
-
     <!-- JAVASCRIPT -->
     @include('component.jquery')
     <script src="/vendor/manage/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/vendor/manage/assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="/vendor/manage/assets/libs/node-waves/waves.min.js"></script>
     <script src="/vendor/manage/assets/libs/feather-icons/feather.min.js"></script>
-    <script src="/vendor/manage/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/vendor/manage/assets/js/plugins.js"></script>
 
     <!-- Sweet Alerts Js -->
     <script src="/vendor/manage/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Select2 Js -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="/vendor/manage/assets/js/pages/select2.init.js"></script>
 
     <!-- Function js -->
     <script src="/vendor/manage/assets/js/function.js"></script>

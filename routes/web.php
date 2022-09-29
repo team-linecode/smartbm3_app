@@ -1,17 +1,19 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Manage\BillController;
 use App\Http\Controllers\Manage\CostController;
 use App\Http\Controllers\Manage\RoleController;
-use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
-use App\Http\Controllers\Manage\FormTeacherController;
 use App\Http\Controllers\Manage\PermissionController;
 use App\Http\Controllers\Manage\ReportController;
+use App\Http\Controllers\Manage\Salary\AllowanceController;
+use App\Http\Controllers\Manage\Salary\LastEducationController;
+use App\Http\Controllers\Manage\Salary\PositionController;
+use App\Http\Controllers\Manage\Salary\SalaryController;
+use App\Http\Controllers\Manage\Salary\SalaryCutController;
 use App\Http\Controllers\Manage\TransactionController;
 use App\Http\Controllers\Manage\User\StaffController;
 use App\Http\Controllers\Manage\User\StudentController;
@@ -76,9 +78,6 @@ Route::get('/reset/{email}/{token}', [AuthController::class, 'reset'])->name('au
 Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
-    // Form Teacher
-    Route::resource('/form_teacher', FormTeacherController::class)->except('show');
-
     // User
     // Teacher
     Route::resource('/user/teacher', TeacherController::class);
@@ -92,14 +91,31 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::post('/user/teacher/{lesson_id}/destroy_lesson_sess', [TeacherController::class, 'destroy_lesson_sess'])->name('teacher.destroy_lesson_sess');
     Route::post('/user/teacher/destroy_all_lesson_sess', [TeacherController::class, 'destroy_all_lesson_sess'])->name('teacher.destroy_all_lesson_sess');
     Route::get('/user/teacher/{teacher}/destroy_image', [TeacherController::class, 'destroy_image'])->name('teacher.destroy_image');
-
     // Student
     Route::resource('/user/student', StudentController::class);
     Route::get('/user/student/{student}/change_password', [StudentController::class, 'change_password'])->name('student.change_password');
     Route::put('/user/student/{student}/save_password', [StudentController::class, 'save_password'])->name('student.save_password');
     Route::get('/user/student/{student}/destroy_image', [StudentController::class, 'destroy_image'])->name('student.destroy_image');
-
+    // Staff
     Route::resource('/user/staff', StaffController::class);
+    Route::get('/user/staff/{staff}/change_password', [StaffController::class, 'change_password'])->name('staff.change_password');
+    Route::put('/user/staff/{staff}/save_password', [StaffController::class, 'save_password'])->name('staff.save_password');
+    Route::get('/user/staff/{staff}/destroy_image', [StaffController::class, 'destroy_image'])->name('staff.destroy_image');
+
+    // Salary
+    Route::resource('/salaries', SalaryController::class)->except('show');
+    // Salary Cut
+    Route::resource('/salary/salary_cut', SalaryCutController::class)->except('show');
+    // Allowance
+    Route::resource('/salary/allowance', AllowanceController::class)->except('show');
+    Route::post('/salary/allowance/add_input', [AllowanceController::class, 'add_input'])->name('salary.allowance.add_input');
+    Route::post('/salary/allowance/remove_input', [AllowanceController::class, 'remove_input'])->name('salary.allowance.remove_input');
+    Route::post('/salary/allowance/reset_input', [AllowanceController::class, 'reset_input'])->name('salary.allowance.reset_input');
+    // Last Education
+    Route::resource('/salary/last_education', LastEducationController::class)->except('show');
+    // Position
+    Route::resource('/salary/position', PositionController::class)->except('show');
+    Route::delete('/salary/position/{position:slug}/{user}/destroy_user', [PositionController::class, 'destroy_user'])->name('position.destroy_user');
 
     // Finance -> Transaction
     Route::get('/finance/transaction', [TransactionController::class, 'index'])->name('finance.transaction.index');
