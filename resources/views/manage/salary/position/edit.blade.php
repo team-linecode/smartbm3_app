@@ -28,7 +28,7 @@
                                 <select class="form-control" data-choices data-choices-removeItem multiple name="user[]" id="user">
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
-                                            {{ select_old_multiple($user->id, old('user'), true, $position->users->pluck('id')) }}>
+                                            {{ select_old_multiple($user->id, old('user'), true, $position->users->pluck('id')->toArray()) }}>
                                             {{ $user->name }}
                                         </option>
                                     @endforeach

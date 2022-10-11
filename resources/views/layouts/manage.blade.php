@@ -399,12 +399,11 @@
     <script src="/vendor/manage/assets/libs/sweetalert2/sweetalert2.min.js"></script>
     <!-- Select2 Js -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="/vendor/manage/assets/js/pages/select2.init.js"></script>
+    {{-- <script src="/vendor/manage/assets/js/pages/select2.init.js"></script> --}}
 
     <!-- Function js -->
     <script src="/vendor/manage/assets/js/function.js"></script>
 
-    @stack('include-script')
 
     @include('component.alert')
     @include('component.confirm')
@@ -413,6 +412,24 @@
     <script src="/vendor/manage/assets/js/app.js"></script>
 
     <script>
+        // Calculate Year of Experience
+        window.onload = function() {
+            $('.entry_date').on('change', function() {
+                var dob = new Date(this.value);
+                var today = new Date();
+                var experience = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+                $('.year_experience').val(experience);
+            });
+
+        }
+
+        function yearExperience(entry_date) {
+            var dob = new Date(entry_date);
+            var today = new Date();
+            var experience = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+            $('.year_experience').val(experience);
+        }
+
         // Input Currency
         $('.currency').blur(function() {
             var formatter = new Intl.NumberFormat('en-US', {
@@ -428,6 +445,8 @@
         // Time
         setInterval(() => document.querySelector("#liveClock").innerHTML = new Date().toLocaleTimeString(), 1000);
     </script>
+
+    @stack('include-script')
 </body>
 
 </html>

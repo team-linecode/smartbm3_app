@@ -38,6 +38,11 @@ class TeacherController extends Controller
             'password' => 'required|min:4|same:re-password',
             're-password' => 'required',
             'last_education' => 'required',
+            'entry_date' => 'required|date',
+            'status' => 'required',
+            'gender' => 'required',
+            'marital_status' => 'required',
+            'child' => 'required',
             'picture' => 'image|max:1024'
         ];
 
@@ -86,6 +91,11 @@ class TeacherController extends Controller
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $teacher->id,
             'last_education' => 'required',
+            'entry_date' => 'required|date',
+            'status' => 'required',
+            'gender' => 'required',
+            'marital_status' => 'required',
+            'child' => 'required',
             'picture' => 'image|max:1024'
         ];
 

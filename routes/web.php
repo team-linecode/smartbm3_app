@@ -103,7 +103,8 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::get('/user/staff/{staff}/destroy_image', [StaffController::class, 'destroy_image'])->name('staff.destroy_image');
 
     // Salary
-    Route::resource('/salaries', SalaryController::class)->except('show');
+    Route::resource('/salaries', SalaryController::class);
+    Route::get('/salaries/generatePDF/{salary_detail:uid}/{type}', [SalaryController::class, 'generatePDF'])->name('salaries.generate_pdf');
     // Salary Cut
     Route::resource('/salary/salary_cut', SalaryCutController::class)->except('show');
     // Allowance

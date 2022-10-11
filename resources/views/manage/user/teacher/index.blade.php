@@ -29,6 +29,7 @@
                         <th scope="col">Pendidikan</th>
                         <th scope="col">Username</th>
                         <th scope="col">Kata Sandi</th>
+                        <th scope="col">Tanggal Tugas</th>
                         <th scope="col">Opsi</th>
                     </tr>
                 </thead>
@@ -60,8 +61,8 @@
                     name: 'name',
                 },
                 {
-                    data: 'last_education',
-                    name: 'last_education',
+                    data: 'last_education_id',
+                    name: 'last_education_id',
                 },
                 {
                     data: 'username',
@@ -71,6 +72,10 @@
                     data: 'password',
                     name: 'password',
                     orderable: false
+                },
+                {
+                    data: 'entry_date',
+                    name: 'entry_date',
                 },
                 {
                     data: 'action',

@@ -39,6 +39,11 @@ class StaffController extends Controller
             'password' => 'required|min:4|same:re-password',
             're-password' => 'required',
             'role' => 'required',
+            'entry_date' => 'required|date',
+            'status' => 'required',
+            'gender' => 'required',
+            'marital_status' => 'required',
+            'child' => 'required',
             'picture' => 'image|max:1024'
         ];
 
@@ -80,6 +85,11 @@ class StaffController extends Controller
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $staff->id,
             'role' => 'required',
+            'entry_date' => 'required|date',
+            'status' => 'required',
+            'gender' => 'required',
+            'marital_status' => 'required',
+            'child' => 'required',
             'picture' => 'image|max:1024'
         ];
 

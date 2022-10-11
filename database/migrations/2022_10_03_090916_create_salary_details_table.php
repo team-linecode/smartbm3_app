@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalariesTable extends Migration
+class CreateSalaryDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateSalariesTable extends Migration
      */
     public function up()
     {
-        Schema::create('salaries', function (Blueprint $table) {
+        Schema::create('salary_details', function (Blueprint $table) {
             $table->id();
-            $table->string('month');
-            $table->enum('status', ['open', 'close']);
+            $table->string('uid');
+            $table->text('components');
+            $table->foreignId('user_id');
+            $table->foreignId('salary_id');
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ class CreateSalariesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('salaries');
+        Schema::dropIfExists('salary_details');
     }
 }

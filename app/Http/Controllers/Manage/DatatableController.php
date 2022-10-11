@@ -91,8 +91,11 @@ class DatatableController extends Controller
                         Nip: ' . (!is_null($row->nip) ? $row->nip : '<span class="text-danger">tidak ada</span>') .
                     '</small>';
             })
-            ->editColumn('last_education', function ($row) {
+            ->editColumn('last_education_id', function ($row) {
                 return $row->last_education->alias ?? '-';
+            })
+            ->editColumn('entry_date', function ($row) {
+                return $row->entry_date ? date('M Y', strtotime($row->entry_date)) : '-';
             })
             ->editColumn('password', function ($row) {
                 return '<div class="display-password d-flex">
@@ -141,6 +144,9 @@ class DatatableController extends Controller
             })
             ->editColumn('last_education', function ($row) {
                 return $row->last_education->alias ?? '-';
+            })
+            ->editColumn('entry_date', function ($row) {
+                return $row->entry_date ? date('M Y', strtotime($row->entry_date)) : '-';
             })
             ->editColumn('password', function ($row) {
                 return '<div class="display-password d-flex">

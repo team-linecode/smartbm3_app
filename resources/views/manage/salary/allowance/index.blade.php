@@ -19,7 +19,8 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Tunjangan</th>
-                            <th scope="col">Komponen</th>
+                            <th scope="col">Keterangan</th>
+                            <th scope="col">Jumlah (Rp)</th>
                             <th scope="col">Opsi</th>
                         </tr>
                     </thead>
@@ -31,27 +32,10 @@
                                     {{ $allowance->name }}
                                     <div class="small text-primary">{{ $allowance->slug }}</div>
                                 </td>
-                                <td style="white-space: nowrap">
-                                    <table class="table table-sm table-bordered mb-0 w-100">
-                                        @forelse ($allowance->details as $detail)
-                                            <tr>
-                                                <td>{{ $detail->description }}</td>
-                                                <td>{{ $detail->lastEducation->alias ?? '-' }}</td>
-                                                <td class="text-end">
-                                                    <div class="d-flex justify-content-between">
-                                                        <div>Rp.</div>
-                                                        <div>{{ number_format($detail->salary) }}</div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td class="text-danger">No Permissions <i
-                                                        class="ri ri-close-line align-middle"></i></td>
-                                            </tr>
-                                        @endforelse
-                                    </table>
-                                </td>
+                                <td>{{ $allowance->description }}</td>
+                                <td>{!! formulaExists($allowance->description)
+                                    ? '<span class="text-muted">*disesuaikan</span>'
+                                    : 'Rp. ' . number_format($allowance->amount) !!}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <div class="edit">

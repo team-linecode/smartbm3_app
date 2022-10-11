@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-7">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
@@ -134,6 +134,131 @@
                                 </select>
                                 @error('last_education')
                                     <div class="small text-danger mt-1">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <label for="entry_date" class="form-label">Tanggal Masuk</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="mb-3">
+                                    <input type="date" name="entry_date"
+                                        class="form-control entry_date @error('entry_date') is-invalid @enderror"
+                                        id="entry_date" value="{{ old('entry_date') ?? $staff->entry_date }}">
+                                    @error('entry_date')
+                                        <div class="invalid-feedback">
+                                            <strong>{{ $message }}</strong>
+                                        </div>
+                                    @enderror
+                                </div>
+
+                                <div class="row align-items-center">
+                                    <div class="col-sm-3">
+                                        <label for="entry_date" class="form-label">Masa Kerja</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control"
+                                                value="{{ yearExperience($staff->entry_date) }}" disabled>
+                                            <span class="input-group-text">Tahun</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-sm-3">
+                                <label for="Status" class="form-label">Status</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <select class="form-select @error('status') is-invalid @enderror" name="status"
+                                    id="Status">
+                                    <option value="" hidden>Pilih Status</option>
+                                    <option value="GTY" {{ select_old('GTY', old('status'), true, $staff->status) }}>
+                                        GTY
+                                    </option>
+                                    <option value="GTT" {{ select_old('GTT', old('status'), true, $staff->status) }}>
+                                        GTT
+                                    </option>
+                                    <option value="KTY" {{ select_old('KTY', old('status'), true, $staff->status) }}>
+                                        KTY
+                                    </option>
+                                    <option value="KTT" {{ select_old('KTT', old('status'), true, $staff->status) }}>
+                                        KTT
+                                    </option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-sm-3">
+                                <label for="gender" class="form-label">Gender</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <select class="form-select @error('gender') is-invalid @enderror" name="gender"
+                                    id="gender">
+                                    <option value="" hidden>Pilih Gender</option>
+                                    <option value="Pria"
+                                        {{ select_old('Pria', old('gender'), true, $staff->gender) }}>Pria
+                                    </option>
+                                    <option value="Wanita"
+                                        {{ select_old('Wanita', old('gender'), true, $staff->gender) }}>Wanita
+                                    </option>
+                                </select>
+                                @error('gender')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-sm-3">
+                                <label for="marital_status" class="form-label">Status Perkawinan</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <select class="form-select @error('marital_status') is-invalid @enderror"
+                                    name="marital_status" id="marital_status">
+                                    <option value="" hidden>Pilih Status Perkawinan</option>
+                                    <option value="1"
+                                        {{ select_old('1', old('marital_status'), true, $staff->marital_status) }}>
+                                        Menikah
+                                    </option>
+                                    <option value="0"
+                                        {{ select_old('0', old('marital_status'), true, $staff->marital_status) }}>
+                                        Belum
+                                        Menikah
+                                    </option>
+                                </select>
+                                @error('marital_status')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-sm-3">
+                                <label for="child" class="form-label">Jumlah Anak</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" name="child"
+                                    class="form-control @error('child') is-invalid @enderror" id="child"
+                                    value="{{ old('child') ?? $staff->child }}">
+                                @error('child')
+                                    <div class="invalid-feedback">
                                         <strong>{{ $message }}</strong>
                                     </div>
                                 @enderror
