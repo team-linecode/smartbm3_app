@@ -14,6 +14,7 @@ use App\Http\Controllers\Manage\Salary\LastEducationController;
 use App\Http\Controllers\Manage\Salary\PositionController;
 use App\Http\Controllers\Manage\Salary\SalaryController;
 use App\Http\Controllers\Manage\Salary\SalaryCutController;
+use App\Http\Controllers\Manage\Salary\SalarySlipController;
 use App\Http\Controllers\Manage\TransactionController;
 use App\Http\Controllers\Manage\User\StaffController;
 use App\Http\Controllers\Manage\User\StudentController;
@@ -105,6 +106,8 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Salary
     Route::resource('/salaries', SalaryController::class);
     Route::get('/salaries/generatePDF/{salary_detail:uid}/{type}', [SalaryController::class, 'generatePDF'])->name('salaries.generate_pdf');
+    // Salary Slip
+    Route::resource('/salary_slip', SalarySlipController::class);
     // Salary Cut
     Route::resource('/salary/salary_cut', SalaryCutController::class)->except('show');
     // Allowance

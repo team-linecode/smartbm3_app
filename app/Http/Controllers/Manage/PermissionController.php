@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
     public function index()
     {
-        $this->authorize('developer access');
+        $this->authorize('read permission');
 
         $permissions = Permission::all();
         return view('manage.permission.index', [
@@ -20,7 +20,7 @@ class PermissionController extends Controller
 
     public function create()
     {
-        $this->authorize('developer access');
+        $this->authorize('create permission');
 
         $permissions = Permission::all();
         return view('manage.permission.create', [
@@ -30,7 +30,7 @@ class PermissionController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('developer access');
+        $this->authorize('create permission');
 
         $request->validate([
             'name' => 'required|unique:permissions,name',
@@ -38,14 +38,20 @@ class PermissionController extends Controller
 
         $request['name'] = strtolower($request['name']);
 
-        Permission::create($request->all());
+        Permission::create($request->only('name'));
 
-        return redirect()->route('app.permission.index')->with('success', 'Permission berhasil ditambahkan');
+        if ($request->stay) {
+            $route = 'app.permission.create';
+        } else {
+            $route = 'app.permission.index';
+        }
+
+        return redirect()->route($route)->with('success', 'Permission berhasil ditambahkan');
     }
 
     public function edit(Permission $permission)
     {
-        $this->authorize('developer access');
+        $this->authorize('update permission');
 
         $permissions = Permission::all();
         return view('manage.permission.edit', [
@@ -56,7 +62,7 @@ class PermissionController extends Controller
 
     public function update(Permission $permission, Request $request)
     {
-        $this->authorize('developer access');
+        $this->authorize('update permission');
 
         $request->validate([
             'name' => 'required|unique:permissions,name, ' . $permission->id,
@@ -66,12 +72,12 @@ class PermissionController extends Controller
 
         $permission->update($request->all());
 
-        return redirect()->route('app.permission.index')->with('success', 'Permission berhasil diperbarui');
+        return redirect()->route('app.permission.index')->with('success', 'Permission berhasil diupdate');
     }
 
     public function destroy(Permission $permission)
     {
-        $this->authorize('developer access');
+        $this->authorize('delete permission');
 
         $permission->delete();
         $permission->roles()->detach();

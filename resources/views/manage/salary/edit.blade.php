@@ -1,9 +1,9 @@
-@extends('layouts.manage', ['title' => 'Penggajian'])
+@extends('layouts.manage', ['title' => 'Ubah Penggajian'])
 
 @section('content')
-    <form action="{{ route('app.salaries.store') }}" method="POST">
+    <form action="{{ route('app.salaries.update', $salary->id) }}" method="POST">
         @csrf
-        @method('POST')
+        @method('PUT')
         <div class="row">
             <div class="col-lg-6">
                 <div class="card mb-3">
@@ -13,7 +13,7 @@
                                 <div class="mb-3">
                                     <label for="date" class="form-label">Bulan</label>
                                     <input type="month" class="form-control @error('month') is-invalid @enderror"
-                                        name="month" id="date" value="{{ old('month') }}">
+                                        name="month" id="date" value="{{ old('month') ?? $salary->month }}">
                                     @error('month')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -25,8 +25,10 @@
                                     <select class="form-select @error('status') is-invalid @enderror" name="status"
                                         id="Status">
                                         <option value="" hidden>Pilih Status</option>
-                                        <option value="open" {{ select_old('open', old('status')) }}>Dibuka</option>
-                                        <option value="close" {{ select_old('close', old('status')) }}>Ditutup</option>
+                                        <option value="open"
+                                            {{ select_old('open', old('status'), true, $salary->status) }}>Dibuka</option>
+                                        <option value="close"
+                                            {{ select_old('close', old('status'), true, $salary->status) }}>Ditutup</option>
                                     </select>
                                     @error('status')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -39,7 +41,7 @@
                                 Klik "<b>Generate</b>" untuk membuat penggajian
                             </div>
                             <div>
-                                <button class="btn btn-primary">Generate</button>
+                                <button class="btn btn-primary">Re-Generate</button>
                             </div>
                         </div>
                     </div>
@@ -58,8 +60,8 @@
                             </div>
                         </div>
 
-                        @forelse ($users as $indexUser => $user)
-                            {{-- {{ dd(getFormula('[TJJBTN]', $user->id)) }} --}}
+                        @forelse ($salaryDetails as $indexDetail => $detail)
+                            {{-- {{ dd(getFormula('[TJJBTN]', $detail->user->id)) }} --}}
                             <div class="card shadow-none border-1 mb-2">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center justify-content-between">
@@ -67,19 +69,19 @@
                                             {{-- checkbox user --}}
                                             <div class="form-check">
                                                 <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
-                                                    value="{{ $user->id }}" id="userCheck{{ $indexUser }}">
-                                                <label class="form-check-label" for="userCheck{{ $indexUser }}">
-                                                    <h6 class="fw-bold">{{ $user->name }}</h6>
+                                                    value="{{ $detail->user->id }}" id="userCheck{{ $indexDetail }}">
+                                                <label class="form-check-label" for="userCheck{{ $indexDetail }}">
+                                                    <h6 class="fw-bold">{{ $detail->user->name }}</h6>
                                                     <table class="text-primary">
                                                         <tr valign="top">
                                                             <td>Level</td>
                                                             <td class="px-2">:</td>
-                                                            <td>{{ strtoupper($user->getRoleNames()->implode(', ')) }}</td>
+                                                            <td>{{ strtoupper($detail->user->getRoleNames()->implode(', ')) }}</td>
                                                         </tr>
                                                         <tr valign="top">
                                                             <td>Jabatan</td>
                                                             <td class="px-2">:</td>
-                                                            <td>{{ $user->positions()->exists() ? $user->positions->pluck('name')->implode(', ') : 'Guru' }}
+                                                            <td>{{ $detail->user->positions()->exists() ? $detail->user->positions->pluck('name')->implode(', ') : 'Guru' }}
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -89,13 +91,13 @@
                                         </div>
                                         <div>
                                             <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseSalary{{ $indexUser }}" aria-expanded="false"
-                                                aria-controls="collapseSalary{{ $indexUser }}">
+                                                data-bs-target="#collapseSalary{{ $indexDetail }}" aria-expanded="false"
+                                                aria-controls="collapseSalary{{ $indexDetail }}">
                                                 Rincian
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="collapse" id="collapseSalary{{ $indexUser }}">
+                                    <div class="collapse" id="collapseSalary{{ $indexDetail }}">
                                         <hr>
                                         <div class="row">
                                             <div class="col-lg-6">
@@ -103,16 +105,16 @@
                                                 @php
                                                     $allowanceTotal = 0;
                                                 @endphp
-                                                @forelse ($allowances as $indexAllowance => $allowance)
+                                                @forelse (json_decode($detail->components, true)['allowances'] as $indexAllowance => $allowance)
                                                     @php
-                                                        $allowanceTotal += formulaExists($allowance->description) ? getFormula($allowance->description, $user->id) : 0;
+                                                        $allowanceTotal += 0;
                                                     @endphp
                                                     <div class="card shadow-none border-1 mb-2">
                                                         <div class="card-body ps-2 pe-1 py-1">
                                                             <div class="row align-items-center">
                                                                 <div class="col-lg-6">
                                                                     <h6 class="mb-2 mb-md-0 mb-lg-0 mb-xl-0">
-                                                                        {{ $allowance->name }}</h6>
+                                                                        {{ $allowance['name'] }}</h6>
                                                                 </div>
                                                                 <div class="col-lg-6">
                                                                     <div class="input-group">
@@ -120,9 +122,9 @@
                                                                             id="basic-addon1">Rp.</span>
                                                                         <input type="text"
                                                                             class="form-control form-control-sm currency"
-                                                                            name="allowances[{{ $user->id }}][{{ $allowance->id }}]"
+                                                                            name="allowances[{{ $detail->user->id }}][{{ $allowance['name'] }}]"
                                                                             placeholder="Masukkan Jumlah"
-                                                                            value="{{ formulaExists($allowance->description) ? number_format(getFormula($allowance->description, $user->id)) : 0 }}">
+                                                                            value="{{ number_format($allowance['amount']) }}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -139,12 +141,12 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <h6 class="fw-bold">Pemotongan</h6>
-                                                @forelse ($salary_cuts as $indexSalaryCut => $salary_cut)
+                                                @forelse (json_decode($detail->components, true)['salary_cuts'] as $indexSalaryCut => $salary_cut)
                                                     <div class="card shadow-none border-1 mb-2">
                                                         <div class="card-body ps-2 pe-1 py-1">
                                                             <div class="row align-items-center">
                                                                 <div class="col-lg-6">
-                                                                    <h6 class="mb-0">{{ $salary_cut->name }}</h6>
+                                                                    <h6 class="mb-0">{{ $salary_cut['name'] }}</h6>
                                                                 </div>
                                                                 <div class="col-lg-6">
                                                                     <div class="input-group">
@@ -153,8 +155,8 @@
                                                                         <input type="text"
                                                                             class="form-control form-control-sm currency"
                                                                             placeholder="Masukkan Jumlah"
-                                                                            name="salary_cuts[{{ $user->id }}][{{ $salary_cut->id }}]"
-                                                                            value="{{ formulaExists($allowance->description) ? number_format(getFormula($allowance->description, $user->id)) : 0 }}">
+                                                                            name="salary_cuts[{{ $detail->user->id }}][{{ $salary_cut['name'] }}]"
+                                                                            value="{{ number_format($salary_cut['amount']) }}">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -173,7 +175,8 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="ps-3 text-danger mb-2"><i class="ri ri-information-line align-middle"></i> Tidak ada Staff /
+                            <div class="ps-3 text-danger mb-2"><i class="ri ri-information-line align-middle"></i> Tidak
+                                ada Staff /
                                 Guru
                             </div>
                         @endforelse

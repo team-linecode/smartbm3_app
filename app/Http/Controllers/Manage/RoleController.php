@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
-use App\Models\Role;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
     public function index()
     {
-        $this->authorize('developer access');
+        $this->authorize('read role');
 
         $roles = Role::all();
         return view('manage.role.index', [
@@ -21,7 +21,7 @@ class RoleController extends Controller
 
     public function create()
     {
-        $this->authorize('developer access');
+        $this->authorize('create role');
 
         $permissions = Permission::all();
         return view('manage.role.create', [
@@ -31,24 +31,24 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('developer access');
+        $this->authorize('create role');
 
         $request->validate([
-            'name' => 'required|unique:roles,name',
-            'permissions' => 'array'
+            'name' => 'required|unique:roles,name'
         ]);
+
 
         $request['name'] = strtolower($request['name']);
 
-        $role = Role::create($request->all());
-        $role->permissions()->attach($request->permissions);
+        $role = Role::create($request->only('name'));
+        $role->givePermissionTo($request->permissions);
 
         return redirect()->route('app.role.index')->with('success', 'Role berhasil ditambahkan');
     }
 
     public function edit(Role $role)
     {
-        $this->authorize('developer access');
+        $this->authorize('update role');
 
         $permissions = Permission::all();
         return view('manage.role.edit', [
@@ -59,33 +59,26 @@ class RoleController extends Controller
 
     public function update(Role $role, Request $request)
     {
-        $this->authorize('developer access');
+        $this->authorize('update role');
 
         $request->validate([
             'name' => 'required|unique:roles,name, ' . $role->id,
             'permissions' => 'array'
         ]);
 
-        $permissions = (array) $request['permissions'];
-
-        if ($role->default_permission_id()) {
-            $request['name'] = strtolower($request['name']);
-            array_push($permissions, (string) $role->default_permission_id());
-            sort($permissions);
-        }
-
         $role->update($request->all());
-        $role->permissions()->sync($permissions);
+        $role->syncPermissions($request->permissions);
 
-        return redirect()->route('app.role.index')->with('success', 'Role berhasil diperbarui');
+        return redirect()->route('app.role.index')->with('success', 'Role berhasil diupdate');
     }
 
     public function destroy(Role $role)
     {
-        $this->authorize('developer access');
+        $this->authorize('delete role');
 
+        $role->syncPermissions([]);
         $role->delete();
-        $role->permissions()->detach();
+
         return redirect()->route('app.role.index')->with('success', 'Role berhasil dihapus');
     }
 }

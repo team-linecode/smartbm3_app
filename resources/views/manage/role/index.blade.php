@@ -31,15 +31,15 @@
                                 <td>{{ ucwords($role->name) }}</td>
                                 <td style="white-space: nowrap">
                                     <table class="table table-sm table-bordered mb-0 w-auto table-light">
-                                        @forelse ($role->permissions as $permission)
+                                        @if ($role->permissions->count() > 0)
                                             <tr>
-                                                <td>{{ $permission->name }} <i class="ri ri-check-line align-middle"></i></td>
+                                                <td class="text-success">have {{ $role->permissions->count() }} permissions</td>
                                             </tr>
-                                        @empty
+                                        @else
                                             <tr>
-                                                <td class="text-danger">No Permissions <i class="ri ri-close-line align-middle"></i></td>
+                                                <td class="text-danger">don't have permission</td>
                                             </tr>
-                                        @endforelse
+                                        @endif
                                     </table>
                                 </td>
                                 <td>
@@ -48,20 +48,13 @@
                                             <a href="{{ route('app.role.edit', $role->id) }}"
                                                 class="btn btn-sm btn-success">Edit</a>
                                         </div>
-                                        @if (!in_array($role->id, [1, 2, 3, 4, 5]))
-                                            <div class="remove">
-                                                <form action="{{ route('app.role.destroy', $role->id) }}" method="post">
-                                                    @csrf
-                                                    @method('delete')
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-danger c-delete">Hapus</button>
-                                                </form>
-                                            </div>
-                                        @else
-                                            <div class="remove">
-                                                <button class="btn btn-sm btn-danger" disabled>Hapus</button>
-                                            </div>
-                                        @endif
+                                        <div class="remove">
+                                            <form action="{{ route('app.role.destroy', $role->id) }}" method="post">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

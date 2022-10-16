@@ -10,11 +10,9 @@ class DatatableController extends Controller
 {
     public function student_json()
     {
-        $this->authorize('developer access');
+        $this->authorize('read student');
 
-        return DataTables::of(User::whereHas('role', function ($q) {
-            $q->where('name', 'student');
-        })->with('classroom')->with('expertise')->select('users.*')->limit(1))
+        return DataTables::of(User::role('student')->with('classroom')->with('expertise')->select('users.*')->limit(1))
             ->addIndexColumn()
             ->editColumn('name', function ($row) {
                 return $row->name . '<br />
@@ -52,7 +50,7 @@ class DatatableController extends Controller
 
     public function student_bill_json()
     {
-        $this->authorize('finance access');
+        $this->authorize('read bill');
 
         return DataTables::of(User::whereHas('role', function ($q) {
             $q->where('name', 'student');
@@ -79,11 +77,9 @@ class DatatableController extends Controller
 
     public function teacher_json()
     {
-        $this->authorize('developer access');
+        $this->authorize('read teacher');
 
-        return DataTables::of(User::whereHas('role', function ($q) {
-            $q->where('name', 'teacher');
-        })->limit(1))
+        return DataTables::of(User::role('teacher')->limit(1))
             ->addIndexColumn()
             ->editColumn('name', function ($row) {
                 return $row->name . '<br />
@@ -130,11 +126,9 @@ class DatatableController extends Controller
 
     public function staff_json()
     {
-        $this->authorize('developer access');
+        $this->authorize('read staff');
 
-        return DataTables::of(User::whereHas('role', function ($q) {
-            $q->whereIn('name', ['staff', 'finance']);
-        })->limit(1))
+        return DataTables::of(User::role('staff')->limit(1))
             ->addIndexColumn()
             ->editColumn('name', function ($row) {
                 return $row->name . '<br />

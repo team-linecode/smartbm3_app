@@ -37,7 +37,15 @@
 
                         <div class="row">
                             <div class="col-sm-9 offset-sm-3">
-                                <button class="btn btn-primary">Simpan</button>
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-primary">Simpan</button>
+                                    <div class="form-check ms-3">
+                                        <input class="form-check-input" name="stay" type="checkbox" id="checkboxStay">
+                                        <label class="form-check-label" for="checkboxStay">
+                                            Tetap dihalaman ini
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>

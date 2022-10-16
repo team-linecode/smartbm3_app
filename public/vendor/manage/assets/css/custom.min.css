@@ -24,10 +24,26 @@ body::-webkit-scrollbar-thumb:hover {
     white-space: nowrap;
 }
 
+.permission-column {
+    column-count: 4;
+}
+
+/* mobile responsive */
 @media (max-width: 575px) {
     .card-header .btn {
         padding: 0.25rem 0.5rem;
         font-size: 0.7109375rem;
         border-radius: 0.2rem;
+    }
+
+    .permission-column {
+        column-count: 2;
+    }
+}
+
+/* tablet responsive */
+@media (min-width: 768px) and (max-width: 991px) {
+    .permission-column {
+        column-count: 3;
     }
 }

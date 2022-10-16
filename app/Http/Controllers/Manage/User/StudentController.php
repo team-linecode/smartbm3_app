@@ -16,14 +16,14 @@ class StudentController extends Controller
 {
     public function index()
     {
-        $this->authorize('developer access');
+        $this->authorize('read student');
 
         return view('manage.user.student.index');
     }
 
     public function create()
     {
-        $this->authorize('developer access');
+        $this->authorize('create student');
 
         return view('manage.user.student.create', [
             'classrooms' => Classroom::all(),
@@ -35,6 +35,8 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create student');
+
         $rules = [
             'name' => 'required',
             'username' => 'required|unique:users,username',
@@ -75,7 +77,7 @@ class StudentController extends Controller
 
     public function edit(User $student)
     {
-        $this->authorize('developer access');
+        $this->authorize('update student');
 
         return view('manage.user.student.edit', [
             'student' => $student,
@@ -88,6 +90,8 @@ class StudentController extends Controller
 
     public function update(User $student, Request $request)
     {
+        $this->authorize('update student');
+
         $rules = [
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $student->id,
@@ -124,6 +128,8 @@ class StudentController extends Controller
 
     public function destroy(User $student)
     {
+        $this->authorize('delete student');
+
         if ($student->image !== NULL) {
             Storage::disk('public')->delete($student->image);
         }
@@ -135,6 +141,8 @@ class StudentController extends Controller
 
     public function change_password(User $student)
     {
+        $this->authorize('change password');
+
         return view('manage.user.student.change_password', [
             'student' => $student
         ]);
@@ -142,6 +150,8 @@ class StudentController extends Controller
 
     public function save_password(User $student, Request $request)
     {
+        $this->authorize('change password');
+
         $request->validate([
             'old_password' => 'required',
             'password' => 'required|min:4|same:re_password',

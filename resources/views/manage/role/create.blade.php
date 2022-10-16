@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center">
@@ -25,7 +25,8 @@
                             </div>
                             <div class="col-sm-9">
                                 <input type="text" name="name"
-                                    class="form-control @error('name') is-invalid @enderror" id="name" value="{{ old('name') }}">
+                                    class="form-control @error('name') is-invalid @enderror" id="name"
+                                    value="{{ old('name') }}">
                                 @error('name')
                                     <div class="invalid-feedback">
                                         <strong>{{ $message }}</strong>
@@ -34,25 +35,28 @@
                             </div>
                         </div>
 
-                        <div class="row align-items-start mb-3">
+                        <div class="row align-items-start mb-5">
                             <div class="col-sm-3">
                                 <label for="permission" class="form-label">Permission</label>
                             </div>
                             <div class="col-sm-9">
                                 <div class="row">
-                                    @foreach ($permissions as $i => $permission)
-                                        <div class="col-12">
-                                            <div class="form-check mb-2">
-                                                <input class="form-check-input" name="permissions[]"
-                                                    value="{{ $permission->id }}" type="checkbox"
-                                                    id="checkbox{{ $i }}"
-                                                    {{ cb_old($permission->id, old('permissions')) }}>
-                                                <label class="form-check-label" for="checkbox{{ $i }}">
-                                                    {{ $permission->name }}
-                                                </label>
+                                    <div class="permission-column">
+                                        @foreach ($permissions as $i => $permission)
+                                            <div class="col-12">
+                                                <div class="form-check mb-2"
+                                                    style="break-inside: avoid-column;">
+                                                    <input class="form-check-input" name="permissions[]"
+                                                        value="{{ $permission->name }}" type="checkbox"
+                                                        id="checkbox{{ $i }}"
+                                                        {{ cb_old($permission->id, old('permissions')) }}>
+                                                    <label class="form-check-label" for="checkbox{{ $i }}">
+                                                        {{ $permission->name }}
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </div>
                                 @error('permissions')
                                     <div class="small text-danger">

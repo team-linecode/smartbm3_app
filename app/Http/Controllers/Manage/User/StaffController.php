@@ -16,14 +16,14 @@ class StaffController extends Controller
 {
     public function index()
     {
-        $this->authorize('developer access');
+        $this->authorize('read staff');
 
         return view('manage.user.staff.index');
     }
 
     public function create()
     {
-        $this->authorize('developer access');
+        $this->authorize('create staff');
 
         return view('manage.user.staff.create', [
             'roles' => Role::whereIn('name', ['staff', 'finance'])->get(),
@@ -33,6 +33,8 @@ class StaffController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create staff');
+
         $rules = [
             'name' => 'required',
             'username' => 'required|unique:users,username',
@@ -70,7 +72,7 @@ class StaffController extends Controller
 
     public function edit(User $staff)
     {
-        $this->authorize('developer access');
+        $this->authorize('update staff');
 
         return view('manage.user.staff.edit', [
             'staff' => $staff,
@@ -81,6 +83,8 @@ class StaffController extends Controller
 
     public function update(User $staff, Request $request)
     {
+        $this->authorize('update staff');
+
         $rules = [
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $staff->id,
@@ -117,6 +121,8 @@ class StaffController extends Controller
 
     public function destroy(User $staff)
     {
+        $this->authorize('delete staff');
+
         if ($staff->image !== NULL) {
             Storage::disk('public')->delete($staff->image);
         }
@@ -128,6 +134,8 @@ class StaffController extends Controller
 
     public function change_password(User $staff)
     {
+        $this->authorize('change password');
+
         return view('manage.user.staff.change_password', [
             'staff' => $staff
         ]);
@@ -135,6 +143,8 @@ class StaffController extends Controller
 
     public function save_password(User $staff, Request $request)
     {
+        $this->authorize('change password');
+
         $request->validate([
             'old_password' => 'required',
             'password' => 'required|min:4|same:re_password',

@@ -131,7 +131,7 @@
                                         <span
                                             class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ Auth::user()->name }}</span>
                                         <span
-                                            class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">{{ Auth::user()->role->name }}</span>
+                                            class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">{{ Auth::user()->getRoleNames()->implode(', ') }}</span>
                                     </span>
                                 </span>
                             </button>
@@ -195,83 +195,119 @@
                                 <i class="ri-dashboard-2-line"></i> <span data-key="t-landing">Dashboard</span>
                             </a>
                         </li>
-                        @can('developer access')
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*']) }}"
-                                    href="#sidebarSalary" data-bs-toggle="collapse" role="button" aria-expanded="false"
-                                    aria-controls="sidebarSalary">
-                                    <i class="ri-money-dollar-circle-line"></i> <span
-                                        data-key="t-report">Penggajian</span>
-                                </a>
-                                <div class="collapse menu-dropdown {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*'], 'show') }}"
-                                    id="sidebarSalary">
-                                    <ul class="nav nav-sm flex-column">
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*']) }}"
+                                href="#sidebarSalary" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                                aria-controls="sidebarSalary">
+                                <i class="ri-money-dollar-circle-line"></i> <span
+                                    data-key="t-report">Penggajian</span>
+                            </a>
+                            <div class="collapse menu-dropdown {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*'], 'show') }}"
+                                id="sidebarSalary">
+                                <ul class="nav nav-sm flex-column">
+                                    @can('read salary')
                                         <li class="nav-item">
                                             <a href="{{ route('app.salaries.index') }}"
                                                 class="nav-link {{ set_active('app.salaries*') }}"
                                                 data-key="t-transaction"> Input Penggajian</a>
                                         </li>
+                                    @endcan
+
+                                    @can('read salary cut')
                                         <li class="nav-item">
                                             <a href="{{ route('app.salary_cut.index') }}"
                                                 class="nav-link {{ set_active('app.salary_cut*') }}"
                                                 data-key="t-transaction"> Potongan
                                             </a>
                                         </li>
+                                    @endcan
+
+                                    @can('read allowance')
                                         <li class="nav-item">
                                             <a href="{{ route('app.allowance.index') }}"
                                                 class="nav-link {{ set_active('app.allowance*') }}"
                                                 data-key="t-transaction"> Tunjangan
                                             </a>
                                         </li>
+                                    @endcan
+
+                                    @can('read last education')
                                         <li class="nav-item">
                                             <a href="{{ route('app.last_education.index') }}"
                                                 class="nav-link {{ set_active('app.last_education*') }}"
                                                 data-key="t-transaction"> Data Pend. Terakhir
                                             </a>
                                         </li>
+                                    @endcan
+
+                                    @can('read position')
                                         <li class="nav-item">
                                             <a href="{{ route('app.position.index') }}"
                                                 class="nav-link {{ set_active('app.position*') }}"
                                                 data-key="t-transaction"> Data Jabatan
                                             </a>
                                         </li>
-                                    </ul>
-                                </div>
-                            </li>
+                                    @endcan
+
+                                    @can('print salary')
+                                        <li class="nav-item">
+                                            <a href="{{ route('app.salary_slip.index') }}"
+                                                class="nav-link {{ set_active('app.salary_slip*') }}"
+                                                data-key="t-transaction"> Slip Gaji
+                                            </a>
+                                        </li>
+                                    @endcan
+                                </ul>
+                            </div>
+                        </li>
+
+                        @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
                             <li class="menu-title"><span data-key="t-menu">User</span></li>
+                        @endif
+                        @can('read staff')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.staff*']) }}"
                                     href="{{ route('app.staff.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
                                 </a>
                             </li>
+                        @endcan
+
+                        @can('read teacher')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active('app.teacher*') }}"
                                     href="{{ route('app.teacher.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Guru</span>
                                 </a>
                             </li>
+                        @endcan
+
+                        @can('read student')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.student*']) }}"
                                     href="{{ route('app.student.index') }}">
                                     <i class="ri-group-line"></i> <span data-key="t-landing">Siswa/Siswi</span>
                                 </a>
                             </li>
+                        @endcan
 
+                        @role('developer')
                             <li class="menu-title"><span data-key="t-menu">Role & Permission</span></li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/role', 'app/role/*']) }}"
+                                <a class="nav-link menu-link {{ set_active(['app.role', 'app.role.*']) }}"
                                     href="{{ route('app.role.index') }}">
                                     <i class="ri-user-2-line"></i> <span data-key="t-landing">Role</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/permission', 'app/permission/*']) }}"
+                                <a class="nav-link menu-link {{ set_active(['app.permission', 'app.permission.*']) }}"
                                     href="{{ route('app.permission.index') }}">
                                     <i class="ri-group-line"></i> <span data-key="t-landing">Permission</span>
                                 </a>
                             </li>
-                        @endcan
+                        @endrole
+
                         @can('finance access')
                             <li class="menu-title"><span data-key="t-menu">Keuangan</span></li>
                             <li class="nav-item">
@@ -315,15 +351,6 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </li>
-                        @endcan
-                        @can('teacher access')
-                            <li class="menu-title"><span data-key="t-menu">Slip Gaji</span></li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.finance.transaction.create') }}"
-                                    href="{{ route('app.finance.transaction.create') }}">
-                                    <i class="ri-exchange-line"></i> <span data-key="t-landing">Pembayaran</span>
-                                </a>
                             </li>
                         @endcan
                     </ul>
