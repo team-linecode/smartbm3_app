@@ -11,6 +11,8 @@ class SalaryCutController extends Controller
 {
     public function index()
     {
+        $this->authorize('read salary cut');
+
         return view('manage.salary.salary_cut.index', [
             'salary_cuts' => SalaryCut::all()
         ]);
@@ -18,11 +20,15 @@ class SalaryCutController extends Controller
 
     public function create()
     {
+        $this->authorize('create salary cut');
+
         return view('manage.salary.salary_cut.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create salary cut');
+
         $request['amount'] = cleanCurrency($request->amount);
 
         $request->validate([
@@ -44,6 +50,8 @@ class SalaryCutController extends Controller
 
     public function edit(SalaryCut $salary_cut)
     {
+        $this->authorize('update salary cut');
+
         return view('manage.salary.salary_cut.edit', [
             'salary_cut' => $salary_cut
         ]);
@@ -51,6 +59,8 @@ class SalaryCutController extends Controller
 
     public function update(SalaryCut $salary_cut, Request $request)
     {
+        $this->authorize('update salary cut');
+
         $request['amount'] = cleanCurrency($request->amount);
 
         $request->validate([
@@ -70,6 +80,8 @@ class SalaryCutController extends Controller
 
     public function destroy(SalaryCut $salary_cut)
     {
+        $this->authorize('delete salary cut');
+
         $salary_cut->delete();
         return redirect(route('app.salary_cut.index'))->with('success', 'Potongan berhasil dihapus');
     }

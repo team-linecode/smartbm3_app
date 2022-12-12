@@ -12,6 +12,8 @@ class AllowanceController extends Controller
 {
     public function index()
     {
+        $this->authorize('read allowance');
+
         return view('manage.salary.allowance.index', [
             'allowances' => Allowance::all()
         ]);
@@ -19,6 +21,8 @@ class AllowanceController extends Controller
 
     public function create()
     {
+        $this->authorize('create allowance');
+
         return view('manage.salary.allowance.create', [
             'last_educations' => LastEducation::all()
         ]);
@@ -26,6 +30,8 @@ class AllowanceController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create allowance');
+
         cleanCurrency($request->amount);
 
         $request->validate([
@@ -47,6 +53,8 @@ class AllowanceController extends Controller
 
     public function edit(Allowance $allowance)
     {
+        $this->authorize('update allowance');
+
         return view('manage.salary.allowance.edit', [
             'allowance' => $allowance,
         ]);
@@ -54,6 +62,8 @@ class AllowanceController extends Controller
 
     public function update(Allowance $allowance, Request $request)
     {
+        $this->authorize('update allowance');
+
         cleanCurrency($request->amount);
 
         $request->validate([
@@ -71,6 +81,8 @@ class AllowanceController extends Controller
 
     public function destroy(Allowance $allowance)
     {
+        $this->authorize('delete allowance');
+
         $allowance->delete();
 
         return back()->with('success', 'Tunjangan berhasil dihapus');

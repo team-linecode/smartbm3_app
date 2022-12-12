@@ -10,14 +10,14 @@ class BillController extends Controller
 {
     public function index()
     {
-        $this->authorize('finance access');
+        $this->authorize('read bill');
 
         return view('manage.finance.bill.index');
     }
 
     public function show(User $user)
     {
-        $this->authorize('finance access');
+        $this->authorize('read bill');
 
         return view('manage.finance.bill.show', [
             'user' => $user

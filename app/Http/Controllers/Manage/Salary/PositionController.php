@@ -12,6 +12,8 @@ class PositionController extends Controller
 {
     public function index()
     {
+        $this->authorize('read position');
+
         return view('manage.salary.position.index', [
             'positions' => Position::orderByDesc('name')->get()
         ]);
@@ -19,6 +21,8 @@ class PositionController extends Controller
 
     public function create()
     {
+        $this->authorize('create position');
+
         return view('manage.salary.position.create', [
             'users' => User::whereHas('role', function ($q) {
                 $q->whereIn('name', ['teacher', 'staff', 'finance']);
@@ -28,6 +32,8 @@ class PositionController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create position');
+
         $request->validate([
             'user' => 'array|min:1',
             'name' => 'required|unique:positions,name',
@@ -45,6 +51,8 @@ class PositionController extends Controller
 
     public function edit(Position $position)
     {
+        $this->authorize('update position');
+
         return view('manage.salary.position.edit', [
             'position' => $position,
             'users' => User::whereHas('role', function ($q) {
@@ -55,6 +63,8 @@ class PositionController extends Controller
 
     public function update(Position $position, Request $request)
     {
+        $this->authorize('update position');
+
         $request->validate([
             'user' => 'array|min:1',
             'name' => 'required|unique:positions,name,' . $position->id,
@@ -73,6 +83,8 @@ class PositionController extends Controller
 
     public function destroy(Position $position)
     {
+        $this->authorize('delete position');
+
         $position->delete();
         $position->users()->detach();
 
@@ -81,6 +93,8 @@ class PositionController extends Controller
 
     public function destroy_user(Position $position, User $user)
     {
+        $this->authorize('delete position');
+
         $user->positions()->detach($position->id);
         return back()->with('success', 'Anggota berhasil dihapus dari jabatan');
     }

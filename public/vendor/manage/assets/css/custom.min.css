@@ -28,6 +28,10 @@ body::-webkit-scrollbar-thumb:hover {
     column-count: 4;
 }
 
+.white-space-nowrap {
+    white-space: nowrap;
+}
+
 /* mobile responsive */
 @media (max-width: 575px) {
     .card-header .btn {

@@ -1,3 +1,6 @@
+<!-- Sweet Alerts Js -->
+<script src="/vendor/manage/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+
 <script>
     const Toast = Swal.mixin({
         toast: true,

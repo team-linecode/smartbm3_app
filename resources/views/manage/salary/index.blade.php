@@ -5,7 +5,7 @@
         <div class="card-header">
             <div class="d-flex flex-column flex-sm-row flex-md-row align-items-md-center justify-content-between">
                 <div class="">
-                    <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Input Penggajian</h4>
+                    <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Input Slip Gaji</h4>
                 </div>
                 <div class="text-center">
                     <a href="{{ route('app.salaries.create') }}" class="btn btn-primary">Tambah</a>

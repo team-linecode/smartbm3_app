@@ -17,30 +17,26 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $this->authorize('finance access');
+        $this->authorize('read transaction');
 
         return view('manage.finance.transaction.index', [
-            'users' => User::whereHas('role', function ($q) {
-                $q->where('name', 'student');
-            })->get(),
+            'users' => User::role('student')->get(),
             'transactions' => Transaction::latest()->get()
         ]);
     }
 
     public function create()
     {
-        $this->authorize('finance access');
+        $this->authorize('create transaction');
 
         return view('manage.finance.transaction.create', [
-            'users' => User::whereHas('role', function ($q) {
-                $q->where('name', 'student');
-            })->get(),
+            'users' => User::role('student')->get(),
         ]);
     }
 
     public function save_transaction(Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('create transaction');
 
         $request->validate([
             'date' => 'required',
@@ -60,11 +56,11 @@ class TransactionController extends Controller
 
     public function update_transaction(Transaction $transaction, Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('update transaction');
 
         $request->validate(
             [
-                'transaction_date' => 'required|date',
+                'transaction_date' => 'required',
                 'status' => 'required',
                 'payment_method_id' => 'required'
             ],
@@ -84,7 +80,7 @@ class TransactionController extends Controller
 
     public function create_detail(Transaction $transaction)
     {
-        $this->authorize('finance access');
+        $this->authorize('create transaction');
 
         return view('manage.finance.transaction.create_detail', [
             'cost_spp' => Cost::where('schoolyear_id', $transaction->user->schoolyear_id)->whereHas('cost_category', function ($query) {
@@ -98,7 +94,7 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('create transaction');
 
         $request->validate([
             'cost_id' => 'required',
@@ -146,7 +142,7 @@ class TransactionController extends Controller
 
     public function detail_destroy(TransactionDetail $transaction_detail)
     {
-        $this->authorize('finance access');
+        $this->authorize('delete transaction');
 
         // update transaction total
         $transaction = Transaction::find($transaction_detail->transaction->id);
@@ -161,7 +157,7 @@ class TransactionController extends Controller
 
     public function get_user(Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('read transaction');
 
         $user = User::where('id', $request->user_id)
             ->with('classroom')
@@ -173,7 +169,7 @@ class TransactionController extends Controller
 
     public function get_cost_detail(Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('read transaction');
 
         $cost = Cost::find($request->cost_id);
         $user = User::find($request->user_id);
@@ -209,7 +205,7 @@ class TransactionController extends Controller
 
     public function get_cost_amount(Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('read transaction');
 
         $cost_detail = CostDetail::find($request->cost_detail_id);
 
@@ -220,7 +216,7 @@ class TransactionController extends Controller
 
     public function get_account_number(Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('read transaction');
 
         $payment_method = PaymentMethod::find($request->payment_method_id);
 
@@ -237,7 +233,7 @@ class TransactionController extends Controller
 
     public function print(Transaction $transaction)
     {
-        $this->authorize('finance access');
+        $this->authorize('print transaction');
 
         return view('manage.finance.transaction.print', [
             'transaction' => $transaction

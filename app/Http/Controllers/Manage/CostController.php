@@ -17,7 +17,7 @@ class CostController extends Controller
 {
     public function index()
     {
-        $this->authorize('finance access');
+        $this->authorize('read cost');
 
         return view('manage.finance.cost.index', [
             'schoolyears' => Schoolyear::orderBy('id', 'desc')->get()
@@ -26,7 +26,7 @@ class CostController extends Controller
 
     public function show(Schoolyear $schoolyear)
     {
-        $this->authorize('finance access');
+        $this->authorize('read cost');
 
         return view('manage.finance.cost.show', [
             'cost_categories' => CostCategory::all(),
@@ -36,7 +36,7 @@ class CostController extends Controller
 
     public function detail(Schoolyear $schoolyear, Cost $cost)
     {
-        $this->authorize('finance access');
+        $this->authorize('read cost');
 
         return view('manage.finance.cost.detail', [
             'classrooms' => Classroom::all(),
@@ -48,7 +48,7 @@ class CostController extends Controller
 
     public function create(Schoolyear $schoolyear, CostCategory $cost_category)
     {
-        $this->authorize('finance access');
+        $this->authorize('create cost');
 
         return view('manage.finance.cost.create', [
             'cost_categories' => CostCategory::all(),
@@ -62,7 +62,7 @@ class CostController extends Controller
 
     public function store(Schoolyear $schoolyear, CostCategory $cost_category, Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('create cost');
 
         $request->validate([
             'name' => 'required|unique:costs,name',
@@ -112,7 +112,7 @@ class CostController extends Controller
 
     public function edit(Schoolyear $schoolyear, Cost $cost)
     {
-        $this->authorize('finance access');
+        $this->authorize('update cost');
 
         return view('manage.finance.cost.edit', [
             'cost_categories' => CostCategory::all(),
@@ -126,7 +126,7 @@ class CostController extends Controller
 
     public function update(Schoolyear $schoolyear, Cost $cost, Request $request)
     {
-        $this->authorize('finance access');
+        $this->authorize('update cost');
 
         $request->validate([
             'name' => 'required|unique:costs,name,' . $cost->id,
@@ -158,7 +158,7 @@ class CostController extends Controller
 
     public function destroy(Schoolyear $schoolyear, Cost $cost)
     {
-        $this->authorize('finance access');
+        $this->authorize('delete cost');
 
         CostDetail::where('cost_id', $cost->id)->delete();
         $cost->delete();

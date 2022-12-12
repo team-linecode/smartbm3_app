@@ -8,6 +8,10 @@
             <div class="col-lg-6">
                 <div class="card mb-3">
                     <div class="card-body">
+                        <a href="{{ route('app.salaries.index') }}" class="btn btn-light mb-3">
+                            <i class="ri ri-arrow-left-line align-middle"></i> Kembali
+                        </a>
+
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="mb-3">
@@ -41,7 +45,7 @@
                                 Klik "<b>Generate</b>" untuk membuat penggajian
                             </div>
                             <div>
-                                <button class="btn btn-primary">Re-Generate</button>
+                                <button class="btn btn-primary ms-2 white-space-nowrap">Update</button>
                             </div>
                         </div>
                     </div>
@@ -76,7 +80,8 @@
                                                         <tr valign="top">
                                                             <td>Level</td>
                                                             <td class="px-2">:</td>
-                                                            <td>{{ strtoupper($detail->user->getRoleNames()->implode(', ')) }}</td>
+                                                            <td>{{ strtoupper($detail->user->getRoleNames()->implode(', ')) }}
+                                                            </td>
                                                         </tr>
                                                         <tr valign="top">
                                                             <td>Jabatan</td>

@@ -73,7 +73,9 @@ Route::get('/', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/', [AuthController::class, 'post_login'])->name('auth.post_login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::get('/forgot', [AuthController::class, 'forgot'])->name('auth.forgot');
-Route::get('/reset/{email}/{token}', [AuthController::class, 'reset'])->name('auth.reset');
+Route::post('/forgot', [AuthController::class, 'post_forgot'])->name('auth.forgot.post');
+Route::get('/reset_password/{token}', [AuthController::class, 'reset'])->name('auth.reset');
+Route::post('/reset_password/{verify_token}', [AuthController::class, 'post_reset'])->name('auth.reset.post');
 
 // Route [auth, master]
 Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {

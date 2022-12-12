@@ -39,6 +39,7 @@ class User extends Authenticatable
         'classroom_id',
         'expertise_id',
         'verify_token',
+        'expired_token',
         'remember_token'
     ];
 

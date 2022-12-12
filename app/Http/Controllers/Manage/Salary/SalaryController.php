@@ -74,7 +74,6 @@ class SalaryController extends Controller
                 $_allowance = Allowance::find($allowanceId);
 
                 $components[$user]['allowances'][] = [
-                    'allowance_id' => $allowanceId,
                     'name' => $_allowance->name,
                     'amount' => (int) cleanCurrency($allowance)
                 ];
@@ -84,7 +83,6 @@ class SalaryController extends Controller
                 $_salary_cut = SalaryCut::find($salaryCutsId);
 
                 $components[$user]['salary_cuts'][] = [
-                    'salary_cut_id' => $salaryCutsId,
                     'name' => $_salary_cut->name,
                     'amount' => (int) cleanCurrency($salary_cut)
                 ];
@@ -102,7 +100,7 @@ class SalaryController extends Controller
 
         SalaryDetail::insert($insert);
 
-        return redirect(route('app.salaries.index'))->with('success', 'Penggajian Berhasil Dibuat');
+        return redirect(route('app.salaries.index'))->with('success', 'Slip Gaji Berhasil Dibuat');
     }
 
     public function edit(Salary $salary)
@@ -129,44 +127,38 @@ class SalaryController extends Controller
             'status' => 'required'
         ]);
 
-        if (!$request->users) {
-            return back()->with('error', 'Harap mencentang Staff / Guru');
-        }
 
-        $update = [];
         $components = [];
 
-        foreach ($request->users as $indexUser => $user) {
-            // Allowance
-            foreach ($request->allowances[$user] as $allowanceId => $allowance) {
-                $_allowance = Allowance::find($allowanceId);
+        if ($request->users) {
+            foreach ($request->users as $user) {
+                // Allowance
+                foreach ($request->allowances[$user] as $allowance_name => $allowance_amount) {
+                    $components[$user]['allowances'][] = [
+                        'name' => $allowance_name,
+                        'amount' => (int) cleanCurrency($allowance_amount)
+                    ];
+                }
+                // Salary Cuts
+                foreach ($request->salary_cuts[$user] as $salary_cut_name => $salary_cut_amount) {
+                    $components[$user]['salary_cuts'][] = [
+                        'name' => $salary_cut_name,
+                        'amount' => (int) cleanCurrency($salary_cut_amount)
+                    ];
+                }
 
-                $components[$user]['allowances'][] = [
-                    'allowance_id' => $allowanceId,
-                    'name' => $_allowance->name,
-                    'amount' => (int) cleanCurrency($allowance)
-                ];
+                SalaryDetail::where('salary_id', $salary->id)->where('user_id', $user)->update([
+                    'components' => json_encode($components[$user]),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
             }
-            // Salary Cuts
-            foreach ($request->salary_cuts[$user] as $salaryCutsId => $salary_cut) {
-                $_salary_cut = SalaryCut::find($salaryCutsId);
-
-                $components[$user]['salary_cuts'][] = [
-                    'salary_cut_id' => $salaryCutsId,
-                    'name' => $_salary_cut->name,
-                    'amount' => (int) cleanCurrency($salary_cut)
-                ];
-            }
-
-            $update[] = [
-                'uid' => Str::uuid(),
-                'components' => json_encode($components[$user]),
-                'user_id' => $user,
-                'salary_id' => $salary->id,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ];
         }
+
+        $salary->month = $request->month;
+        $salary->status = $request->status;
+        $salary->update();
+
+        return redirect(route('app.salaries.index'))->with('success', 'Slip Gaji Berhasil Diubah');
     }
 
     public function destroy(Salary $salary)
@@ -176,7 +168,7 @@ class SalaryController extends Controller
         $salary->details()->delete();
         $salary->delete();
 
-        return redirect(route('app.salaries.index'))->with('success', 'Penggajian Berhasil Dihapus');
+        return redirect(route('app.salaries.index'))->with('success', 'Slip Gaji Berhasil Dihapus');
     }
 
     public function generatePDF(SalaryDetail $salary_detail, $type)

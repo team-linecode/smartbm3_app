@@ -11,6 +11,8 @@ class SalarySlipController extends Controller
 {
     public function index()
     {
+        $this->authorize('print salary');
+
         return view('manage.salary.slip.index', [
             'salaryDetails' => SalaryDetail::whereHas('salary', function($query) {
                 $query->where('status', 'open');

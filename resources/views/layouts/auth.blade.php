@@ -86,7 +86,10 @@
 
     <!-- JAVASCRIPT -->
     <script src="/vendor/manage/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/manage/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/vendor/manage/assets/js/plugins.js"></script>
+
+    @include('component.alert')
 </body>
 
 </html>

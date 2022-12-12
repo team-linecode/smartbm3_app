@@ -11,6 +11,8 @@ class ReportController extends Controller
 {
     public function index($type, Request $request)
     {
+        $this->authorize('read transaction report');
+
         if ($request->get('date') && $request->get('status')) {
             if (str_contains($request->get('date'), 'to')) {
                 $explode_date = explode(' to ', $request->get('date'));

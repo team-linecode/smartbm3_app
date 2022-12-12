@@ -11,8 +11,6 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ Storage::url('icon/favicon.png') }}">
 
-    <!-- Sweet Alert Css-->
-    <link href="/vendor/manage/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
     <!-- Select2 Css -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
@@ -138,11 +136,11 @@
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
                                 <h6 class="dropdown-header">Selamat Datang!</h6>
-                                <a class="dropdown-item" href="/vendor/manage/pages-profile.html"><i
+                                <a class="dropdown-item" href="#"><i
                                         class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
                                         class="align-middle">Profil</span></a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/vendor/manage/pages-profile-settings.html"><i
+                                <a class="dropdown-item" href="#"><i
                                         class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
                                         class="align-middle">Pengaturan</span></a>
                                 <a class="dropdown-item" href="{{ route('auth.logout') }}"><i
@@ -196,221 +194,245 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*']) }}"
-                                href="#sidebarSalary" data-bs-toggle="collapse" role="button" aria-expanded="false"
-                                aria-controls="sidebarSalary">
-                                <i class="ri-money-dollar-circle-line"></i> <span
-                                    data-key="t-report">Penggajian</span>
-                            </a>
-                            <div class="collapse menu-dropdown {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*'], 'show') }}"
-                                id="sidebarSalary">
-                                <ul class="nav nav-sm flex-column">
-                                    @can('read salary')
-                                        <li class="nav-item">
-                                            <a href="{{ route('app.salaries.index') }}"
-                                                class="nav-link {{ set_active('app.salaries*') }}"
-                                                data-key="t-transaction"> Input Penggajian</a>
-                                        </li>
-                                    @endcan
+                        @if (auth()->user()->hasAnyPermission([
+                                'read salary',
+                                'read salary cut',
+                                'read allowance',
+                                'read last education',
+                                'read position',
+                                'print salary',
+                            ]))
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*']) }}"
+                                    href="#sidebarSalary" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="false" aria-controls="sidebarSalary">
+                                    <i class="ri-money-dollar-circle-line"></i> <span
+                                        data-key="t-report">Penggajian</span>
+                                </a>
+                                <div class="collapse menu-dropdown {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*'], 'show') }}"
+                                    id="sidebarSalary">
+                                    <ul class="nav nav-sm flex-column">
+                                        @can('read salary')
+                                            <li class="nav-item">
+                                                <a href="{{ route('app.salaries.index') }}"
+                                                    class="nav-link {{ set_active('app.salaries*') }}"
+                                                    data-key="t-transaction"> Input Penggajian</a>
+                                            </li>
+                                        @endcan
 
-                                    @can('read salary cut')
-                                        <li class="nav-item">
-                                            <a href="{{ route('app.salary_cut.index') }}"
-                                                class="nav-link {{ set_active('app.salary_cut*') }}"
-                                                data-key="t-transaction"> Potongan
-                                            </a>
-                                        </li>
-                                    @endcan
+                                        @can('read salary cut')
+                                            <li class="nav-item">
+                                                <a href="{{ route('app.salary_cut.index') }}"
+                                                    class="nav-link {{ set_active('app.salary_cut*') }}"
+                                                    data-key="t-transaction"> Potongan
+                                                </a>
+                                            </li>
+                                        @endcan
 
-                                    @can('read allowance')
-                                        <li class="nav-item">
-                                            <a href="{{ route('app.allowance.index') }}"
-                                                class="nav-link {{ set_active('app.allowance*') }}"
-                                                data-key="t-transaction"> Tunjangan
-                                            </a>
-                                        </li>
-                                    @endcan
+                                        @can('read allowance')
+                                            <li class="nav-item">
+                                                <a href="{{ route('app.allowance.index') }}"
+                                                    class="nav-link {{ set_active('app.allowance*') }}"
+                                                    data-key="t-transaction"> Tunjangan
+                                                </a>
+                                            </li>
+                                        @endcan
 
-                                    @can('read last education')
-                                        <li class="nav-item">
-                                            <a href="{{ route('app.last_education.index') }}"
-                                                class="nav-link {{ set_active('app.last_education*') }}"
-                                                data-key="t-transaction"> Data Pend. Terakhir
-                                            </a>
-                                        </li>
-                                    @endcan
+                                        @can('read last education')
+                                            <li class="nav-item">
+                                                <a href="{{ route('app.last_education.index') }}"
+                                                    class="nav-link {{ set_active('app.last_education*') }}"
+                                                    data-key="t-transaction"> Data Pend. Terakhir
+                                                </a>
+                                            </li>
+                                        @endcan
 
-                                    @can('read position')
-                                        <li class="nav-item">
-                                            <a href="{{ route('app.position.index') }}"
-                                                class="nav-link {{ set_active('app.position*') }}"
-                                                data-key="t-transaction"> Data Jabatan
-                                            </a>
-                                        </li>
-                                    @endcan
+                                        @can('read position')
+                                            <li class="nav-item">
+                                                <a href="{{ route('app.position.index') }}"
+                                                    class="nav-link {{ set_active('app.position*') }}"
+                                                    data-key="t-transaction"> Data Jabatan
+                                                </a>
+                                            </li>
+                                        @endcan
 
-                                    @can('print salary')
-                                        <li class="nav-item">
+                                        @can('print salary')
                                             <a href="{{ route('app.salary_slip.index') }}"
                                                 class="nav-link {{ set_active('app.salary_slip*') }}"
                                                 data-key="t-transaction"> Slip Gaji
                                             </a>
-                                        </li>
-                                    @endcan
-                                </ul>
-                            </div>
-                        </li>
-
-                        @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
-                            <li class="menu-title"><span data-key="t-menu">User</span></li>
-                        @endif
-                        @can('read staff')
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app.staff*']) }}"
-                                    href="{{ route('app.staff.index') }}">
-                                    <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
-                                </a>
-                            </li>
-                        @endcan
-
-                        @can('read teacher')
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.teacher*') }}"
-                                    href="{{ route('app.teacher.index') }}">
-                                    <i class="ri-user-2-line"></i> <span data-key="t-landing">Guru</span>
-                                </a>
-                            </li>
-                        @endcan
-
-                        @can('read student')
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app.student*']) }}"
-                                    href="{{ route('app.student.index') }}">
-                                    <i class="ri-group-line"></i> <span data-key="t-landing">Siswa/Siswi</span>
-                                </a>
-                            </li>
-                        @endcan
-
-                        @role('developer')
-                            <li class="menu-title"><span data-key="t-menu">Role & Permission</span></li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app.role', 'app.role.*']) }}"
-                                    href="{{ route('app.role.index') }}">
-                                    <i class="ri-user-2-line"></i> <span data-key="t-landing">Role</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app.permission', 'app.permission.*']) }}"
-                                    href="{{ route('app.permission.index') }}">
-                                    <i class="ri-group-line"></i> <span data-key="t-landing">Permission</span>
-                                </a>
-                            </li>
-                        @endrole
-
-                        @can('finance access')
-                            <li class="menu-title"><span data-key="t-menu">Keuangan</span></li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app/finance/transaction/create') }}"
-                                    href="{{ route('app.finance.transaction.create') }}">
-                                    <i class="ri-exchange-line"></i> <span data-key="t-landing">Pembayaran</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/finance/transaction', 'app/finance/transaction/create_detail/*']) }}"
-                                    href="{{ route('app.finance.transaction.index') }}">
-                                    <i class="ri-exchange-line"></i> <span data-key="t-landing">Data Transaksi</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/finance/bill', 'app/finance/bill/*']) }}"
-                                    href="{{ route('app.finance.bill.index') }}">
-                                    <i class="ri-funds-line"></i> <span data-key="t-landing">Tagihan Siswa/i</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/finance/cost', 'app/finance/cost/*']) }}"
-                                    href="{{ route('app.finance.cost.index') }}">
-                                    <i class="ri-money-dollar-circle-line"></i> <span data-key="t-landing">Biaya
-                                        Sekolah</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/finance/report/transaction']) }}"
-                                    href="#sidebarReport" data-bs-toggle="collapse" role="button" aria-expanded="false"
-                                    aria-controls="sidebarReport">
-                                    <i class="ri-file-list-3-line"></i> <span data-key="t-report">Laporan</span>
-                                </a>
-                                <div class="collapse menu-dropdown {{ set_active('app/finance/report/transaction', 'show') }}"
-                                    id="sidebarReport">
-                                    <ul class="nav nav-sm flex-column">
-                                        <li class="nav-item">
-                                            <a href="{{ route('app.finance.report.index', 'transaction') }}"
-                                                class="nav-link {{ set_active('app/finance/report/transaction') }}"
-                                                data-key="t-transaction"> Transaksi</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                        @endcan
+                                </li>
+                            @endcan
                     </ul>
                 </div>
-                <!-- Sidebar -->
+                </li>
+                @endif
+
+                @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
+                    <li class="menu-title"><span data-key="t-menu">User</span></li>
+                @endif
+                @can('read staff')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app.staff*']) }}"
+                            href="{{ route('app.staff.index') }}">
+                            <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('read teacher')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active('app.teacher*') }}"
+                            href="{{ route('app.teacher.index') }}">
+                            <i class="ri-user-2-line"></i> <span data-key="t-landing">Guru</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('read student')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app.student*']) }}"
+                            href="{{ route('app.student.index') }}">
+                            <i class="ri-group-line"></i> <span data-key="t-landing">Siswa/Siswi</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @role('developer')
+                    <li class="menu-title"><span data-key="t-menu">Role & Permission</span></li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app.role', 'app.role.*']) }}"
+                            href="{{ route('app.role.index') }}">
+                            <i class="ri-user-2-line"></i> <span data-key="t-landing">Role</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app.permission', 'app.permission.*']) }}"
+                            href="{{ route('app.permission.index') }}">
+                            <i class="ri-group-line"></i> <span data-key="t-landing">Permission</span>
+                        </a>
+                    </li>
+                @endrole
+
+                {{-- @can('finance access') --}}
+                @can('read transaction')
+                    <li class="menu-title"><span data-key="t-menu">Keuangan</span></li>
+                @endcan
+
+                @can('create transaction')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active('app.finance.transaction*') }}"
+                            href="{{ route('app.finance.transaction.create') }}">
+                            <i class="ri-exchange-line"></i> <span data-key="t-landing">Pembayaran</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('read transaction')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app/finance/transaction', 'app/finance/transaction/create_detail/*']) }}"
+                            href="{{ route('app.finance.transaction.index') }}">
+                            <i class="ri-exchange-line"></i> <span data-key="t-landing">Data Transaksi</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('read bill')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app/finance/bill', 'app/finance/bill/*']) }}"
+                            href="{{ route('app.finance.bill.index') }}">
+                            <i class="ri-funds-line"></i> <span data-key="t-landing">Tagihan Siswa/i</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('read cost')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app/finance/cost', 'app/finance/cost/*']) }}"
+                            href="{{ route('app.finance.cost.index') }}">
+                            <i class="ri-money-dollar-circle-line"></i> <span data-key="t-landing">Biaya
+                                Sekolah</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('read transaction report')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link {{ set_active(['app/finance/report/transaction']) }}"
+                            href="#sidebarReport" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                            aria-controls="sidebarReport">
+                            <i class="ri-file-list-3-line"></i> <span data-key="t-report">Laporan</span>
+                        </a>
+                        <div class="collapse menu-dropdown {{ set_active('app/finance/report/transaction', 'show') }}"
+                            id="sidebarReport">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="{{ route('app.finance.report.index', 'transaction') }}"
+                                        class="nav-link {{ set_active('app/finance/report/transaction') }}"
+                                        data-key="t-transaction"> Transaksi</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                @endcan
+                </ul>
             </div>
+            <!-- Sidebar -->
         </div>
-        <!-- Left Sidebar End -->
-        <!-- Vertical Overlay-->
-        <div class="vertical-overlay"></div>
+    </div>
+    <!-- Left Sidebar End -->
+    <!-- Vertical Overlay-->
+    <div class="vertical-overlay"></div>
 
-        <!-- ============================================================== -->
-        <!-- Start right Content here -->
-        <!-- ============================================================== -->
-        <div class="main-content">
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="main-content">
 
-            <div class="page-content">
-                <div class="container-fluid">
+        <div class="page-content">
+            <div class="container-fluid">
 
-                    <!-- start page title -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0">{{ $title ?? 'No Title Page' }}</h4>
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                            <h4 class="mb-sm-0">{{ $title ?? 'No Title Page' }}</h4>
 
-                                <div class="page-title-right">
-                                    <ol class="breadcrumb m-0">
-                                        <!-- <li class="breadcrumb-item"><a href="/vendor/manage/javascript: void(0);">Pages</a></li> -->
-                                        <li class="breadcrumb-item active">{{ strftime('%d %B %Y') }} <span
-                                                id="liveClock">00:00:00</span></li>
-                                    </ol>
-                                </div>
-
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <!-- <li class="breadcrumb-item"><a href="/vendor/manage/javascript: void(0);">Pages</a></li> -->
+                                    <li class="breadcrumb-item active">{{ strftime('%d %B %Y') }} <span
+                                            id="liveClock">00:00:00</span></li>
+                                </ol>
                             </div>
+
                         </div>
                     </div>
-                    <!-- end page title -->
-
-                    @yield('content')
-
                 </div>
-                <!-- container-fluid -->
-            </div>
-            <!-- End Page-content -->
+                <!-- end page title -->
 
-            <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-6">{{ date('Y') }} © smartbm3.com</div>
-                        <div class="col-sm-6">
-                            <div class="text-sm-end d-none d-sm-block">
-                                Engined by Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP
-                                v{{ PHP_VERSION }})
-                            </div>
+                @yield('content')
+
+            </div>
+            <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">{{ date('Y') }} © smartbm3.com</div>
+                    <div class="col-sm-6">
+                        <div class="text-sm-end d-none d-sm-block">
+                            Engined by Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP
+                            v{{ PHP_VERSION }})
                         </div>
                     </div>
                 </div>
-            </footer>
-        </div>
-        <!-- end main content-->
+            </div>
+        </footer>
+    </div>
+    <!-- end main content-->
 
     </div>
     <!-- END layout-wrapper -->
@@ -422,15 +444,12 @@
     <script src="/vendor/manage/assets/libs/feather-icons/feather.min.js"></script>
     <script src="/vendor/manage/assets/js/plugins.js"></script>
 
-    <!-- Sweet Alerts Js -->
-    <script src="/vendor/manage/assets/libs/sweetalert2/sweetalert2.min.js"></script>
     <!-- Select2 Js -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     {{-- <script src="/vendor/manage/assets/js/pages/select2.init.js"></script> --}}
 
     <!-- Function js -->
     <script src="/vendor/manage/assets/js/function.js"></script>
-
 
     @include('component.alert')
     @include('component.confirm')

@@ -52,9 +52,7 @@ class DatatableController extends Controller
     {
         $this->authorize('read bill');
 
-        return DataTables::of(User::whereHas('role', function ($q) {
-            $q->where('name', 'student');
-        })->with('classroom')->with('expertise')->select('users.*')->limit(1))
+        return DataTables::of(User::role('student')->with('classroom')->with('expertise')->select('users.*')->limit(1))
             ->addIndexColumn()
             ->editColumn('name', function ($row) {
                 return $row->name . '<br />
@@ -136,7 +134,7 @@ class DatatableController extends Controller
                         Nip: ' . (!is_null($row->nip) ? $row->nip : '<span class="text-danger">tidak ada</span>') .
                     '</small>';
             })
-            ->editColumn('last_education', function ($row) {
+            ->editColumn('last_education_id', function ($row) {
                 return $row->last_education->alias ?? '-';
             })
             ->editColumn('entry_date', function ($row) {
