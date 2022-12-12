@@ -15,6 +15,7 @@ use App\Http\Controllers\Manage\Salary\PositionController;
 use App\Http\Controllers\Manage\Salary\SalaryController;
 use App\Http\Controllers\Manage\Salary\SalaryCutController;
 use App\Http\Controllers\Manage\Salary\SalarySlipController;
+use App\Http\Controllers\Manage\Sarpras\RoomController;
 use App\Http\Controllers\Manage\TransactionController;
 use App\Http\Controllers\Manage\User\StaffController;
 use App\Http\Controllers\Manage\User\StudentController;
@@ -165,6 +166,10 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
 
     // Permission
     Route::resource('/permission', PermissionController::class)->except('show');
+
+    // Sarpras
+    // Room
+    Route::resource('/sarpras/room', RoomController::class)->except('show');
 });
 // End Route
 
