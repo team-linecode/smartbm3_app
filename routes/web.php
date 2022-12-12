@@ -19,6 +19,7 @@ use App\Http\Controllers\Manage\TransactionController;
 use App\Http\Controllers\Manage\User\StaffController;
 use App\Http\Controllers\Manage\User\StudentController;
 use App\Http\Controllers\Manage\User\TeacherController;
+use App\Http\Controllers\Manage\Sarpras\BuildingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,6 +154,9 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::put('/finance/cost/edit/ta/{schoolyear:slug}/biaya/{cost:slug}', [CostController::class, 'update'])->name('finance.cost.update');
     Route::delete('/finance/cost/ta/{schoolyear:slug}/biaya/{cost:slug}/destroy', [CostController::class, 'destroy'])->name('finance.cost.destroy');
 
+    // Sarpras
+    Route::resource('/sarpras/building', BuildingController::class)->except('show');
+    
     // Finance -> Report -> Transaction
     Route::get('/finance/report/{type}', [ReportController::class, 'index'])->name('finance.report.index');
 
