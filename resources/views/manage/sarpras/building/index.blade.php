@@ -6,7 +6,6 @@
             <div class="d-flex flex-column flex-sm-row flex-md-row align-items-md-center justify-content-between">
                 <div>
                     <h4 class="card-title text-center text-lg-start text-uppercase mb-2 mb-md-0 mb-lg-0">Gedung</h4>
-                    <p class="mb-lg-0">Terdapat role default yang tidak dapat dihapus</p>
                 </div>
                 <div class="text-center">
                     <a href="{{ route('app.building.create') }}" class="btn btn-primary">Tambah</a>
@@ -20,7 +19,7 @@
                         <tr>
                             <th scope="col">No.</th>
                             <th scope="col">Nama</th>
-                            <th scope="col">Hak Akses</th>
+                            <th scope="col">Jumlah Tingkat</th>
                             <th scope="col">Opsi</th>
                         </tr>
                     </thead>
