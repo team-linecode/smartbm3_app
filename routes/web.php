@@ -21,6 +21,7 @@ use App\Http\Controllers\Manage\User\StaffController;
 use App\Http\Controllers\Manage\User\StudentController;
 use App\Http\Controllers\Manage\User\TeacherController;
 use App\Http\Controllers\Manage\Sarpras\BuildingController;
+use App\Http\Controllers\Manage\Sarpras\FacilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -165,6 +166,8 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::resource('/permission', PermissionController::class)->except('show');
 
     // Sarpras
+    // Facility
+    Route::resource('/sarpras/facility', FacilityController::class)->except('show');
     // Building
     Route::resource('/sarpras/building', BuildingController::class)->except('show');
     // Room
