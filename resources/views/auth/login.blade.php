@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="auth-remember-check" name="remember" tabindex="3">
+                            <input class="form-check-input" type="checkbox" id="auth-remember-check" name="remember" tabindex="3" checked>
                             <label class="form-check-label" for="auth-remember-check">Ingat saya</label>
                         </div>
 

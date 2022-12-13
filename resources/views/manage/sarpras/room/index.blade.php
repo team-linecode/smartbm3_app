@@ -26,6 +26,34 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @forelse ($rooms as $room)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $room->name }}</td>
+                                <td>{{ $room->building->name }}</td>
+                                <td>{{ $room->stage }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <div class="edit">
+                                            <a href="{{ route('app.room.edit', $room->id) }}"
+                                                class="btn btn-sm btn-success">Edit</a>
+                                        </div>
+                                        <div class="remove">
+                                            <form action="{{ route('app.room.destroy', $room->id) }}"
+                                                method="post">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center">Tidak ada data!</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
                 <!-- end table -->

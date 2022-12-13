@@ -27,7 +27,7 @@
                             <div class="col-sm-9">
                                 <input type="text" name="name"
                                     class="form-control @error('name') is-invalid @enderror" id="name"
-                                    value="{{ old('name') }}">
+                                    value="{{ old('name') ?? $room->name }}">
                                 @error('name')
                                     <div class="invalid-feedback">
                                         <strong>{{ $message }}</strong>
@@ -44,10 +44,11 @@
                                 <select type="text" name="building"
                                     class="form-select @error('building') is-invalid @enderror" id="building">
                                     <option value="" hidden>Pilih Gedung</option>
-                                    <option value="" {{ select_old('', old('building'), true, $room->building_id) }}>
-                                        Gedung A</option>
-                                    <option value="" {{ select_old('', old('building'), true, $room->building_id) }}>
-                                        Gedung B</option>
+                                    @foreach ($buildings as $building)
+                                        <option value="{{ $building->id }}"
+                                            {{ select_old($building->id, old('building'), true, $room->building_id) }}>
+                                            {{ $building->name }}</option>
+                                    @endforeach
                                 </select>
                                 @error('building')
                                     <div class="invalid-feedback">
@@ -91,3 +92,57 @@
         </div>
     </div>
 @stop
+
+@push('include-script')
+    <script>
+        function getStage(building_id, edited = false, edit_type = 'old') {
+            $.ajax({
+                url: '{{ route('app.room._get_stage') }}',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'building_id': building_id
+                },
+                type: 'POST',
+                dataType: 'json',
+                beforeSend: () => {
+                    $('#stage').attr('disabled', 'disabled')
+                },
+                success: (response) => {
+                    if (response.status == '200') {
+                        $('#stage').html(response.options);
+                        $('#stage').removeAttr('disabled')
+                        if (edited) {
+                            if (edit_type == 'old') {
+                                $('#stage').val('{{ old('stage') }}').change()
+                            } else {
+                                $('#stage').val('{{ $room->stage }}').change()
+                            }
+                        }
+                    } else {
+                        alert('Response status : ' + response.status);
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script>
+        $('#building').change(function() {
+            if ($(this).val() == 'add-building') {
+                window.location.href = '{{ route('app.building.create') }}'
+            } else {
+                getStage($(this).val())
+            }
+        });
+    </script>
+
+    @if (old('building'))
+        <script>
+            getStage($('#building').val(), true)
+        </script>
+    @endif
+
+    <script>
+        getStage($('#building').val(), true, 'variable')
+    </script>
+@endpush

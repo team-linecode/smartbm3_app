@@ -1,4 +1,4 @@
-@extends('layouts.manage', ['title' => 'Building'])
+@extends('layouts.manage', ['title' => 'Gedung'])
 
 @section('content')
     <div class="card">

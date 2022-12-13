@@ -40,15 +40,21 @@
                                 <label for="building" class="form-label">Letak Gedung</label>
                             </div>
                             <div class="col-sm-9">
-                                <select type="text" name="building" class="form-select @error('building') is-invalid @enderror" id="building">
+                                <select type="text" name="building"
+                                    class="form-select @error('building') is-invalid @enderror" id="building">
                                     <option value="" hidden>Pilih Gedung</option>
-                                    <option value="" {{ select_old('', old('building')) }}>Gedung A</option>
-                                    <option value="" {{ select_old('', old('building')) }}>Gedung B</option>
+                                    @forelse ($buildings as $building)
+                                        <option value="{{ $building->id }}"
+                                            {{ select_old($building->id, old('building')) }}>{{ $building->name }}</option>
+                                    @empty
+                                        <option value="add-building" {{ select_old('', old('building')) }}>+ Tambah Gedung
+                                        </option>
+                                    @endforelse
                                 </select>
                                 @error('building')
-                                <div class="invalid-feedback">
-                                    <strong>{{ $message }}</strong>
-                                </div>
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
                                 @enderror
                             </div>
                         </div>
@@ -58,11 +64,9 @@
                                 <label for="stage" class="form-label">Pada Lantai</label>
                             </div>
                             <div class="col-sm-9">
-                                <select type="text" name="stage" class="form-select @error('stage') is-invalid @enderror" id="stage">
+                                <select type="text" name="stage"
+                                    class="form-select @error('stage') is-invalid @enderror" id="stage" disabled>
                                     <option value="" hidden>Pilih Lantai</option>
-                                    <option value="" {{ select_old('', old('stage')) }}>Lantai 1</option>
-                                    <option value="" {{ select_old('', old('stage')) }}>Lantai 2</option>
-                                    <option value="" {{ select_old('', old('stage')) }}>Lantai 3</option>
                                 </select>
                                 @error('stage')
                                     <div class="invalid-feedback">
@@ -91,3 +95,49 @@
         </div>
     </div>
 @stop
+
+@push('include-script')
+    <script>
+        function getStage(building_id, edited = false) {
+            $.ajax({
+                url: '{{ route('app.room._get_stage') }}',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'building_id': building_id
+                },
+                type: 'POST',
+                dataType: 'json',
+                beforeSend: () => {
+                    $('#stage').attr('disabled', 'disabled')
+                },
+                success: (response) => {
+                    if (response.status == '200') {
+                        $('#stage').html(response.options);
+                        $('#stage').removeAttr('disabled')
+                        if (edited) {
+                            $('#stage').val('{{ old("stage") }}').change()
+                        }
+                    } else {
+                        alert('Response status : ' + response.status);
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script>
+        $('#building').change(function() {
+            if ($(this).val() == 'add-building') {
+                window.location.href = '{{ route('app.building.create') }}'
+            } else {
+                getStage($(this).val())
+            }
+        });
+    </script>
+
+    @if (old('building'))
+        <script>
+            getStage($('#building').val(), true)
+        </script>
+    @endif
+@endpush

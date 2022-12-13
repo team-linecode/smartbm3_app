@@ -41,8 +41,9 @@
                                 <label for="stage" class="form-label">Jumlah Tingkat</label>
                             </div>
                             <div class="col-sm-9">
-                                <input type="text" name="stage" class="form-control @error('stage') is-invalid @enderror"
-                                 id="stage" value="{{ old('stage') ?? $building->stage }}">
+                                <input type="text" name="stage"
+                                    class="form-control @error('stage') is-invalid @enderror" id="stage"
+                                    value="{{ old('stage') ?? $building->stage }}">
                                 @error('stage')
                                     <div class="small text-danger">
                                         <strong>{{ $message }}</strong>

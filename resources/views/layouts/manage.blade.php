@@ -377,14 +377,22 @@
                             </li>
                         @endcan
 
-                        @if (auth()->user()->hasAnyPermission(['read room']))
+                        @if (auth()->user()->hasAnyPermission(['read building', 'read room']))
                             <li class="menu-title"><span data-key="t-menu">Sarpras</span></li>
                         @endif
+                        @can('read building')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.building*']) }}"
+                                    href="{{ route('app.building.index') }}">
+                                    <i class="ri-building-line"></i> <span data-key="t-landing">Gedung</span>
+                                </a>
+                            </li>
+                        @endcan
                         @can('read room')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.room*']) }}"
                                     href="{{ route('app.room.index') }}">
-                                    <i class="ri-door-line"></i> <span data-key="t-landing">Room</span>
+                                    <i class="ri-door-line"></i> <span data-key="t-landing">Ruangan</span>
                                 </a>
                             </li>
                         @endcan

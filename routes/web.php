@@ -169,6 +169,7 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::resource('/sarpras/building', BuildingController::class)->except('show');
     // Room
     Route::resource('/sarpras/room', RoomController::class)->except('show');
+    Route::post('/sarpras/room/get_stage', [RoomController::class, '_get_stage'])->name('room._get_stage');
 });
 // End Route
 
