@@ -188,7 +188,9 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::resource('/point/user_point', UserPointController::class);
 
     // Point Report
-    Route::resource('/point/report_point', ReportPointController::class);
+    Route::resource('/point/report_point', ReportPointController::class)->only('index');
+    Route::post('/point/export_point', [ReportPointController::class, 'export_point'])->name('point.export_point');
+    Route::post('/point/export_total_point', [ReportPointController::class, 'export_total_point'])->name('point.export_total_point');
 });
 // End Route
 
