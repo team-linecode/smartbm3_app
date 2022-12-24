@@ -1,48 +1,50 @@
-@extends('layouts.manage', ['title' => 'Ruangan'])
+@extends('layouts.manage', ['title' => 'Poin Pelanggaran'])
+
+@push('include-style')
+    @include('component.datatables-style')
+@endpush
 
 @section('content')
     <div class="card">
         <div class="card-header">
             <div class="d-flex flex-column flex-sm-row flex-md-row align-items-md-center justify-content-between">
                 <div>
-                    <h4 class="card-title text-center text-lg-start text-uppercase mb-2 mb-md-0 mb-lg-0">Ruangan</h4>
-                    <p class="mb-lg-0">Detail letak ruangan</p>
+                    <h4 class="card-title text-center text-lg-start text-uppercase mb-2 mb-md-0 mb-lg-0">Poin Pelanggaran
+                    </h4>
+                    <p class="mb-lg-0">Poin akan bertambah ketika siswa/i melakukan pelanggaran.</p>
                 </div>
                 <div class="text-center">
-                    <a href="{{ route('app.room.create') }}" class="btn btn-primary">Tambah</a>
+                    <a href="{{ route('app.penalty_point.create') }}" class="btn btn-primary">Tambah</a>
                 </div>
             </div>
         </div>
         <div class="card-body">
             <div class="table-responsive table-card">
-                <table class="table align-middle w-100 mb-0 dt-serverside">
+                <table class="table align-middle w-100 mb-0 datatables">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col">No.</th>
-                            <th scope="col">Nama</th>
-                            <th scope="col">Gedung</th>
-                            <th scope="col">Lantai</th>
+                            <th scope="col">No</th>
+                            <th scope="col">Kode</th>
+                            <th scope="col">Keterangan</th>
+                            <th scope="col">Poin</th>
                             <th scope="col">Opsi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($rooms as $room)
+                        @foreach ($penalty_points as $penalty_point)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $room->name }}</td>
-                                <td>{{ $room->building->name }}</td>
-                                <td>{{ $room->stage }}</td>
+                                <td>{{ $penalty_point->code }}</td>
+                                <td>{{ $penalty_point->name }}</td>
+                                <td>{{ $penalty_point->point }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <div>
-                                            <a href="{{ route('app.room.show', $room->id) }}" class="btn btn-sm btn-primary">Sarana</a>
-                                        </div>
                                         <div class="edit">
-                                            <a href="{{ route('app.room.edit', $room->id) }}"
+                                            <a href="{{ route('app.penalty_point.edit', $penalty_point->id) }}"
                                                 class="btn btn-sm btn-success">Edit</a>
                                         </div>
                                         <div class="remove">
-                                            <form action="{{ route('app.room.destroy', $room->id) }}"
+                                            <form action="{{ route('app.penalty_point.destroy', $penalty_point->id) }}"
                                                 method="post">
                                                 @csrf
                                                 @method('delete')
@@ -52,11 +54,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center">Tidak ada data!</td>
-                        </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
                 <!-- end table -->
@@ -65,3 +63,7 @@
         </div>
     </div>
 @stop
+
+@push('include-script')
+    @include('component.datatables-script')
+@endpush

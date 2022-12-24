@@ -17,14 +17,14 @@ class FacilityController extends Controller
             'facilities' => $facilities
         ]);
     }
-    
+
     public function create()
     {
         $this->authorize('create facility');
 
         return view('manage.sarpras.facility.create');
     }
-    
+
     public function store(Request $request)
     {
         $this->authorize('create facility');
@@ -43,15 +43,15 @@ class FacilityController extends Controller
         }
 
         $request->validate($rules);
-        
+
         Facility::create($request->all());
-        
+
         if ($request->stay) {
             $route = 'app.facility.create';
         } else {
             $route = 'app.facility.index';
         }
-        
+
         return redirect()->route($route)->with('success', 'Sarana berhasil ditambahkan.');
     }
 
@@ -82,7 +82,7 @@ class FacilityController extends Controller
         }
 
         $facility->update($request->all());
-        
+
         return redirect()->route('app.facility.index')->with('success', 'Sarana berhasil diubah.');
     }
 

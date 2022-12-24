@@ -8,6 +8,9 @@ use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
 use App\Http\Controllers\Manage\PermissionController;
+use App\Http\Controllers\Manage\Point\ReportPointController;
+use App\Http\Controllers\Manage\Point\PenaltyPointController;
+use App\Http\Controllers\Manage\Point\UserPointController;
 use App\Http\Controllers\Manage\ReportController;
 use App\Http\Controllers\Manage\Salary\AllowanceController;
 use App\Http\Controllers\Manage\Salary\LastEducationController;
@@ -171,8 +174,21 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Building
     Route::resource('/sarpras/building', BuildingController::class)->except('show');
     // Room
-    Route::resource('/sarpras/room', RoomController::class)->except('show');
+    Route::resource('/sarpras/room', RoomController::class);
+    Route::post('/sarpras/room/{room}/store_facility', [RoomController::class, 'store_facility'])->name('room.store_facility');
+    Route::get('/sarpras/room/{room}/edit_facility/{facility}', [RoomController::class, 'edit_facility'])->name('room.edit_facility');
+    Route::put('/sarpras/room/{room}/update_facility/{facility}', [RoomController::class, 'update_facility'])->name('room.update_facility');
+    Route::delete('/sarpras/room/{room}/delete_facility/{facility}', [RoomController::class, 'delete_facility'])->name('room.delete_facility');
     Route::post('/sarpras/room/get_stage', [RoomController::class, '_get_stage'])->name('room._get_stage');
+
+    // Penalty Point
+    Route::resource('/point/penalty_point', PenaltyPointController::class);
+
+    // User Penalty
+    Route::resource('/point/user_point', UserPointController::class);
+
+    // Point Report
+    Route::resource('/point/report_point', ReportPointController::class);
 });
 // End Route
 

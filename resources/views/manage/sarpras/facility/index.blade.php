@@ -1,4 +1,4 @@
-@extends('layouts.manage', ['title' => 'Facility'])
+@extends('layouts.manage', ['title' => 'Sarana'])
 
 @section('content')
     <div class="card">
@@ -19,19 +19,19 @@
                         <tr>
                             <th scope="col">No.</th>
                             <th scope="col">Nama</th>
-                            <th scope="col">Merek</th>
+                            <th scope="col">Merk</th>
                             <th scope="col">Deskripsi</th>
                             <th scope="col">Jumlah</th>
                             <th scope="col">Opsi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($facilities as $facility)
+                        @forelse ($facilities as $facility)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ ucwords($facility->name) }}</td>
                                 <td>{{ $facility->brand }}</td>
-                                <td>{{ $facility->description }}</td>
+                                <td>{{ $facility->description ?? '-' }}</td>
                                 <td>0</td>
                                 <td>
                                     <div class="d-flex gap-2">
@@ -40,7 +40,8 @@
                                                 class="btn btn-sm btn-success">Edit</a>
                                         </div>
                                         <div class="remove">
-                                            <form action="{{ route('app.facility.destroy', $facility->id) }}" method="post">
+                                            <form action="{{ route('app.facility.destroy', $facility->id) }}"
+                                                method="post">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>
@@ -49,7 +50,11 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">Tidak ada data!</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
                 <!-- end table -->

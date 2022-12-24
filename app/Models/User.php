@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -146,5 +147,14 @@ class User extends Authenticatable
     public function total_all_remaining()
     {
         return ($this->total_all_cost() - $this->total_all_paid());
+    }
+
+    public function photo()
+    {
+        if ($this->image == null) {
+            return Storage::url('users/default/user.png');
+        } else {
+            return Storage::url($this->image);
+        }
     }
 }

@@ -118,6 +118,29 @@
 
                                 <div class="row align-items-center mb-3">
                                     <div class="col-sm-3">
+                                        <label for="roles" class="form-label">Roles</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <select class="form-select select2 @error('roles') is-invalid @enderror"
+                                            name="roles[]" id="roles" multiple data-placeholder="Pilih Role">
+                                            <option value="">Pilih Role</option>
+                                            @foreach ($roles as $role)
+                                                <option value="{{ $role->id }}"
+                                                    {{ select_old_multiple($role->id, old('roles')) }}>
+                                                    {{ $role->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('roles')
+                                            <div class="invalid-feedback">
+                                                <strong>{{ $message }}</strong>
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-sm-3">
                                         <label for="last_education" class="form-label">Pend. Terakhir</label>
                                     </div>
                                     <div class="col-sm-9">

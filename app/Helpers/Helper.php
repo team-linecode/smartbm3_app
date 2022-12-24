@@ -45,7 +45,7 @@ function select_old($value, $old_value = null, $edit = false, $edited_value = nu
 function select_old_multiple($value, $old_value = null, $edit = false, $edited_value = null)
 {
     if (!is_null($old_value)) {
-        return ($value == $old_value ? 'selected' : '');
+        return (in_array($value, $old_value) ? 'selected' : '');
     } else {
         if ($edit) {
             return (in_array($value, $edited_value) ? 'selected' : '');
