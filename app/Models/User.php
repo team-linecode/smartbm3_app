@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -146,5 +147,35 @@ class User extends Authenticatable
     public function total_all_remaining()
     {
         return ($this->total_all_cost() - $this->total_all_paid());
+    }
+
+    public function photo()
+    {
+        if ($this->image == null) {
+            return Storage::url('users/default/user.png');
+        } else {
+            return Storage::url($this->image);
+        }
+    }
+
+    public function total_points($from_date = null, $to_date = null)
+    {
+        if ($from_date == null && $to_date == null) {
+            $user_points = UserPoint::where('user_id', $this->id)->get();
+        } else {
+            $user_points = UserPoint::where('user_id', $this->id)->whereBetween('date', [$from_date . " 00:00:00", $to_date . " 23:59:59"])->get();
+        }
+
+        $total_points = 0;
+
+        foreach ($user_points as $user_point) {
+            if ($user_point->type == 'plus') {
+                $total_points += $user_point->penalty->point;
+            } else if ($user_point->type == 'minus') {
+                $total_points -= $user_point->point;
+            }
+        }
+
+        return $total_points;
     }
 }

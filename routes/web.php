@@ -8,6 +8,9 @@ use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
 use App\Http\Controllers\Manage\PermissionController;
+use App\Http\Controllers\Manage\Point\ReportPointController;
+use App\Http\Controllers\Manage\Point\PenaltyPointController;
+use App\Http\Controllers\Manage\Point\UserPointController;
 use App\Http\Controllers\Manage\ReportController;
 use App\Http\Controllers\Manage\Salary\AllowanceController;
 use App\Http\Controllers\Manage\Salary\LastEducationController;
@@ -172,7 +175,11 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Building
     Route::resource('/sarpras/building', BuildingController::class)->except('show');
     // Room
-    Route::resource('/sarpras/room', RoomController::class)->except('show');
+    Route::resource('/sarpras/room', RoomController::class);
+    Route::post('/sarpras/room/{room}/store_facility', [RoomController::class, 'store_facility'])->name('room.store_facility');
+    Route::get('/sarpras/room/{room}/edit_facility/{facility}', [RoomController::class, 'edit_facility'])->name('room.edit_facility');
+    Route::put('/sarpras/room/{room}/update_facility/{facility}', [RoomController::class, 'update_facility'])->name('room.update_facility');
+    Route::delete('/sarpras/room/{room}/delete_facility/{facility}', [RoomController::class, 'delete_facility'])->name('room.delete_facility');
     Route::post('/sarpras/room/get_stage', [RoomController::class, '_get_stage'])->name('room._get_stage');
     // Submission
     Route::resource('/sarpras/submission', SubmissionController::class)->except('show'); 
@@ -181,6 +188,17 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::post('/sarpras/submission/plus_input', [SubmissionController::class, 'plus_input'])->name('submission.plus_input'); 
     Route::post('/sarpras/submission/minus_input', [SubmissionController::class, 'minus_input'])->name('submission.minus_input'); 
     Route::get('/sarpras/submission/invoice/{submission}', [SubmissionController::class, 'invoice'])->name('submission.invoice'); 
+
+    // Penalty Point
+    Route::resource('/point/penalty_point', PenaltyPointController::class);
+
+    // User Penalty
+    Route::resource('/point/user_point', UserPointController::class);
+
+    // Point Report
+    Route::resource('/point/report_point', ReportPointController::class)->only('index');
+    Route::post('/point/export_point', [ReportPointController::class, 'export_point'])->name('point.export_point');
+    Route::post('/point/export_total_point', [ReportPointController::class, 'export_total_point'])->name('point.export_total_point');
 });
 // End Route
 

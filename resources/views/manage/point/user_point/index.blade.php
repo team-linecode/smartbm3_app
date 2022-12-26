@@ -1,0 +1,81 @@
+@extends('layouts.manage', ['title' => 'Data Poin'])
+
+@push('include-style')
+    @include('component.datatables-style')
+@endpush
+
+@section('content')
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex flex-column flex-sm-row flex-md-row align-items-md-center justify-content-between">
+                <div>
+                    <h4 class="card-title text-center text-lg-start text-uppercase mb-2 mb-md-0 mb-lg-0">Data Poin
+                    </h4>
+                    <p class="mb-lg-0">Poin akan bertambah ketika siswa/i melakukan pelanggaran.</p>
+                </div>
+                <div class="text-center">
+                    <a href="{{ route('app.user_point.create') }}" class="btn btn-primary">Tambah</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive table-card">
+                <table class="table align-middle w-100 mb-0 datatables">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Nama</th>
+                            <th scope="col">Kelas</th>
+                            <th scope="col">Keterangan</th>
+                            <th scope="col">Tipe</th>
+                            <th scope="col">Point</th>
+                            <th scope="col">Tanggal & Waktu</th>
+                            <th scope="col">Opsi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($user_points as $user_point)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $user_point->user->name }}</td>
+                                <td>{{ $user_point->user->myClass() }}</td>
+                                <td>{{ $user_point->description ?? $user_point->penalty->name }}</td>
+                                <td>
+                                    @if ($user_point->type == 'plus')
+                                        <i class="h5 align-middle ri-add-circle-fill text-danger"></i> Plus
+                                    @elseif ($user_point->type == 'minus')
+                                        <i class="h5 align-middle ri-indeterminate-circle-fill text-success"></i> Minus
+                                    @endif
+                                </td>
+                                <td>{{ $user_point->point ?? $user_point->penalty->point }}</td>
+                                <td>{{ date('d-m-Y / H:i', $user_point->date()) }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <div class="edit">
+                                            <a href="{{ route('app.user_point.edit', $user_point->id) }}"
+                                                class="btn btn-sm btn-success">Edit</a>
+                                        </div>
+                                        <div class="remove">
+                                            <form action="{{ route('app.user_point.destroy', $user_point->id) }}"
+                                                method="post">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <!-- end table -->
+            </div>
+            <!-- end table responsive -->
+        </div>
+    </div>
+@stop
+
+@push('include-script')
+    @include('component.datatables-script')
+@endpush

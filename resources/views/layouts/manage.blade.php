@@ -12,7 +12,10 @@
     <link rel="shortcut icon" href="{{ Storage::url('icon/favicon.png') }}">
 
     <!-- Select2 Css -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
 
     @stack('include-style')
 
@@ -124,7 +127,7 @@
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="d-flex align-items-center">
                                     <img class="rounded-circle header-profile-user"
-                                        src="/vendor/manage/assets/images/users/avatar-1.jpg" alt="Header Avatar">
+                                        src="{{ auth()->user()->photo() }}" alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
                                         <span
                                             class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ Auth::user()->name }}</span>
@@ -269,6 +272,46 @@
                             </li>
                         @endif
 
+                        @if (auth()->user()->hasAnyPermission(['read penalty point', 'read user penalty']))
+                        <li class="menu-title"><span data-key="t-point">POIN SISWA/I</span></li>
+                        @endif
+                        @can('read user penalty')
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ set_active('app.user_point.index') }}"
+                                href="{{ route('app.user_point.index') }}">
+                                <i class="ri-file-warning-line"></i> <span data-key="t-point">Data Poin Siswa/i</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('read penalty point')
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ set_active('app.penalty_point.index') }}"
+                                href="{{ route('app.penalty_point.index') }}">
+                                <i class="ri-auction-line"></i> <span data-key="t-point">Poin Pelanggaran</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('read penalty point')
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ set_active('app.report_point.index') }}"
+                                href="{{ route('app.report_point.index') }}">
+                                <i class="ri-file-list-3-line"></i> <span data-key="t-point">Laporan</span>
+                            </a>
+                        </li>
+                        @endcan
+
+                        @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
+                            <li class="menu-title"><span data-key="t-menu">User</span></li>
+                        @endif
+                        @can('read staff')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.staff*']) }}"
+                                    href="{{ route('app.staff.index') }}">
+                                    <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
+                                </a>
+                            </li>
+                        @endcan
+
                         @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
                             <li class="menu-title"><span data-key="t-menu">User</span></li>
                         @endif
@@ -377,7 +420,7 @@
                             </li>
                         @endcan
 
-                        @if (auth()->user()->hasAnyPermission(['read building', 'read room', 'read submission']))
+                        @if (auth()->user()->hasAnyPermission(['read building', 'read room', 'read facility', 'read submission']))
                             <li class="menu-title"><span data-key="t-menu">Sarpras</span></li>
                         @endif
                         @can('read building')
@@ -396,7 +439,6 @@
                                 </a>
                             </li>
                         @endcan
-                        
                         @can('read facility')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.facility*']) }}"
@@ -484,7 +526,8 @@
     <script src="/vendor/manage/assets/js/plugins.js"></script>
 
     <!-- Select2 Js -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
     {{-- <script src="/vendor/manage/assets/js/pages/select2.init.js"></script> --}}
 
     <!-- Function js -->
@@ -497,6 +540,11 @@
     <script src="/vendor/manage/assets/js/app.js"></script>
 
     <script>
+        // select2
+        $(".select2").select2({
+            theme: "bootstrap-5",
+        });
+
         // Calculate Year of Experience
         window.onload = function() {
             $('.entry_date').on('change', function() {

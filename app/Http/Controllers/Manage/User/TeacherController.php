@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LastEducation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 class TeacherController extends Controller
 {
@@ -27,6 +28,7 @@ class TeacherController extends Controller
         return view('manage.user.teacher.create', [
             'lessons' => Lesson::all(),
             'last_educations' => LastEducation::all(),
+            'roles' => Role::all()
         ]);
     }
 
@@ -66,6 +68,10 @@ class TeacherController extends Controller
 
         $teacher = User::create($request->all());
 
+        if ($request->roles) {
+            $teacher->syncRoles($request->roles);
+        }
+
         if (session('lesson_teacher')) {
             foreach (session('lesson_teacher') as $lesson_teacher) {
                 $teacher->lessons()->attach($lesson_teacher['lesson_id'], ['hours' => $lesson_teacher['hours']]);
@@ -83,7 +89,8 @@ class TeacherController extends Controller
         return view('manage.user.teacher.edit', [
             'teacher' => $teacher,
             'lessons' => Lesson::all(),
-            'last_educations' => LastEducation::all()
+            'last_educations' => LastEducation::all(),
+            'roles' => Role::all()
         ]);
     }
 
@@ -115,6 +122,10 @@ class TeacherController extends Controller
         if ($request->hasFile('picture')) {
             Storage::disk('public')->delete($teacher->image);
             $request['image'] = $request->file('picture')->store('users', 'public');
+        }
+
+        if ($request->roles) {
+            $teacher->syncRoles($request->roles);
         }
 
         $teacher->update($request->all());
