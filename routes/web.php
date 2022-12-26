@@ -22,6 +22,7 @@ use App\Http\Controllers\Manage\User\StudentController;
 use App\Http\Controllers\Manage\User\TeacherController;
 use App\Http\Controllers\Manage\Sarpras\BuildingController;
 use App\Http\Controllers\Manage\Sarpras\FacilityController;
+use App\Http\Controllers\Manage\Sarpras\SubmissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -173,6 +174,13 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Room
     Route::resource('/sarpras/room', RoomController::class)->except('show');
     Route::post('/sarpras/room/get_stage', [RoomController::class, '_get_stage'])->name('room._get_stage');
+    // Submission
+    Route::resource('/sarpras/submission', SubmissionController::class)->except('show'); 
+    Route::get('/sarpras/submission/accept/{submission}', [SubmissionController::class, 'accept'])->name('submission.accept'); 
+    Route::put('/sarpras/submission/reject/{submission}', [SubmissionController::class, 'reject'])->name('submission.reject'); 
+    Route::post('/sarpras/submission/plus_input', [SubmissionController::class, 'plus_input'])->name('submission.plus_input'); 
+    Route::post('/sarpras/submission/minus_input', [SubmissionController::class, 'minus_input'])->name('submission.minus_input'); 
+    Route::get('/sarpras/submission/invoice/{submission}', [SubmissionController::class, 'invoice'])->name('submission.invoice'); 
 });
 // End Route
 
