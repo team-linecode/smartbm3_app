@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Models\UserPoint;
 use Carbon\Carbon;
 
+use function GuzzleHttp\Promise\all;
+
 class UserPointController extends Controller
 {
     public function index()
@@ -103,6 +105,7 @@ class UserPointController extends Controller
             $user_point->penalty_id = $request->penalty_point;
 
             $user_point->description = null;
+            $request['description'] = null;
             $user_point->point = null;
         } else if ($request->type == 'minus') {
             $user_point->description = $request->description;

@@ -12,19 +12,21 @@
                 <div class="row">
                     <div class="col-lg-3">
                         <label for="from_date">Dari Tanggal</label>
-                        <input type="date" class="form-control" name="from_date" id="from_date">
+                        <input type="date" class="form-control @error('from_date') is-invalid @enderror" name="from_date"
+                            id="from_date" value="{{ old('from_date') }}">
                     </div>
                     <div class="col-lg-3">
                         <label for="to_date">Sampai Tanggal</label>
-                        <input type="date" class="form-control" name="to_date" id="to_date">
+                        <input type="date" class="form-control @error('to_date') is-invalid @enderror" name="to_date"
+                            id="to_date" value="{{ old('to_date') }}">
                     </div>
                     <div class="col-lg-3">
                         <label for="type">Tipe Poin</label>
-                        <select class="form-select" name="type" id="type">
+                        <select class="form-select @error('type') is-invalid @enderror" name="type" id="type">
                             <option value="" hidden>Pilih Tipe</option>
-                            <option value="all">Semua</option>
-                            <option value="plus">Plus</option>
-                            <option value="minus">Minus</option>
+                            <option value="all" {{ select_old('all', old('type')) }}>Semua Poin</option>
+                            <option value="plus" {{ select_old('plus', old('type')) }}>Poin Plus</option>
+                            <option value="minus" {{ select_old('minus', old('type')) }}>Poin Minus</option>
                         </select>
                     </div>
                     <div class="col-lg-3 align-self-end">
@@ -47,7 +49,8 @@
                 <div class="row">
                     <div class="col-lg-2">
                         <label for="classrooms">Kelas</label>
-                        <select class="form-select select2" name="classrooms[]" id="classrooms" multiple data-placeholder="Pilih Kelas">
+                        <select class="form-select select2 @error('classrooms') is-invalid @enderror" name="classrooms[]" id="classrooms" multiple
+                            data-placeholder="Pilih Kelas">
                             <option value="" hidden>Pilih Kelas</option>
                             @foreach ($classrooms as $classroom)
                                 <option value="{{ $classroom->id }}">{{ $classroom->name }}</option>
@@ -56,7 +59,8 @@
                     </div>
                     <div class="col-lg-2">
                         <label for="expertises">Jurusan</label>
-                        <select class="form-select select2" name="expertises[]" id="expertises" multiple data-placeholder="Pilih Jurusan">
+                        <select class="form-select select2 @error('expertises') is-invalid @enderror" name="expertises[]" id="expertises" multiple
+                            data-placeholder="Pilih Jurusan">
                             <option value="" hidden>Pilih Kelas</option>
                             @foreach ($expertises as $expertise)
                                 <option value="{{ $expertise->id }}">{{ $expertise->name }}</option>
@@ -64,14 +68,15 @@
                         </select>
                     </div>
                     <div class="col-lg-3">
-                        <label for="from_date">Dari Tanggal</label>
-                        <input type="date" class="form-control" name="from_date" id="from_date">
+                        <label for="from_date2">Dari Tanggal</label>
+                        <input type="date" class="form-control @error('from_date2') is-invalid @enderror" name="from_date2" id="from_date2">
                     </div>
                     <div class="col-lg-3">
-                        <label for="to_date">Sampai Tanggal</label>
-                        <input type="date" class="form-control" name="to_date" id="to_date">
+                        <label for="to_date2">Sampai Tanggal</label>
+                        <input type="date" class="form-control @error('to_date2') is-invalid @enderror" name="to_date2" id="to_date2">
                     </div>
-                    <div class="col-lg-2 align-self-end">
+                    <div class="col-lg-2">
+                        <label class="d-none d-md-block d-lg-block d-xl-block">&nbsp;</label>
                         <button class="btn btn-success w-100"><i class="ri-file-excel-2-line align-middle"></i> Export
                             Excel</button>
                     </div>
@@ -80,3 +85,19 @@
         </div>
     </div>
 @stop
+
+@push('include-script')
+    <script>
+        $('#from_date').change(function() {
+            let from_date = $(this).val()
+
+            $('#to_date').attr('min', from_date)
+        })
+
+        $('#to_date').change(function() {
+            let to_date = $(this).val()
+
+            $('#from_date').attr('max', to_date)
+        })
+    </script>
+@endpush
