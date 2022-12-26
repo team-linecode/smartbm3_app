@@ -52,7 +52,7 @@ class UserPointExport implements FromCollection
             $objects[($i + 1)]["name"] = $user_point->user->name;
             $objects[($i + 1)]["classroom"] = $user_point->user->myClass();
             $objects[($i + 1)]["description"] = $user_point->description ?? $user_point->penalty->name;
-            $objects[($i + 1)]["type"] = $user_point->type;
+            $objects[($i + 1)]["type"] = $user_point->type == "plus" ? "Penambahan Poin" : "Pengurangan Poin";
             $objects[($i + 1)]["point"] = $user_point->point ?? $user_point->penalty->point;
             $objects[($i + 1)]["date"] = date('d-m-Y H:i:s', $user_point->date());
         }

@@ -132,6 +132,10 @@ hr {
     background-color: #405189;
 }
 
+.progress-label .progress-bar .label {
+    right: -18px;
+}
+
 /* mobile responsive */
 @media (max-width: 575px) {
     .card-header .btn {

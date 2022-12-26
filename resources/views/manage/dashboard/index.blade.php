@@ -4,7 +4,9 @@
 
     @include('component.form-error')
 
-    {{-- your scripts --}}
+    @can('dashboard student')
+        @include('manage.dashboard.student-dashboard')
+    @endcan
 @stop
 
 @push('include-script')

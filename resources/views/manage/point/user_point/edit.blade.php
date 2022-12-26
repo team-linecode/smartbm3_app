@@ -18,6 +18,8 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    @include('component.default-alert')
+
                     <form action="{{ route('app.user_point.update', $user_point->id) }}" method="post">
                         @csrf
                         @method('put')
@@ -101,6 +103,22 @@
                                     class="form-control @error('point') is-invalid @enderror" id="point"
                                     value="{{ old('point') ?? $user_point->point }}">
                                 @error('point')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-sm-3">
+                                <label for="date" class="form-label">Tanggal & Waktu</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="datetime-local" name="date"
+                                    class="form-control @error('date') is-invalid @enderror" id="date"
+                                    value="{{ old('date') ?? $user_point->date }}">
+                                @error('date')
                                     <div class="invalid-feedback">
                                         <strong>{{ $message }}</strong>
                                     </div>

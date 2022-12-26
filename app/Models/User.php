@@ -178,4 +178,15 @@ class User extends Authenticatable
 
         return $total_points;
     }
+
+    public function point_color()
+    {
+        if ($this->total_points() < 20) {
+            return 'bg-success';
+        } else if ($this->total_points() >= 20 && $this->total_points() < 30) {
+            return 'bg-warning';
+        } else if ($this->total_points() >= 30) {
+            return 'bg-danger';
+        }
+    }
 }

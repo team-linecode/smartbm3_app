@@ -18,6 +18,8 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    @include('component.default-alert')
+
                     <form action="{{ route('app.user_point.store') }}" method="post">
                         @csrf
                         <div class="row align-items-center mb-3">
@@ -104,10 +106,28 @@
                                 <select class="form-select select2 @error('users') is-invalid @enderror" name="users[]"
                                     id="users" multiple data-placeholder="Pilih Siswa/i">
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" {{ select_old_multiple($user->id, old('users')) }}>{{ $user->name }}</option>
+                                        <option value="{{ $user->id }}"
+                                            {{ select_old_multiple($user->id, old('users')) }}>{{ $user->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 @error('users')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-sm-3">
+                                <label for="date" class="form-label">Tanggal & Waktu</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="datetime-local" name="date"
+                                    class="form-control @error('date') is-invalid @enderror" id="date"
+                                    value="{{ old('date') ?? date('Y-m-d\TH:i:s') }}">
+                                @error('date')
                                     <div class="invalid-feedback">
                                         <strong>{{ $message }}</strong>
                                     </div>

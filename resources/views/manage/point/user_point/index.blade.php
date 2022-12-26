@@ -29,7 +29,7 @@
                             <th scope="col">Keterangan</th>
                             <th scope="col">Tipe</th>
                             <th scope="col">Point</th>
-                            <th scope="col">Tanggal & Waktu</th>
+                            <th scope="col">Tanggal&nbsp;&&nbsp;Waktu</th>
                             <th scope="col">Opsi</th>
                         </tr>
                     </thead>
@@ -42,13 +42,13 @@
                                 <td>{{ $user_point->description ?? $user_point->penalty->name }}</td>
                                 <td>
                                     @if ($user_point->type == 'plus')
-                                        <i class="h5 align-middle ri-add-circle-fill text-danger"></i> Plus
+                                        <i class="h5 align-middle ri-add-circle-fill text-danger"></i>&nbsp;Penambahan&nbsp;Poin
                                     @elseif ($user_point->type == 'minus')
-                                        <i class="h5 align-middle ri-indeterminate-circle-fill text-success"></i> Minus
+                                        <i class="h5 align-middle ri-indeterminate-circle-fill text-success"></i>&nbsp;Pengurangan&nbsp;Poin
                                     @endif
                                 </td>
                                 <td>{{ $user_point->point ?? $user_point->penalty->point }}</td>
-                                <td>{{ date('d-m-Y / H:i', $user_point->date()) }}</td>
+                                <td>{!! str_replace(' ', '&nbsp;', date('d-m-Y / H:i', $user_point->date())) !!}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <div class="edit">
