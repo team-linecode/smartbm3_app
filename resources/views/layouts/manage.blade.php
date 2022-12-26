@@ -420,7 +420,7 @@
                             </li>
                         @endcan
 
-                        @if (auth()->user()->hasAnyPermission(['read building', 'read room', 'read facility']))
+                        @if (auth()->user()->hasAnyPermission(['read building', 'read room', 'read facility', 'read submission']))
                             <li class="menu-title"><span data-key="t-menu">Sarpras</span></li>
                         @endif
                         @can('read building')
@@ -443,7 +443,16 @@
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.facility*']) }}"
                                     href="{{ route('app.facility.index') }}">
-                                    <i class="ri-device-line"></i> <span data-key="t-landing">Sarana</span>
+                                    <i class="ri-door-line"></i> <span data-key="t-landing">Fasilitas</span>
+                                </a>
+                            </li>
+                        @endcan
+                        
+                        @can('read submission')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.submission*']) }}"
+                                    href="{{ route('app.submission.index') }}">
+                                    <i class="ri-door-line"></i> <span data-key="t-landing">Pengajuan</span>
                                 </a>
                             </li>
                         @endcan
