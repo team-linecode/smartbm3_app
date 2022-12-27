@@ -174,14 +174,34 @@ class UserPointController extends Controller
 
         // mengecek apakah total poin pada siswa tersebut melebihi 100 atau kurang dari 0
         $penalty = PenaltyPoint::find($request->penalty_point);
-        $point = $request->type == 'plus' ? $penalty->point : $request->point;
-        $total_point = ($request->type == 'plus' ? ($user_point->user->total_points() - $user_point->penalty->point) + $point : ($user_point->user->total_points() - $user_point->point) + $point);
-        dd($total_point);
+        if ($request->type == 'plus' && $user_point->type == 'plus') {
+            if ($user_point->penalty->point < $penalty->point) {
+                $calc_point = ($user_point->penalty->point + $penalty->point) - $user_point->penalty->point;
+            } else if ($user_point->penalty->point > $penalty->point) {
+                $calc_point = ($user_point->penalty->point - $penalty->point);
+            } else {
+                $calc_point = $penalty->point;
+            }
+
+            $total_point = ($user_point->user->total_points() - $user_point->penalty->point) + $calc_point;
+        } else if ($request->type == 'minus' && $user_point->type == 'minus') {
+            if ($user_point->point < $request->point) {
+                $calc_point = ($user_point->point - $request->point);
+                $total_point = ($user_point->user->total_points() + $calc_point);
+            } else {
+                $calc_point = ($user_point->point + $request->point);
+                $total_point = ($user_point->user->total_points() - $user_point->point) + $calc_point;
+            }
+        } else {
+            $total_point = $user_point->user->total_points();
+        }
+
         if ($total_point > 100) {
             return back()->with('alert-error', $user_point->user->name . " -> Poin sudah melebihi dari 100<br>");
         } else if ($total_point < 0) {
             return back()->with('alert-error', $user_point->user->name . " -> Poin tidak boleh kurang dari 0<br>");
         }
+
 
         // jika tipenya penambahan poin maka isi variabel penalty_id dengan pelanggaran yang dipilih
         // mengosongkan keterangan dan juga poin
@@ -195,6 +215,7 @@ class UserPointController extends Controller
             $user_point->description = null;
             $request['description'] = null;
             $user_point->point = null;
+            $request['point'] = null;
         } else if ($request->type == 'minus') {
             $user_point->description = $request->description;
             $user_point->point = $request->point;

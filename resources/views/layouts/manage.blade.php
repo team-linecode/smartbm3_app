@@ -273,31 +273,31 @@
                         @endif
 
                         @if (auth()->user()->hasAnyPermission(['read penalty point', 'read user penalty']))
-                        <li class="menu-title"><span data-key="t-point">POIN SISWA/I</span></li>
+                            <li class="menu-title"><span data-key="t-point">POIN SISWA/I</span></li>
                         @endif
                         @can('read user penalty')
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ set_active('app.user_point*') }}"
-                                href="{{ route('app.user_point.index') }}">
-                                <i class="ri-file-warning-line"></i> <span data-key="t-point">Data Poin Siswa/i</span>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.user_point*') }}"
+                                    href="{{ route('app.user_point.index') }}">
+                                    <i class="ri-file-warning-line"></i> <span data-key="t-point">Data Poin Siswa/i</span>
+                                </a>
+                            </li>
                         @endcan
                         @can('read penalty point')
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ set_active('app.penalty_point*') }}"
-                                href="{{ route('app.penalty_point.index') }}">
-                                <i class="ri-auction-line"></i> <span data-key="t-point">Poin Pelanggaran</span>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.penalty_point*') }}"
+                                    href="{{ route('app.penalty_point.index') }}">
+                                    <i class="ri-auction-line"></i> <span data-key="t-point">Poin Pelanggaran</span>
+                                </a>
+                            </li>
                         @endcan
                         @can('read penalty point')
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ set_active('app.report_point*') }}"
-                                href="{{ route('app.report_point.index') }}">
-                                <i class="ri-file-list-3-line"></i> <span data-key="t-point">Laporan</span>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.report_point*') }}"
+                                    href="{{ route('app.report_point.index') }}">
+                                    <i class="ri-file-list-3-line"></i> <span data-key="t-point">Laporan</span>
+                                </a>
+                            </li>
                         @endcan
 
                         @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
@@ -447,7 +447,7 @@
                                 </a>
                             </li>
                         @endcan
-                        
+
                         @can('read submission')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.submission*']) }}"
