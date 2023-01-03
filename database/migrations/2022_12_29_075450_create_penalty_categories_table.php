@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePenaltyPointsTable extends Migration
+class CreatePenaltyCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,10 @@ class CreatePenaltyPointsTable extends Migration
      */
     public function up()
     {
-        Schema::create('penalty_points', function (Blueprint $table) {
+        Schema::create('penalty_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->string('code');
-            $table->integer('point');
-            $table->foreignId('penalty_category_id');
-            $table->integer('used')->default(0);
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ class CreatePenaltyPointsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('penalty_points');
+        Schema::dropIfExists('penalty_categories');
     }
 }

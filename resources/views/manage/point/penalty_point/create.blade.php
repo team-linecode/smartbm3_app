@@ -12,13 +12,39 @@
                             </a>
                         </div>
                         <div>
-                            <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Tambah Poin Pelanggaran</h4>
+                            <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Tambah Poin Pelanggaran
+                            </h4>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('app.penalty_point.store') }}" method="post">
                         @csrf
+                        <div class="row align-items-center mb-3">
+                            <div class="col-sm-3">
+                                <label for="penalty_category" class="form-label">Pelanggaran</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <select class="form-select @error('penalty_category') is-invalid @enderror"
+                                    name="penalty_category" id="penalty_category">
+                                    <option value="" hidden>Pilih Pelanggaran</option>
+                                    @forelse ($penalty_categories as $penalty_category)
+                                        <option value="{{ $penalty_category->id }}"
+                                            {{ select_old($penalty_category->id, old('penalty_category')) }}>
+                                            {{ $penalty_category->code }}. {{ $penalty_category->name }}
+                                        </option>
+                                    @empty
+                                        <option value="create_penalty_category">+ Tambah Poin Pelanggaran</option>
+                                    @endforelse
+                                </select>
+                                @error('penalty_category')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="row align-items-center mb-3">
                             <div class="col-sm-3">
                                 <label for="name" class="form-label">Nama</label>
@@ -70,3 +96,13 @@
         </div>
     </div>
 @stop
+
+@push('include-script')
+    <script>
+        $('#penalty_category').change(function() {
+            if ($(this).val() == 'create_penalty_category') {
+                window.location.href = "{{ route('app.penalty_category.create') }}"
+            }
+        })
+    </script>
+@endpush

@@ -39,15 +39,31 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $user_point->user->name }}</td>
                                 <td>{{ $user_point->user->myClass() }}</td>
-                                <td>{{ $user_point->description ?? $user_point->penalty->name }}</td>
                                 <td>
-                                    @if ($user_point->type == 'plus')
-                                        <i class="h5 align-middle ri-add-circle-fill text-danger"></i>&nbsp;Penambahan&nbsp;Poin
-                                    @elseif ($user_point->type == 'minus')
-                                        <i class="h5 align-middle ri-indeterminate-circle-fill text-success"></i>&nbsp;Pengurangan&nbsp;Poin
+                                    @if ($user_point->description != null)
+                                        {{ $user_point->description }}
+                                    @else
+                                        <div class="d-flex">
+                                            <div class="fw-medium me-2">
+                                                {{ $user_point->penalty->code }}
+                                            </div>
+                                            <div>
+                                                {{ $user_point->penalty->name }}
+                                            </div>
+                                        </div>
                                     @endif
                                 </td>
-                                <td>{{ $user_point->point ?? $user_point->penalty->point }}</td>
+                                <td>
+                                    @if ($user_point->type == 'plus')
+                                        <i
+                                            class="h5 align-middle ri-arrow-up-line text-danger"></i>&nbsp;Penambahan&nbsp;Poin
+                                    @elseif ($user_point->type == 'minus')
+                                        <i
+                                            class="h5 align-middle ri-arrow-down-line text-success"></i>&nbsp;Pengurangan&nbsp;Poin
+                                    @endif
+                                </td>
+                                <td class="fw-medium">{{ $user_point->type == 'plus' ? '+' : '-' }}{{ $user_point->point ?? $user_point->penalty->point }}
+                                </td>
                                 <td>{!! str_replace(' ', '&nbsp;', date('d-m-Y / H:i', $user_point->date())) !!}</td>
                                 <td>
                                     <div class="d-flex gap-2">

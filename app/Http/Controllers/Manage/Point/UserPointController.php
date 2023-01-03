@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\PenaltyPoint;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Jobs\CountUsedUserPenalty;
+use App\Models\PenaltyCategory;
 use App\Models\UserPoint;
 use Carbon\Carbon;
 
@@ -23,7 +25,8 @@ class UserPointController extends Controller
     public function create()
     {
         return view('manage.point.user_point.create', [
-            'penalty_points' => PenaltyPoint::all(),
+            'penalty_categories' => PenaltyCategory::orderBy('code')->get(),
+            'penalty_points' => PenaltyPoint::orderBy('code')->get(),
             'users' => User::role('student')->get()
         ]);
     }
@@ -120,6 +123,12 @@ class UserPointController extends Controller
         if ($error_point) {
             return back()->with('alert-error', $messages);
         } else {
+            dispatch(new CountUsedUserPenalty([
+                "penalty_point_id" => $request->penalty_point,
+                "type" => "plus",
+                "times" => count($request->users)
+            ]));
+
             UserPoint::insert($insertPoints);
 
             if ($request->stay) {
@@ -143,8 +152,9 @@ class UserPointController extends Controller
 
     public function update(UserPoint $user_point, Request $request)
     {
+        $request['type'] = $user_point->type;
+
         $rules = [
-            'type' => 'required',
             'date' => 'required|date'
         ];
 
@@ -154,7 +164,7 @@ class UserPointController extends Controller
             $rules['penalty_point'] = 'required';
         } else if ($request->type == 'minus') {
             $rules['description'] = 'required|max:100';
-            $rules['point'] = 'required|numeric|min:0|max:100';
+            $rules['point'] = 'required|numeric|min:1|max:100';
         }
 
         $request->validate($rules);
@@ -173,35 +183,31 @@ class UserPointController extends Controller
         }
 
         // mengecek apakah total poin pada siswa tersebut melebihi 100 atau kurang dari 0
-        $penalty = PenaltyPoint::find($request->penalty_point);
-        if ($request->type == 'plus' && $user_point->type == 'plus') {
-            if ($user_point->penalty->point < $penalty->point) {
-                $calc_point = ($user_point->penalty->point + $penalty->point) - $user_point->penalty->point;
-            } else if ($user_point->penalty->point > $penalty->point) {
-                $calc_point = ($user_point->penalty->point - $penalty->point);
-            } else {
-                $calc_point = $penalty->point;
-            }
+        $model_user = $user_point->user;
+        $point = $request->type == 'plus' ? PenaltyPoint::find($request->penalty_point)->point : $request->point;
+        $total_point = ($request->type == 'plus' ? ($model_user->total_points() + $user_point->point) + $point : ($model_user->total_points() + $user_point->point) - $point);
 
-            $total_point = ($user_point->user->total_points() - $user_point->penalty->point) + $calc_point;
-        } else if ($request->type == 'minus' && $user_point->type == 'minus') {
-            if ($user_point->point < $request->point) {
-                $calc_point = ($user_point->point - $request->point);
-                $total_point = ($user_point->user->total_points() + $calc_point);
-            } else {
-                $calc_point = ($user_point->point + $request->point);
-                $total_point = ($user_point->user->total_points() - $user_point->point) + $calc_point;
-            }
-        } else {
-            $total_point = $user_point->user->total_points();
-        }
-
+        // dd($total_point);
         if ($total_point > 100) {
             return back()->with('alert-error', $user_point->user->name . " -> Poin sudah melebihi dari 100<br>");
         } else if ($total_point < 0) {
             return back()->with('alert-error', $user_point->user->name . " -> Poin tidak boleh kurang dari 0<br>");
         }
 
+        // jika penalty point sebelumnya tidak sama dengan yang akan diubah
+        // maka kurangi used point pada penalty point sebelumnya dan tambahkan used point ke penalty point yang baru
+        if ($user_point->penalty_id != $request->penalty_point) {
+            dispatch(new CountUsedUserPenalty([
+                "penalty_point_id" => $user_point->penalty_id,
+                "type" => "minus",
+                "times" => 1
+            ]));
+            dispatch(new CountUsedUserPenalty([
+                "penalty_point_id" => $request->penalty_point,
+                "type" => "plus",
+                "times" => 1
+            ]));
+        }
 
         // jika tipenya penambahan poin maka isi variabel penalty_id dengan pelanggaran yang dipilih
         // mengosongkan keterangan dan juga poin
@@ -225,7 +231,6 @@ class UserPointController extends Controller
 
         // ubah type dengan yang dipilih
         // dan melakukan update
-        $user_point->type = $request->type;
         $user_point->update($request->all());
 
         return redirect()->route('app.user_point.index')->with('success', 'Poin berhasil diubah');
@@ -233,6 +238,14 @@ class UserPointController extends Controller
 
     public function destroy(UserPoint $user_point)
     {
+        if ($user_point->type == 'plus') {
+            dispatch(new CountUsedUserPenalty([
+                "penalty_point_id" => $user_point->penalty_id,
+                "type" => "minus",
+                "times" => 1
+            ]));
+        }
+
         $user_point->delete();
         return back()->with('success', 'Poin berhasil dihapus');
     }

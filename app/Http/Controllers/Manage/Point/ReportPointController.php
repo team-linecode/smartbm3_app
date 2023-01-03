@@ -32,7 +32,7 @@ class ReportPointController extends Controller
         $userpointexport = new UserPointExport($request->from_date, $request->to_date, $request->type);
 
         if ($request->export_as == 'excel') {
-            return Excel::download($userpointexport, 'users.xlsx');
+            return Excel::download($userpointexport, 'laporan_poin_siswa_' . date('dmy') . '.xlsx');
         } else if ($request->export_as == 'pdf') {
             $data["from_date"] = $request->from_date;
             $data["to_date"] = $request->to_date;
@@ -40,7 +40,7 @@ class ReportPointController extends Controller
             unset($data["user_points"][0]);
 
             view()->share('data', $data);
-            return PDF::loadView('manage.point.report_point.export_pdf', $data)->setPaper('F4')->stream('users.pdf');
+            return PDF::loadView('manage.point.report_point.export_user_point_pdf', $data)->setPaper('F4')->download('laporan_poin_siswa_' . date('dmy') . '.pdf');
         } else {
             abort(404);
         }
@@ -56,6 +56,21 @@ class ReportPointController extends Controller
         ]);
 
         $userpointexport = new UserTotalPointExport($request->classrooms, $request->expertises, $request->from_date2, $request->to_date2);
-        return Excel::download($userpointexport, 'users.xlsx');
+
+        if ($request->export_as == 'excel') {
+            return Excel::download($userpointexport, 'laporan_total_poin_siswa_' . date('dmy') . '.xlsx');
+        } else if ($request->export_as == 'pdf') {
+            $data["from_date"] = $request->from_date2;
+            $data["to_date"] = $request->to_date2;
+            $data["classrooms"] = Classroom::whereIn('id', $request->classrooms)->pluck('name')->implode(', ');
+            $data["expertises"] = Expertise::whereIn('id', $request->expertises)->pluck('name')->implode(', ');
+            $data["user_points"] = $userpointexport->collection()->toArray();
+            unset($data["user_points"][0]);
+
+            view()->share('data', $data);
+            return PDF::loadView('manage.point.report_point.export_total_point_pdf', $data)->setPaper('F4')->download('laporan_total_poin_siswa_' . date('dmy') . '.pdf');
+        } else {
+            abort(404);
+        }
     }
 }

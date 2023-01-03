@@ -5,7 +5,7 @@
         @csrf
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title text-center text-lg-start text-uppercase mb-0">Laporan Detail Poin Siswa
+                <h4 class="card-title text-center text-lg-start text-uppercase mb-0">Laporan Poin Siswa
                 </h4>
             </div>
             <div class="card-body">
@@ -107,6 +107,18 @@
             let to_date = $(this).val()
 
             $('#from_date').attr('max', to_date)
+        })
+
+        $('#from_date2').change(function() {
+            let from_date2 = $(this).val()
+
+            $('#to_date2').attr('min', from_date2)
+        })
+
+        $('#to_date2').change(function() {
+            let to_date2 = $(this).val()
+
+            $('#from_date2').attr('max', to_date2)
         })
     </script>
 @endpush

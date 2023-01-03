@@ -189,4 +189,8 @@ class User extends Authenticatable
             return 'bg-danger';
         }
     }
+
+    public function user_points() {
+        return $this->hasMany(UserPoint::class);
+    }
 }

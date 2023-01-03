@@ -51,13 +51,17 @@
                                 <select class="form-select @error('penalty_point') is-invalid @enderror"
                                     name="penalty_point" id="penalty_point">
                                     <option value="" hidden>Pilih Pelanggaran</option>
-                                    @foreach ($penalty_points as $penalty_point)
-                                        <option value="{{ $penalty_point->id }}"
-                                            {{ select_old($penalty_point->id, old('penalty_point')) }}>
-                                            {{ $penalty_point->name }}
-                                            ({{ $penalty_point->point }} Poin)
-                                        </option>
-                                    @endforeach
+                                    @forelse ($penalty_categories as $penalty_category)
+                                    <optgroup label="{{ $penalty_category->code }}. {{ $penalty_category->name }}">
+                                            @foreach ($penalty_points as $penalty_point)
+                                                @if ($penalty_category->id == $penalty_point->penalty_category_id)
+                                                <option value="{{ $penalty_point->id }}">{{ $penalty_point->code }} {{ $penalty_point->name }}</option>
+                                                @endif
+                                            @endforeach
+                                        </optgroup>
+                                    @empty
+                                        <option value="create_penalty_point">+ Tambah Poin Pelanggaran</option>
+                                    @endforelse
                                 </select>
                                 @error('penalty_point')
                                     <div class="invalid-feedback">
@@ -156,6 +160,14 @@
 @stop
 
 @push('include-script')
+    <script>
+        $('#penalty_point').change(function(){
+            if ($(this).val() == 'create_penalty_point') {
+                window.location.href = "{{ route('app.penalty_point.create') }}"
+            }
+        })
+    </script>
+
     @if (old('type'))
         @if (old('type') == 'plus')
             <script>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\LastEducation;
+use App\Models\PenaltyCategory;
+use App\Models\PenaltyPoint;
 use App\Models\User;
 
 setlocale(LC_ALL, 'IND');
@@ -239,4 +241,38 @@ function getFormula($formula, $userId)
 function formulaExists($formula)
 {
     return in_array($formula, formulas()) ? true : false;
+}
+
+function penaltyCode()
+{
+    $letters = [];
+    foreach (range('A', 'Z') as  $letter) {
+        $letters[] = $letter;
+    }
+    foreach (range('A', 'Z') as  $letter) {
+        foreach (range('A', 'Z') as $letter2) {
+            $letters[] = $letter . $letter2;
+        }
+    }
+
+    return $letters;
+}
+
+function getPenaltyCategoryCode()
+{
+    $penalty_category = PenaltyCategory::all()->count();
+    return penaltyCode()[$penalty_category];
+}
+
+function getPenaltyPointCode($penalty_category_code)
+{
+    if ($penalty_category_code == null) {
+        return false;
+    } else {
+        $penalty_point = PenaltyPoint::whereHas('category', function($penalty_category) use ($penalty_category_code) {
+            $penalty_category->where('code', $penalty_category_code);
+        })->count();
+
+        return $penalty_category_code . "." . ($penalty_point + 1);
+    }
 }

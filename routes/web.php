@@ -1,31 +1,34 @@
 <?php
 
+use App\Models\User;
+use App\Models\PenaltyPoint;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Manage\BillController;
 use App\Http\Controllers\Manage\CostController;
 use App\Http\Controllers\Manage\RoleController;
+use App\Http\Controllers\Manage\ReportController;
 use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
 use App\Http\Controllers\Manage\PermissionController;
-use App\Http\Controllers\Manage\Point\ReportPointController;
-use App\Http\Controllers\Manage\Point\PenaltyPointController;
-use App\Http\Controllers\Manage\Point\UserPointController;
-use App\Http\Controllers\Manage\ReportController;
-use App\Http\Controllers\Manage\Salary\AllowanceController;
-use App\Http\Controllers\Manage\Salary\LastEducationController;
-use App\Http\Controllers\Manage\Salary\PositionController;
-use App\Http\Controllers\Manage\Salary\SalaryController;
-use App\Http\Controllers\Manage\Salary\SalaryCutController;
-use App\Http\Controllers\Manage\Salary\SalarySlipController;
-use App\Http\Controllers\Manage\Sarpras\RoomController;
-use App\Http\Controllers\Manage\TransactionController;
 use App\Http\Controllers\Manage\User\StaffController;
+use App\Http\Controllers\Manage\TransactionController;
+use App\Http\Controllers\Manage\Sarpras\RoomController;
 use App\Http\Controllers\Manage\User\StudentController;
 use App\Http\Controllers\Manage\User\TeacherController;
+use App\Http\Controllers\Manage\Salary\SalaryController;
+use App\Http\Controllers\Manage\Point\UserPointController;
+use App\Http\Controllers\Manage\Salary\PositionController;
+use App\Http\Controllers\Manage\Salary\AllowanceController;
+use App\Http\Controllers\Manage\Salary\SalaryCutController;
 use App\Http\Controllers\Manage\Sarpras\BuildingController;
 use App\Http\Controllers\Manage\Sarpras\FacilityController;
+use App\Http\Controllers\Manage\Point\ReportPointController;
+use App\Http\Controllers\Manage\Salary\SalarySlipController;
+use App\Http\Controllers\Manage\Point\PenaltyPointController;
 use App\Http\Controllers\Manage\Sarpras\SubmissionController;
+use App\Http\Controllers\Manage\Salary\LastEducationController;
+use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +77,18 @@ use App\Http\Controllers\Manage\Sarpras\SubmissionController;
 //     foreach ($period3 as $dt3) {
 //         echo $dt3->format("F Y") . '<br />';
 //     }
+// });
+
+// Route::get('apake', function(){
+//     foreach (PenaltyPoint::all() as $pp) {
+//         $pp->code = substr($pp->code, 0, 1) . '.' . substr($pp->code, 1, 1);
+//         $pp->update();
+//     }
+// });
+
+// Route::get('test', function() {
+//     $users = User::take(10)->withCount('user_points')->orderByDesc('user_points_count')->get();
+//     dd($users);
 // });
 
 Route::get('/', [AuthController::class, 'login'])->name('auth.login');
@@ -182,15 +197,18 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::delete('/sarpras/room/{room}/delete_facility/{facility}', [RoomController::class, 'delete_facility'])->name('room.delete_facility');
     Route::post('/sarpras/room/get_stage', [RoomController::class, '_get_stage'])->name('room._get_stage');
     // Submission
-    Route::resource('/sarpras/submission', SubmissionController::class)->except('show'); 
-    Route::get('/sarpras/submission/accept/{submission}', [SubmissionController::class, 'accept'])->name('submission.accept'); 
-    Route::put('/sarpras/submission/reject/{submission}', [SubmissionController::class, 'reject'])->name('submission.reject'); 
-    Route::post('/sarpras/submission/plus_input', [SubmissionController::class, 'plus_input'])->name('submission.plus_input'); 
-    Route::post('/sarpras/submission/minus_input', [SubmissionController::class, 'minus_input'])->name('submission.minus_input'); 
-    Route::get('/sarpras/submission/invoice/{submission}', [SubmissionController::class, 'invoice'])->name('submission.invoice'); 
+    Route::resource('/sarpras/submission', SubmissionController::class)->except('show');
+    Route::get('/sarpras/submission/accept/{submission}', [SubmissionController::class, 'accept'])->name('submission.accept');
+    Route::put('/sarpras/submission/reject/{submission}', [SubmissionController::class, 'reject'])->name('submission.reject');
+    Route::post('/sarpras/submission/plus_input', [SubmissionController::class, 'plus_input'])->name('submission.plus_input');
+    Route::post('/sarpras/submission/minus_input', [SubmissionController::class, 'minus_input'])->name('submission.minus_input');
+    Route::get('/sarpras/submission/invoice/{submission}', [SubmissionController::class, 'invoice'])->name('submission.invoice');
 
     // Penalty Point
     Route::resource('/point/penalty_point', PenaltyPointController::class);
+
+    // Penalty Point Category
+    Route::resource('/point/penalty_category', PenaltyCategoryController::class);
 
     // User Penalty
     Route::resource('/point/user_point', UserPointController::class);

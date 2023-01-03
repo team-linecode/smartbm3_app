@@ -94,10 +94,10 @@
                                                             <td>
                                                                 @if ($user_point->type == 'plus')
                                                                     <i
-                                                                        class="h5 align-middle ri-add-circle-fill text-danger"></i>&nbsp;Penambahan&nbsp;Poin
+                                                                        class="h5 align-middle ri-arrow-up-line text-danger"></i>&nbsp;Penambahan&nbsp;Poin
                                                                 @elseif ($user_point->type == 'minus')
                                                                     <i
-                                                                        class="h5 align-middle ri-indeterminate-circle-fill text-success"></i>&nbsp;Pengurangan&nbsp;Poin
+                                                                        class="h5 align-middle ri-arrow-down-line text-success"></i>&nbsp;Pengurangan&nbsp;Poin
                                                                 @endif
                                                             </td>
                                                             <td>{{ $user_point->point ?? $user_point->penalty->point }}

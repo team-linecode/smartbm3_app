@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-sm-9">
                                 <select class="form-select @error('type') is-invalid @enderror" name="type"
-                                    id="type">
+                                    id="type" disabled>
                                     <option value="" hidden>Pilih Tipe Point</option>
                                     <option value="plus" {{ select_old('plus', old('type'), true, $user_point->type) }}>
                                         (+) Penambahan Poin

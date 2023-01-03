@@ -283,14 +283,35 @@
                                 </a>
                             </li>
                         @endcan
-                        @can('read penalty point')
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.penalty_point*') }}"
-                                    href="{{ route('app.penalty_point.index') }}">
-                                    <i class="ri-auction-line"></i> <span data-key="t-point">Poin Pelanggaran</span>
-                                </a>
-                            </li>
-                        @endcan
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ set_active(['app.penalty_point*', 'app.penalty_category*']) }}"
+                                href="#sidebarPointPenalty" data-bs-toggle="collapse" role="button"
+                                aria-expanded="false" aria-controls="sidebarPointPenalty">
+                                <i class="ri-auction-line"></i> <span data-key="t-point">Poin Pelanggaran</span>
+                            </a>
+                            <div class="collapse menu-dropdown {{ set_active(['app.penalty_point*', 'app.penalty_category*'], 'show') }}"
+                                id="sidebarPointPenalty">
+                                <ul class="nav nav-sm flex-column">
+                                    @can('print salary')
+                                        <li>
+                                            <a href="{{ route('app.penalty_point.index') }}"
+                                                class="nav-link {{ set_active('app.penalty_point*') }}"
+                                                data-key="t-transaction"> Poin Pelanggaran
+                                            </a>
+                                        </li>
+                                    @endcan
+                                    @can('print salary')
+                                        <li>
+                                            <a href="{{ route('app.penalty_category.index') }}"
+                                                class="nav-link {{ set_active('app.penalty_category*') }}"
+                                                data-key="t-transaction"> Kategori
+                                            </a>
+                                        </li>
+                                    @endcan
+                                </ul>
+                            </div>
+                        </li>
                         @can('read penalty point')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active('app.report_point*') }}"
