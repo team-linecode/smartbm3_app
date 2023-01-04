@@ -96,20 +96,19 @@
 
                         <div class="row align-items-center mb-3">
                             <div class="col-sm-3">
-                                <label for="role" class="form-label">Role</label>
+                                <label for="roles" class="form-label">Role</label>
                             </div>
                             <div class="col-sm-9">
-                                <select class="form-control" data-choices data-choices-search-false name="role"
-                                    id="role">
-                                    <option value="">Pilih Role</option>
+                                <select class="form-select select2 @error('roles') is-invalid @enderror" name="roles[]"
+                                    id="roles" multiple data-placeholder="Pilih Role">
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->id }}"
-                                            {{ select_old($role->id, old('role'), true, $staff->role_id) }}>
+                                            {{ select_old_multiple($role->id, old('roles'), true, $staff->roles->pluck('id')->toArray()) }}>
                                             {{ $role->name }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('role')
+                                @error('roles')
                                     <div class="small text-danger mt-1">
                                         <strong>{{ $message }}</strong>
                                     </div>

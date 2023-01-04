@@ -50,8 +50,11 @@ class TeacherController extends Controller
             'picture' => 'image|max:1024'
         ];
 
-        if ($request->email) {
+        if ($request->nip) {
             $rules['nip'] = 'unique:users,nip';
+        }
+
+        if ($request->email) {
             $rules['email'] = 'email|unique:users,email';
         }
 

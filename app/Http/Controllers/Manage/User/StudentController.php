@@ -50,8 +50,11 @@ class StudentController extends Controller
             'picture' => 'image|max:1024'
         ];
 
-        if ($request->email) {
+        if ($request->nisn) {
             $rules['nisn'] = 'unique:users,nisn';
+        }
+
+        if ($request->email) {
             $rules['email'] = 'email|unique:users,email';
         }
 

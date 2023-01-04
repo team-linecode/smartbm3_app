@@ -333,18 +333,6 @@
                             </li>
                         @endcan
 
-                        @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
-                            <li class="menu-title"><span data-key="t-menu">User</span></li>
-                        @endif
-                        @can('read staff')
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app.staff*']) }}"
-                                    href="{{ route('app.staff.index') }}">
-                                    <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
-                                </a>
-                            </li>
-                        @endcan
-
                         @can('read teacher')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active('app.teacher*') }}"

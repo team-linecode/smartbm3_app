@@ -12,7 +12,7 @@
                             </a>
                         </div>
                         <div>
-                            <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Tambah Guru</h4>
+                            <h4 class="card-title text-center text-uppercase mb-0">Tambah Guru</h4>
                         </div>
                     </div>
                 </div>

@@ -10,8 +10,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
-use function GuzzleHttp\Promise\all;
-
 class StaffController extends Controller
 {
     public function index()
@@ -40,7 +38,8 @@ class StaffController extends Controller
             'username' => 'required|unique:users,username',
             'password' => 'required|min:4|same:re-password',
             're-password' => 'required',
-            'role' => 'required',
+            'roles' => 'required|array',
+            'last_education' => 'required',
             'entry_date' => 'required|date',
             'status' => 'required',
             'gender' => 'required',
@@ -49,8 +48,11 @@ class StaffController extends Controller
             'picture' => 'image|max:1024'
         ];
 
-        if ($request->email) {
+        if ($request->nip) {
             $rules['nip'] = 'unique:users,nip';
+        }
+
+        if ($request->email) {
             $rules['email'] = 'email|unique:users,email';
         }
 
@@ -58,14 +60,15 @@ class StaffController extends Controller
 
         $request['no_encrypt'] = $request->password;
         $request['password'] = bcrypt($request->password);
-        $request['role_id'] = $request->role;
-        $request['last_education_id'] = $request->last_education ?? NULL;
+        $request['role_id'] = 4;
+        $request['last_education_id'] = $request->last_education;
 
         if ($request->hasFile('picture')) {
             $request['image'] = $request->file('picture')->store('users', 'public');
         }
 
-        User::create($request->all());
+        $user = User::create($request->all());
+        $user->assignRole($request->roles);
 
         return redirect(route('app.staff.index'))->with('success', 'Staff berhasil ditambahkan');
     }
@@ -88,7 +91,7 @@ class StaffController extends Controller
         $rules = [
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $staff->id,
-            'role' => 'required',
+            'roles' => 'required|array',
             'entry_date' => 'required|date',
             'status' => 'required',
             'gender' => 'required',
@@ -106,7 +109,7 @@ class StaffController extends Controller
 
         $request->validate($rules);
 
-        $request['role_id'] = $request->role;
+        $request['role_id'] = 4;
         $request['last_education_id'] = $request->last_education ?? NULL;
 
         if ($request->hasFile('picture')) {
@@ -114,6 +117,7 @@ class StaffController extends Controller
             $request['image'] = $request->file('picture')->store('users', 'public');
         }
 
+        $staff->syncRoles($request->roles);
         $staff->update($request->all());
 
         return redirect(route('app.staff.index'))->with('success', 'Staff berhasil diubah');
