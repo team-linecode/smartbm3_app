@@ -24,9 +24,7 @@ class PositionController extends Controller
         $this->authorize('create position');
 
         return view('manage.salary.position.create', [
-            'users' => User::whereHas('role', function ($q) {
-                $q->whereIn('name', ['teacher', 'staff', 'finance']);
-            })->orderByDesc('name')->get()
+            'users' => User::role(['teacher', 'staff', 'finance'])->orderByDesc('name')->get()
         ]);
     }
 
@@ -55,9 +53,7 @@ class PositionController extends Controller
 
         return view('manage.salary.position.edit', [
             'position' => $position,
-            'users' => User::whereHas('role', function ($q) {
-                $q->whereIn('name', ['teacher', 'staff', 'finance']);
-            })->orderByDesc('name')->get()
+            'users' => User::role(['teacher', 'staff'])->orderByDesc('name')->get()
         ]);
     }
 

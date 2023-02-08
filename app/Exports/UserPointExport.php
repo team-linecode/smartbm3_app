@@ -32,7 +32,9 @@ class UserPointExport implements FromCollection
         }
 
         $user_points = UserPoint::whereBetween('date', [$this->from_date . " 00:00:00", $this->to_date . " 23:59:59"])->whereIn('type', $type)->whereHas('user', function ($user) {
-            $user->orderBy('classroom_id')->orderBy('expertise_id');
+            $user->whereHas('schoolyear', function($query) {
+                $query->where('graduated', '0');
+            })->orderBy('classroom_id')->orderBy('expertise_id');
         })->orderBy('date')->get();
 
         $objects = [

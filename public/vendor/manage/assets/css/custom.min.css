@@ -136,6 +136,68 @@ hr {
     right: -18px;
 }
 
+.card.card-hover:hover {
+    background-color: #405189;
+    color: #ffffff !important;
+    transition: 0.2s;
+}
+.card.card-hover:hover h5 {
+    color: #ffffff !important;
+}
+
+@keyframes spin {
+    100% {
+        rotate: 360deg;
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1, 150;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35;
+    }
+    100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124;
+    }
+}
+
+.loader svg {
+    width: 25px;
+    height: 25px;
+    animation: spin 1s linear infinite;
+}
+
+.loader circle {
+    fill: none;
+    stroke: #405189;
+    stroke-width: 4px;
+    stroke-linecap: round;
+    animation: dash 2.5s ease-in-out infinite;
+}
+
+.btn-absent.btn-outline-primary:hover,
+.btn-absent.btn-outline-primary:focus {
+    background-color: transparent !important;
+    color: #405189;
+}
+
+.btn-absent.btn-outline-warning:hover,
+.btn-absent.btn-outline-warning:focus {
+    background-color: transparent !important;
+    color: #f9b868;
+}
+
+.btn-absent.btn-outline-danger:hover,
+.btn-absent.btn-outline-danger:focus {
+    background-color: transparent !important;
+    color: #f06548;
+}
+
 /* mobile responsive */
 @media (max-width: 575px) {
     .card-header .btn {

@@ -30,6 +30,7 @@ class User extends Authenticatable
         'gender',
         'marital_status',
         'child',
+        'is_hometeacher',
         'group_id',
         'schoolyear_id',
         'alumni',
@@ -190,7 +191,148 @@ class User extends Authenticatable
         }
     }
 
-    public function user_points() {
+    public function user_points()
+    {
         return $this->hasMany(UserPoint::class);
+    }
+
+    public function student_attends()
+    {
+        return $this->hasMany(StudentAttend::class);
+    }
+
+    public function isHomeTeacher()
+    {
+        if ($this->is_hometeacher == 1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function absentToday($button_type = null)
+    {
+        $attend = StudentAttend::where('user_id', $this->id)->whereDate('created_at', date('Y-m-d'))->first();
+
+        $button = '';
+
+        if (!$attend) {
+            if ($button_type != null) {
+                if ($button_type == 's') {
+                    $button = 'btn-outline-primary';
+                } else if ($button_type == 'i') {
+                    $button = 'btn-outline-warning';
+                } else if ($button_type == 'a') {
+                    $button = 'btn-outline-danger';
+                }
+            }
+
+            return [
+                'check' => false,
+                'button' => $button,
+            ];
+        } else {
+            if ($button_type != null) {
+                if ($attend->status == 's') {
+                    if ($button_type == 's') {
+                        $button = 'btn-primary';
+                    } else if ($button_type == 'i') {
+                        $button = 'btn-outline-warning';
+                    } else if ($button_type == 'a') {
+                        $button = 'btn-outline-danger';
+                    }
+                } else if ($attend->status == 'i') {
+                    if ($button_type == 's') {
+                        $button = 'btn-outline-primary';
+                    } else if ($button_type == 'i') {
+                        $button = 'btn-warning';
+                    } else if ($button_type == 'a') {
+                        $button = 'btn-outline-danger';
+                    }
+                } else if ($attend->status == 'a') {
+                    if ($button_type == 's') {
+                        $button = 'btn-outline-primary';
+                    } else if ($button_type == 'i') {
+                        $button = 'btn-outline-warning';
+                    } else if ($button_type == 'a') {
+                        $button = 'btn-danger';
+                    }
+                }
+            }
+
+            return [
+                'check' => true,
+                'button' => $button,
+            ];
+        }
+    }
+
+    public function apprenticeship()
+    {
+        return $this->hasOne(StudentApprenticeship::class);
+    }
+
+    public function isApprenticeship()
+    {
+        if ($this->apprenticeship()->exists()) {
+            $end_date = strtotime($this->apprenticeship->end_date);
+            $date_now = time();
+
+            if ($this->apprenticeship->end_date != NULL) {
+                if ($end_date > $date_now) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public function checkAbsentStatus($date)
+    {
+        $date = date('Y-m-d', strtotime($date));
+        
+        $student_attend = StudentAttend::where('user_id', $this->id)->whereDate('created_at', $date)->first();
+        
+        if ($student_attend) {
+            return $student_attend->status;
+        } else {
+            return '';
+        }
+    }
+    
+    public function checkAbsentStatusColor($date)
+    {
+        $date = date('Y-m-d', strtotime($date));
+        
+        $student_attend = StudentAttend::where('user_id', $this->id)->whereDate('created_at', $date)->first();
+        
+        if ($student_attend) {
+            if ($student_attend->status == 's') {
+                return 'lightskyblue';   
+            } else if ($student_attend->status == 'i') {
+                return 'yellow';
+            } else {
+                return 'red';
+            }
+        } else {
+            return 'transparent';
+        }
+    }
+    
+    public function getTotalAbsentByStatus($status, $date)
+    {
+        return StudentAttend::where('user_id', $this->id)->where('status', $status)->whereMonth('created_at', date('m-Y', strtotime($date)))->count();
+    }
+    
+    public function getTotalAbsent($date)
+    {
+        return StudentAttend::where('user_id', $this->id)->whereMonth('created_at', date('m-Y', strtotime($date)))->count();
     }
 }

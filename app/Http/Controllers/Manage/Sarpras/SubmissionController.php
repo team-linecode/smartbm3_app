@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Manage\Sarpras;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Controller; 
 use App\Models\Sarpras\Facility;
 use Illuminate\Http\Request;
 use App\Models\Sarpras\Submission;
@@ -68,8 +68,11 @@ class SubmissionController extends Controller
         $submission = Submission::find($s_id);
         if($submission_create){
             foreach ($request->facility_id as $i => $facility) {
+                $facility_name = Facility::find($facility);
+                
                 $attr2[$i]['submission_id'] = $s_id;
                 $attr2[$i]['facility_id'] = $facility;
+                $attr2[$i]['facility_name'] = $facility_name->name;
             }
             foreach ($request->room_id as $i => $room) {
                 $attr2[$i]['room_id'] = $room;

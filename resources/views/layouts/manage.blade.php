@@ -198,13 +198,13 @@
                         </li>
 
                         @if (auth()->user()->hasAnyPermission([
-                                'read salary',
-                                'read salary cut',
-                                'read allowance',
-                                'read last education',
-                                'read position',
-                                'print salary',
-                            ]))
+                                    'read salary',
+                                    'read salary cut',
+                                    'read allowance',
+                                    'read last education',
+                                    'read position',
+                                    'print salary',
+                                ]))
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.salaries*', 'app.salary_cut*', 'app.allowance*', 'app.last_education*', 'app.position*']) }}"
                                     href="#sidebarSalary" data-bs-toggle="collapse" role="button"
@@ -272,6 +272,26 @@
                             </li>
                         @endif
 
+                        @if (auth()->user()->hasAnyPermission(['create absent', 'read absent']))
+                            <li class="menu-title"><span data-key="t-point">Absen</span></li>
+                        @endif
+                        @can('create absent')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.absent.create*') }}"
+                                    href="{{ route('app.absent.create') }}">
+                                    <i class="ri-run-line"></i> <span data-key="t-point">Absen Terlambat</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('read absent')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.absent.index*') }}"
+                                    href="{{ route('app.absent.index') }}">
+                                    <i class="ri-file-list-3-line"></i> <span data-key="t-point">Data Keterlambatan</span>
+                                </a>
+                            </li>
+                        @endcan
+
                         @if (auth()->user()->hasAnyPermission(['read penalty point', 'read user penalty']))
                             <li class="menu-title"><span data-key="t-point">POIN SISWA/I</span></li>
                         @endif
@@ -284,51 +304,42 @@
                             </li>
                         @endcan
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link {{ set_active(['app.penalty_point*', 'app.penalty_category*']) }}"
-                                href="#sidebarPointPenalty" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarPointPenalty">
-                                <i class="ri-auction-line"></i> <span data-key="t-point">Poin Pelanggaran</span>
-                            </a>
-                            <div class="collapse menu-dropdown {{ set_active(['app.penalty_point*', 'app.penalty_category*'], 'show') }}"
-                                id="sidebarPointPenalty">
-                                <ul class="nav nav-sm flex-column">
-                                    @can('print salary')
-                                        <li>
-                                            <a href="{{ route('app.penalty_point.index') }}"
-                                                class="nav-link {{ set_active('app.penalty_point*') }}"
-                                                data-key="t-transaction"> Poin Pelanggaran
-                                            </a>
-                                        </li>
-                                    @endcan
-                                    @can('print salary')
-                                        <li>
-                                            <a href="{{ route('app.penalty_category.index') }}"
-                                                class="nav-link {{ set_active('app.penalty_category*') }}"
-                                                data-key="t-transaction"> Kategori
-                                            </a>
-                                        </li>
-                                    @endcan
-                                </ul>
-                            </div>
-                        </li>
+                        @if (auth()->user()->hasAnyPermission(['read penalty point', 'read penalty category']))
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.penalty_point*', 'app.penalty_category*']) }}"
+                                    href="#sidebarPointPenalty" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="false" aria-controls="sidebarPointPenalty">
+                                    <i class="ri-auction-line"></i> <span data-key="t-point">Poin Pelanggaran</span>
+                                </a>
+                                <div class="collapse menu-dropdown {{ set_active(['app.penalty_point*', 'app.penalty_category*'], 'show') }}"
+                                    id="sidebarPointPenalty">
+                                    <ul class="nav nav-sm flex-column">
+                                        @can('print salary')
+                                            <li>
+                                                <a href="{{ route('app.penalty_point.index') }}"
+                                                    class="nav-link {{ set_active('app.penalty_point*') }}"
+                                                    data-key="t-transaction"> Poin Pelanggaran
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('print salary')
+                                            <li>
+                                                <a href="{{ route('app.penalty_category.index') }}"
+                                                    class="nav-link {{ set_active('app.penalty_category*') }}"
+                                                    data-key="t-transaction"> Kategori
+                                                </a>
+                                            </li>
+                                        @endcan
+                                    </ul>
+                                </div>
+                            </li>
+                        @endif
+
                         @can('read penalty point')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active('app.report_point*') }}"
                                     href="{{ route('app.report_point.index') }}">
                                     <i class="ri-file-list-3-line"></i> <span data-key="t-point">Laporan</span>
-                                </a>
-                            </li>
-                        @endcan
-
-                        @if (auth()->user()->hasAnyPermission(['read staff', 'read teacher', 'read teacher']))
-                            <li class="menu-title"><span data-key="t-menu">User</span></li>
-                        @endif
-                        @can('read staff')
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app.staff*']) }}"
-                                    href="{{ route('app.staff.index') }}">
-                                    <i class="ri-user-2-line"></i> <span data-key="t-landing">Staff</span>
                                 </a>
                             </li>
                         @endcan
@@ -380,9 +391,9 @@
                         @endrole
 
                         {{-- @can('finance access') --}}
-                        @can('read transaction')
+                        @if (auth()->user()->hasAnyPermission(['read bill', 'read cost', 'read transaction']))
                             <li class="menu-title"><span data-key="t-menu">Keuangan</span></li>
-                        @endcan
+                        @endif
 
                         @can('create transaction')
                             <li class="nav-item">
@@ -464,7 +475,7 @@
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.facility*']) }}"
                                     href="{{ route('app.facility.index') }}">
-                                    <i class="ri-door-line"></i> <span data-key="t-landing">Fasilitas</span>
+                                    <i class="ri-projector-2-line"></i> <span data-key="t-landing">Fasilitas</span>
                                 </a>
                             </li>
                         @endcan
@@ -473,7 +484,51 @@
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.submission*']) }}"
                                     href="{{ route('app.submission.index') }}">
-                                    <i class="ri-door-line"></i> <span data-key="t-landing">Pengajuan</span>
+                                    <i class="ri-quill-pen-fill"></i> <span data-key="t-landing">Pengajuan</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        @if (auth()->user()->hasAnyPermission(['read picket schedule']))
+                            <li class="menu-title"><span data-key="t-menu">Admin Piket</span></li>
+                        @endif
+                        @can('create picket absent')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.picket_absent*']) }}"
+                                    href="{{ route('app.picket_absent.index') }}">
+                                    <i class="ri-file-edit-line"></i> <span data-key="t-landing">Absen Siswa</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('create teacher absent')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.teacher_absent*']) }}"
+                                    href="{{ route('app.teacher_absent.index') }}">
+                                    <i class="ri-file-edit-fill"></i> <span data-key="t-landing">Absen Guru</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('create student apprenticeship')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.student_apprenticeship*']) }}"
+                                    href="{{ route('app.student_apprenticeship.index') }}">
+                                    <i class="ri-user-shared-2-line"></i> <span data-key="t-landing">Siswa PKL</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('read picket schedule')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.picket_schedule*']) }}"
+                                    href="{{ route('app.picket_schedule.index') }}">
+                                    <i class="ri-file-list-2-line"></i> <span data-key="t-landing">Jadwal Piket</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('read picket report')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.picket_report*']) }}"
+                                    href="{{ route('app.picket_report.index') }}">
+                                    <i class="ri-file-list-2-fill"></i> <span data-key="t-landing">Laporan Piket</span>
                                 </a>
                             </li>
                         @endcan
@@ -564,6 +619,22 @@
         // select2
         $(".select2").select2({
             theme: "bootstrap-5",
+        });
+        
+        $(document).on("keypress",".select2",function(event){
+            if (event.ctrlKey || event.metaKey) {
+                var id =$(this).parents("div[class*='select2-container']").attr("id").replace("s2id_","");
+                var element =$("#"+id);
+                if (event.which == 97){
+                    var selected = [];
+                    element.find("option").each(function(i,e){
+                        selected[selected.length]=$(e).attr("value");
+                    });
+                    element.select2("val", selected);
+                } else if (event.which == 100){
+                    element.select2("val", "");
+                }
+            }
         });
 
         // Calculate Year of Experience

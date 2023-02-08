@@ -1,5 +1,9 @@
 @extends('layouts.manage', ['title' => 'Submission'])
 
+@push('include-style')
+    @include('component.datatables-style')
+@endpush
+
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -14,16 +18,16 @@
     </div>
     <div class="card-body">
         <div class="table-responsive table-card">
-            <table class="table table-bordered align-middle w-100 mb-0 dt-serverside">
+            <table class="table table-bordered align-middle w-100 mb-0 datatables">
                 <thead class="table-light">
                     <tr>
                         <th scope="col">No.</th>
                         <th scope="col">Pemohon</th>
                         <th scope="col">Sarana yang diajukan</th>
-                        <th scope="col">Catatan</th>
+                        <th scope="col">Catatan Penolakan</th> 
                         <th scope="col">Status</th>
                         <th scope="col">Tahap</th>
-                        @if (auth()->user()->hasRole('FI') or auth()->user()->hasRole('principal') or auth()->user()->hasRole('HOF'))
+                        @if (auth()->user()->hasRole('FI') or auth()->user()->hasRole('principal') or auth()->user()->hasRole('HOF') or $submissions->whereIn('user_id', auth()->user()->id))
                         <th scope="col">Opsi</th>
                         @endif
                         <th scope="col">Tanggal Pengajuan</th>
@@ -49,7 +53,7 @@
                                 </tr>
                                 @foreach($submission->submission_detail as $detail)
                                 <tr>
-                                    <td class="text-nowrap">{{ $detail->facility->name }} <small>({{ $detail->facility->brand }} | {{ $detail->facility->description }})</small></td>
+                                    <td class="text-nowrap">{{ $detail->facility_name }} <small>({{ $detail->facility->brand ?? '' }} | {{ $detail->facility->description ?? '' }})</small></td>
                                     <td>{{ $detail->room->name }}</td>
                                     <td class="text-nowrap">{{ date('d F Y', strtotime($detail->date_required)) }}</td>
                                     <td>{{ $detail->qty }}</td>
@@ -72,25 +76,22 @@
                                 Yayasan
                             @endif
                             </td>
-                        @if (auth()->user()->hasRole('FI') or auth()->user()->hasRole('principal') or auth()->user()->hasRole('HOF'))
+                        @if (auth()->user()->hasRole('FI') or auth()->user()->hasRole('principal') or auth()->user()->hasRole('HOF') or $submissions->whereIn('user_id', auth()->user()->id))
                         <td class="text-nowrap">
                             <div class="d-flex gap-2">
                                 @if($submission->status == 'pending')
                                 @if (auth()->user()->hasRole('HOF') && $submission->step == 3)
                                 <a href="{{ route('app.submission.accept', $submission->id) }}" class="btn btn-sm btn-primary">Setujui</a>
                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#varyingcontentModal{{$submission->id}}" data-bs-whatever="@mdo">Tolak</button>
-                                <!-- <a href="{{ route('app.submission.reject', $submission->id) }}" class="btn btn-sm btn-warning">Tolak</a> -->
                                 @elseif(auth()->user()->hasRole('principal') && $submission->step == 2)
                                 <a href="{{ route('app.submission.accept', $submission->id) }}" class="btn btn-sm btn-primary">Setujui</a>
                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#varyingcontentModal{{$submission->id}}" data-bs-whatever="@mdo">Tolak</button>
-                                <!-- <a href="{{ route('app.submission.reject', $submission->id) }}" class="btn btn-sm btn-warning">Tolak</a> -->
                                 @elseif(auth()->user()->hasRole('FI') && $submission->step == 1)
                                 <a href="{{ route('app.submission.accept', $submission->id) }}" class="btn btn-sm btn-primary">Setujui</a>
                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#varyingcontentModal{{$submission->id}}" data-bs-whatever="@mdo">Tolak</button>
-                                <!-- <a href="{{ route('app.submission.reject', $submission->id) }}" class="btn btn-sm btn-warning">Tolak</a> -->
                                 @elseif (auth()->user()->hasRole('developer') or auth()->user()->id == $submission->user_id)
                                 <div class="edit">
-                                    <a href="{{ route('app.submission.edit', $submission->id) }}" class="btn btn-sm btn-success">Edit</a>
+                                    <!--<a href="{{ route('app.submission.edit', $submission->id) }}" class="btn btn-sm btn-success">Edit</a>-->
                                 </div>
                                 <div class="remove">
                                     <form action="{{ route('app.submission.destroy', $submission->id) }}" method="post">
@@ -145,6 +146,8 @@
         <!-- end table responsive -->
     </div>
 </div>
-
-
 @stop
+
+@push('include-script')
+    @include('component.datatables-script')
+@endpush

@@ -269,10 +269,97 @@ function getPenaltyPointCode($penalty_category_code)
     if ($penalty_category_code == null) {
         return false;
     } else {
-        $penalty_point = PenaltyPoint::whereHas('category', function($penalty_category) use ($penalty_category_code) {
+        $penalty_point = PenaltyPoint::whereHas('category', function ($penalty_category) use ($penalty_category_code) {
             $penalty_category->where('code', $penalty_category_code);
         })->count();
 
         return $penalty_category_code . "." . ($penalty_point + 1);
     }
+}
+
+function dayID(int $day)
+{
+    switch ($day) {
+        case '1':
+            return "Senin";
+            break;
+        case '2':
+            return "Selasa";
+            break;
+        case '3':
+            return "Rabu";
+            break;
+        case '4':
+            return "Kamis";
+            break;
+        case '5':
+            return "Jumat";
+            break;
+        case '6':
+            return "Sabtu";
+            break;
+        case '7':
+            return "Minggu";
+            break;
+        default:
+            return "Invalid Day";
+            break;
+    }
+}
+
+function monthID(int $month)
+{
+    switch ($month) {
+        case '1':
+            return "Januari";
+            break;
+        case '2':
+            return "Februari";
+            break;
+        case '3':
+            return "Maret";
+            break;
+        case '4':
+            return "April";
+            break;
+        case '5':
+            return "Mei";
+            break;
+        case '6':
+            return "Juni";
+            break;
+        case '7':
+            return "Juli";
+            break;
+        case '7':
+            return "Agustus";
+            break;
+        case '7':
+            return "September";
+            break;
+        case '7':
+            return "Oktober";
+            break;
+        case '7':
+            return "November";
+            break;
+        case '7':
+            return "Desember";
+            break;
+        default:
+            return "Invalid Month";
+            break;
+    }
+}
+
+function status_attend($s)
+{
+    if($s == 's'){
+        $r = 'Sakit';
+    }elseif($s == 'i'){
+        $r = 'Izin';
+    }elseif($s == 'a'){
+        $r = 'Alfa';
+    }
+    return $r;
 }

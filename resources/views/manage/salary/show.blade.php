@@ -39,8 +39,13 @@
                         @foreach ($salary->details as $detail)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $detail->user->name }}</td>
+                                @if ($detail->user)
+                                    <td>{{ $detail->user->name }}</td>
+                                @else
+                                    <td class="text-danger">User telah dihapus</td>
+                                @endif
                                 <td>
+                                    @if ($detail->user)
                                     <div class="d-flex gap-2">
                                         <div class="view">
                                             <a href="{{ route('app.salaries.generate_pdf', [$detail->uid, 'stream']) }}" target="_blank"
@@ -51,6 +56,18 @@
                                                 class="btn btn-success btn-sm">Download Slip</a>
                                         </div>
                                     </div>
+                                    @else
+                                    <div class="d-flex gap-2">
+                                        <div class="view">
+                                            <a href="javascript:void(0)" target="_blank"
+                                                class="btn btn-primary btn-sm disabled">Lihat Slip</a>
+                                        </div>
+                                        <div class="download">
+                                            <a href="javascript:void(0)"
+                                                class="btn btn-success btn-sm disabled">Download Slip</a>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

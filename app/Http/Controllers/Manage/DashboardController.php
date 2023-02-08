@@ -71,6 +71,8 @@ class DashboardController extends Controller
                 'penalty_points' => PenaltyPoint::all(),
                 'chart' => $chart
             ]);
+        } else if (auth()->user()->hasPermissionTo('dashboard gatekeeper')) {
+            return view('manage.dashboard.dashboard-gatekeeper');
         } else {
             return view('manage.dashboard.index');
         }

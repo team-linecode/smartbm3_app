@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manage;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
 class DatatableController extends Controller
@@ -12,7 +13,9 @@ class DatatableController extends Controller
     {
         $this->authorize('read student');
 
-        return DataTables::of(User::role('student')->with('classroom')->with('expertise')->select('users.*')->limit(1))
+        return DataTables::of(User::role('student')->whereHas('schoolyear', function ($query) {
+            $query->where('graduated', '0');
+        })->with('classroom')->with('expertise')->select('users.*')->limit(1))
             ->addIndexColumn()
             ->editColumn('name', function ($row) {
                 return $row->name . '<br />
@@ -64,6 +67,64 @@ class DatatableController extends Controller
                 $btn = '<div class="d-flex gap-2">
                             <div class="edit">
                                 <a href="' . route("app.finance.bill.show", $row->id) . '" class="btn btn-sm btn-primary"><i class="ri-file-list-3-line align-middle"></i> Cek Tagihan</a>
+                            </div>
+                        </div>';
+
+                return $btn;
+            })
+            ->rawColumns(['name', 'password', 'action'])
+            ->toJson();
+    }
+
+    public function student_absent_json($classroom_id, $expertise_id)
+    {
+        $this->authorize('create picket absent');
+
+        return DataTables::of(User::role('student')->whereHas('schoolyear', function ($query) {
+            $query->where('graduated', '0');
+        })->where('classroom_id', $classroom_id)->where('expertise_id', $expertise_id)->select('users.*')->limit(1))
+            ->addIndexColumn()
+            ->editColumn('name', function ($row) {
+                return $row->name . '<br />
+                    <small class="text-muted">
+                        Nisn: ' . (!is_null($row->nisn) ? $row->nisn : '<span class="text-danger">tidak ada</span>') .
+                    '</small>';
+            })
+            ->addColumn('classroom', function ($row) {
+                return $row->myClass();
+            })
+            ->addColumn('action', function ($row) {
+                $btn = '<div class="align-items-center d-flex gap-2">
+                            <div class="sakit">
+                                <form action="' . route('app.picket_absent.store') . '" method="post">
+                                    ' . csrf_field() . '
+                                    <input type="hidden" name="user_id" value="' . $row->id . '">
+                                    <input type="hidden" name="status" value="s">
+                                    <button type="button" data-id="s' . $row->id . '" class="btn ' . $row->absentToday('s')['button'] . ' btn-absent">S</button>
+                                </form>
+                            </div>
+                            <div class="izin">
+                                <form action="' . route('app.picket_absent.store') . '" method="post">
+                                    ' . csrf_field() . '
+                                    <input type="hidden" name="user_id" value="' . $row->id . '">
+                                    <input type="hidden" name="status" value="i">
+                                    <button type="button" data-id="i' . $row->id . '" class="btn ' . $row->absentToday('i')['button'] . ' btn-absent">I</button>
+                                </form>
+                            </div>
+                            <div class="alpha">
+                                <form action="' . route('app.picket_absent.store') . '" method="post">
+                                    ' . csrf_field() . '
+                                    <input type="hidden" name="user_id" value="' . $row->id . '">
+                                    <input type="hidden" name="status" value="a">
+                                    <button type="button" data-id="a' . $row->id . '" class="btn ' . $row->absentToday('a')['button'] . ' btn-absent">A</button>
+                                </form>
+                            </div>
+                            <div>
+                                <div class="loader d-none" id="loader' . $row->id . '">
+                                    <svg viewBox="0 0 50 50">
+                                        <circle cx="25" cy="25" r="20"></circle>
+                                    </svg>
+                                </div>
                             </div>
                         </div>';
 

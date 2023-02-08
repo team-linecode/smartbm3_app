@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\User;
-use App\Models\PenaltyPoint;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Manage\BillController;
 use App\Http\Controllers\Manage\CostController;
@@ -12,6 +12,12 @@ use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
 use App\Http\Controllers\Manage\PermissionController;
 use App\Http\Controllers\Manage\User\StaffController;
+use App\Http\Controllers\Manage\Osis\AbsentController;
+use App\Http\Controllers\Manage\Picket\PicketAbsentController;
+use App\Http\Controllers\Manage\Picket\PicketReportController;
+use App\Http\Controllers\Manage\Picket\PicketScheduleController;
+use App\Http\Controllers\Manage\Picket\StudentApprenticeshipController;
+use App\Http\Controllers\Manage\Picket\TeacherAbsentController;
 use App\Http\Controllers\Manage\TransactionController;
 use App\Http\Controllers\Manage\Sarpras\RoomController;
 use App\Http\Controllers\Manage\User\StudentController;
@@ -91,6 +97,46 @@ use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
 //     dd($users);
 // });
 
+// Route::get('/getkelas10', function(){
+//     $reposenses = Http::get('https://elearning.smartbm3.com/api/getuser')->json();
+
+//     foreach ($reposenses['users'] as $user) {
+//         $expertise = '';
+
+//         if ($user['expertise_id'] == '5') {
+//             $expertise .= '4';
+//         } else if ($user['expertise_id'] == '6') {
+//             $expertise .= '5';
+//         } else if ($user['expertise_id'] == '7') {
+//             $expertise .= '6';
+//         } else if ($user['expertise_id'] == '8') {
+//             $expertise .= '7';
+//         } else if ($user['expertise_id'] == '9') {
+//             $expertise .= '8';
+//         } else {
+//             $expertise .= $user['expertise_id'];
+//         }
+
+//         $user = User::create([
+//             'name' => $user['name'],
+//             'nisn' => $user['nisn'],
+//             'username' => $user['username'],
+//             'password' => bcrypt($user['no_encrypt']),
+//             'no_encrypt' => $user['no_encrypt'],
+//             'role_id' => $user['role_id'],
+//             'classroom_id' => $user['classroom_id'],
+//             'expertise_id' => $expertise,
+//             'schoolyear_id' => '7'
+//         ]);
+//         $user->assignRole('student');
+//     }
+// });
+
+Route::get('/cron/6cd6ba9b-8162-47df-b90b-c3aea03442fc', function () {
+    Artisan::call('queue:work --daemon --stop-when-empty');
+    Log::info("Cron dieksekusi dari server lain");
+});
+
 Route::get('/', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/', [AuthController::class, 'post_login'])->name('auth.post_login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
@@ -117,10 +163,12 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::post('/user/teacher/destroy_all_lesson_sess', [TeacherController::class, 'destroy_all_lesson_sess'])->name('teacher.destroy_all_lesson_sess');
     Route::get('/user/teacher/{teacher}/destroy_image', [TeacherController::class, 'destroy_image'])->name('teacher.destroy_image');
     // Student
-    Route::resource('/user/student', StudentController::class);
+    Route::resource('/user/student', StudentController::class)->except('show');
     Route::get('/user/student/{student}/change_password', [StudentController::class, 'change_password'])->name('student.change_password');
     Route::put('/user/student/{student}/save_password', [StudentController::class, 'save_password'])->name('student.save_password');
     Route::get('/user/student/{student}/destroy_image', [StudentController::class, 'destroy_image'])->name('student.destroy_image');
+
+    Route::get('/user/student/graduate', [StudentController::class, 'alumni'])->name('student.alumni.index');
     // Staff
     Route::resource('/user/staff', StaffController::class);
     Route::get('/user/staff/{staff}/change_password', [StaffController::class, 'change_password'])->name('staff.change_password');
@@ -211,12 +259,30 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::resource('/point/penalty_category', PenaltyCategoryController::class);
 
     // User Penalty
-    Route::resource('/point/user_point', UserPointController::class);
+    Route::resource('/point/user_point', UserPointController::class)->except('show');
+    Route::post('/user_point/bulk_delete', [UserPointController::class, 'bulk_delete'])->name('user_point.bulk_delete');
 
     // Point Report
     Route::resource('/point/report_point', ReportPointController::class)->only('index');
     Route::post('/point/export_point', [ReportPointController::class, 'export_point'])->name('point.export_point');
     Route::post('/point/export_total_point', [ReportPointController::class, 'export_total_point'])->name('point.export_total_point');
+
+    // Osis
+    // Absent
+    Route::resource('/osis/absent', AbsentController::class)->only('index', 'create', 'store');
+
+    // Picket
+    // Schedule
+    Route::resource('/picket_schedule', PicketScheduleController::class)->except('show');
+    // Absent
+    Route::resource('/picket_absent', PicketAbsentController::class)->except('show');
+    // Teacher Absent
+    Route::resource('/teacher_absent', TeacherAbsentController::class)->except('show');
+    // Picket Report
+    Route::resource('/picket_report', PicketReportController::class)->except('show');
+    Route::post('/picket_report/export_monthly', [PicketReportController::class, 'export_monthly'])->name('picket_report.export_monthly');
+    // Student Apprenticeship
+    Route::resource('/student_apprenticeship', StudentApprenticeshipController::class)->except('show');
 });
 // End Route
 
@@ -225,6 +291,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Json DataTables
     Route::get('/datatable.student_json', [DatatableController::class, 'student_json'])->name('datatable.student_json');
     Route::get('/datatable.student_bill_json', [DatatableController::class, 'student_bill_json'])->name('datatable.student_bill_json');
+    Route::get('/datatable.student_absent_json/{classroom_id}/{expertise_id}', [DatatableController::class, 'student_absent_json'])->name('datatable.student_absent_json');
     Route::get('/datatable.teacher_json', [DatatableController::class, 'teacher_json'])->name('datatable.teacher_json');
     Route::get('/datatable.staff_json', [DatatableController::class, 'staff_json'])->name('datatable.staff_json');
 });

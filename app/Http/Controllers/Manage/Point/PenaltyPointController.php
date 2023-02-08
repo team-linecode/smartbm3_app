@@ -11,6 +11,8 @@ class PenaltyPointController extends Controller
 {
     public function index()
     {
+        $this->authorize('read penalty point');
+
         return view('manage.point.penalty_point.index', [
             'penalty_points' => PenaltyPoint::orderBy('code')->get()
         ]);
@@ -18,6 +20,8 @@ class PenaltyPointController extends Controller
 
     public function create()
     {
+        $this->authorize('create penalty point');
+
         return view('manage.point.penalty_point.create', [
             'penalty_categories' => PenaltyCategory::orderBy('code')->get()
         ]);
@@ -25,6 +29,8 @@ class PenaltyPointController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create penalty point');
+
         $request->validate([
             'penalty_category' => 'required',
             'name' => 'required|unique:penalty_points,name',
@@ -57,6 +63,8 @@ class PenaltyPointController extends Controller
 
     public function edit(PenaltyPoint $penalty_point)
     {
+        $this->authorize('update penalty point');
+
         return view('manage.point.penalty_point.edit', [
             'penalty_categories' => PenaltyCategory::orderBy('code')->get(),
             'penalty_point' => $penalty_point
@@ -65,6 +73,8 @@ class PenaltyPointController extends Controller
 
     public function update(PenaltyPoint $penalty_point, Request $request)
     {
+        $this->authorize('update penalty point');
+
         $request->validate([
             'penalty_category' => 'required',
             'name' => 'required|unique:penalty_points,name,' . $penalty_point->id,
@@ -99,6 +109,8 @@ class PenaltyPointController extends Controller
 
     public function destroy(PenaltyPoint $penalty_point)
     {
+        $this->authorize('delete penalty point');
+
         $penalty_point->delete();
         return redirect()->route('app.penalty_point.index')->with('success', 'Poin pelanggaran berhasil dihapus');
     }

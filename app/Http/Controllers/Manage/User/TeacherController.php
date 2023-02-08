@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Manage\User;
 
 use App\Models\User;
 use App\Models\Lesson;
+use App\Models\Position;
+use App\Models\Classroom;
+use App\Models\Expertise;
 use Illuminate\Http\Request;
-use App\Models\LessonTeacher;
-use App\Http\Controllers\Controller;
 use App\Models\LastEducation;
+use App\Models\LessonTeacher;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Role;
 
 class TeacherController extends Controller
 {
@@ -28,7 +31,9 @@ class TeacherController extends Controller
         return view('manage.user.teacher.create', [
             'lessons' => Lesson::all(),
             'last_educations' => LastEducation::all(),
-            'roles' => Role::all()
+            'roles' => Role::all(),
+            'classrooms' => Classroom::all(),
+            'expertises' => Expertise::all()
         ]);
     }
 
@@ -50,9 +55,27 @@ class TeacherController extends Controller
             'picture' => 'image|max:1024'
         ];
 
-        if ($request->email) {
+        if ($request->nip) {
             $rules['nip'] = 'unique:users,nip';
+        }
+
+        if ($request->email) {
             $rules['email'] = 'email|unique:users,email';
+        }
+
+        if ($request->is_hometeacher == 1) {
+            $rules['classroom'] = 'required';
+            $rules['expertise'] = 'required';
+
+            // check walas dari database
+            $check_hometeacher = User::where('is_hometeacher', '1')->where('classroom_id', $request->classroom)->where('expertise_id', $request->expertise)->first();
+            if ($check_hometeacher) {
+                return back()->with('error', $check_hometeacher->name . ' sudah menjadi wali kelas ' . $check_hometeacher->myClass());
+            }
+
+            $request['is_hometeacher'] = '1';
+            $request['classroom_id'] = $request->classroom;
+            $request['expertise_id'] = $request->expertise;
         }
 
         $request->validate($rules);
@@ -70,6 +93,14 @@ class TeacherController extends Controller
 
         if ($request->roles) {
             $teacher->syncRoles($request->roles);
+        }
+
+        // set positions
+        $position = Position::where('slug', 'wali-kelas')->first();
+        if ($position) {
+            $teacher->positions()->attach($position->id);
+        } else {
+            return back()->with('error', 'System error: Model Position 404');
         }
 
         if (session('lesson_teacher')) {
@@ -90,7 +121,9 @@ class TeacherController extends Controller
             'teacher' => $teacher,
             'lessons' => Lesson::all(),
             'last_educations' => LastEducation::all(),
-            'roles' => Role::all()
+            'roles' => Role::all(),
+            'classrooms' => Classroom::all(),
+            'expertises' => Expertise::all()
         ]);
     }
 
@@ -110,9 +143,30 @@ class TeacherController extends Controller
             'picture' => 'image|max:1024'
         ];
 
-        if ($request->email) {
+        if ($request->nip) {
             $rules['nip'] = 'unique:users,nip,' . $teacher->id;
+        }
+        if ($request->email) {
             $rules['email'] = 'email|unique:users,email,' . $teacher->id;
+        }
+
+        if ($request->is_hometeacher == 1) {
+            $rules['classroom'] = 'required';
+            $rules['expertise'] = 'required';
+
+            // check walas dari database
+            $check_hometeacher = User::where('id', '!=', $teacher->id)->where('is_hometeacher', '1')->where('classroom_id', $request->classroom)->where('expertise_id', $request->expertise)->first();
+            if ($check_hometeacher) {
+                return back()->with('error', $check_hometeacher->name . ' sudah menjadi wali kelas ' . $check_hometeacher->myClass());
+            }
+
+            $request['is_hometeacher'] = '1';
+            $request['classroom_id'] = $request->classroom;
+            $request['expertise_id'] = $request->expertise;
+        } else {
+            $request['is_hometeacher'] = '0';
+            $request['classroom_id'] = NULL;
+            $request['expertise_id'] = NULL;
         }
 
         $request->validate($rules);
@@ -126,6 +180,18 @@ class TeacherController extends Controller
 
         if ($request->roles) {
             $teacher->syncRoles($request->roles);
+        }
+
+        // sync positions
+        $position = Position::where('slug', 'wali-kelas')->first();
+        if ($position) {
+            if ($request->is_hometeacher == 1) {
+                $teacher->positions()->attach($position->id);
+            } else if ($request->is_hometeacher == 0) {
+                $teacher->positions()->detach($position->id);
+            }
+        } else {
+            return back()->with('error', 'System error: Model Position 404');
         }
 
         $teacher->update($request->all());
@@ -142,6 +208,7 @@ class TeacherController extends Controller
         }
 
         $teacher->lessons()->detach();
+        $teacher->positions()->detach();
         $teacher->delete();
 
         return redirect(route('app.teacher.index'))->with('success', 'Guru berhasil dihapus');

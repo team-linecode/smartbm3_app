@@ -102,7 +102,7 @@
                                                             </td>
                                                             <td>{{ $user_point->point ?? $user_point->penalty->point }}
                                                             </td>
-                                                            <td>{!! str_replace(' ', '&nbsp;', date('d-m-Y / H:i', $user_point->date())) !!}</td>
+                                                            <td>{!! str_replace(' ', '&nbsp;', date('d-m-Y', $user_point->date())) !!}</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

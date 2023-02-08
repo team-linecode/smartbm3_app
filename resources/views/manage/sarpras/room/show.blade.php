@@ -51,10 +51,20 @@
                                 id="facility">
                                 <option value="" hidden>Pilih Sarana</option>
                                 @foreach ($facilities as $facility)
-                                    <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                                    <option value="{{ $facility->id }}">{{ $facility->name }} | {{ $facility->brand }}</option>
                                 @endforeach
                             </select>
                             @error('facility')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="mb-3 mb-md-0 mb-lg-0">
+                            <label for="procurement_year" class="form-label">Tahun Pengadaan</label>
+                            <input type="number" class="form-control @error('procurement_year') is-invalid @enderror" name="procurement_year"
+                                id="procurement_year" value="{{ old('procurement_year') ?? '' }}">
+                            @error('procurement_year')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -128,6 +138,7 @@
                             <th>No.</th>
                             <th>Nama</th>
                             <th>Merk</th>
+                            <th>Tahun<br>Pengadaan</th>
                             <th>Kondisi</th>
                             <th>Opsi</th>
                         </tr>
@@ -138,6 +149,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $rf->facility->name }}</td>
                                 <td>{{ $rf->facility->brand }}</td>
+                                <td>{{ $rf->procurement_year }}</td>
                                 <td>
                                     <table>
                                         <tr>

@@ -1,4 +1,4 @@
-@extends('layouts.manage', ['title' => 'Poin Pelanggaran'])
+@extends('layouts.manage', ['title' => 'Kategori Pelanggaran'])
 
 @section('content')
     <div class="row">
@@ -7,17 +7,17 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center">
                         <div class="me-3">
-                            <a href="{{ route('app.penalty_point.index') }}" class="btn btn-primary">
+                            <a href="{{ route('app.penalty_category.index') }}" class="btn btn-primary">
                                 <i class="ri ri-arrow-left-line"></i>
                             </a>
                         </div>
                         <div>
-                            <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Edit Permission</h4>
+                            <h4 class="card-title text-center text-uppercase mb-2 mb-md-0 mb-lg-0">Edit Kategori Pelanggaran</h4>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('app.penalty_point.update', $penalty_point->id) }}" method="post">
+                    <form action="{{ route('app.penalty_category.update', $penalty_category->id) }}" method="post">
                         @csrf
                         @method('put')
                         <div class="row align-items-center mb-3">
@@ -27,24 +27,8 @@
                             <div class="col-sm-9">
                                 <input type="text" name="name"
                                     class="form-control @error('name') is-invalid @enderror" id="name"
-                                    value="{{ old('name') ?? $penalty_point->name }}">
+                                    value="{{ old('name') ?? $penalty_category->name }}">
                                 @error('name')
-                                    <div class="invalid-feedback">
-                                        <strong>{{ $message }}</strong>
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row align-items-center mb-3">
-                            <div class="col-sm-3">
-                                <label for="point" class="form-label">Poin</label>
-                            </div>
-                            <div class="col-sm-9">
-                                <input type="number" name="point"
-                                    class="form-control @error('point') is-invalid @enderror" id="point"
-                                    value="{{ old('point') ?? $penalty_point->point }}">
-                                @error('point')
                                     <div class="invalid-feedback">
                                         <strong>{{ $message }}</strong>
                                     </div>

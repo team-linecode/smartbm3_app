@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SubmissionDetail extends Model
 {
     use HasFactory;
-    protected $fillable = ['submission_id', 'facility_id', 'room_id', 'date_required', 'qty', 'price', 'postage_price', 'total_price', 'necessity'];
+    protected $fillable = ['submission_id', 'facility_id', 'facility_name', 'room_id', 'date_required', 'qty', 'price', 'postage_price', 'total_price', 'necessity'];
 
     public function facility()
     {

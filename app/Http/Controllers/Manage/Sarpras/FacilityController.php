@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Manage\Sarpras;
 
 use App\Models\Sarpras\Facility;
+use App\Models\RoomFacility;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -13,8 +14,10 @@ class FacilityController extends Controller
         $this->authorize('create facility');
 
         $facilities = Facility::all();
+        $rc = RoomFacility::all();
         return view('manage.sarpras.facility.index', [
-            'facilities' => $facilities
+            'facilities' => $facilities,
+            'rc' => $rc
         ]);
     }
 
@@ -81,7 +84,7 @@ class FacilityController extends Controller
             }
         }
 
-        $facility->update($request->all());
+        $facility->update($request->all()); 
 
         return redirect()->route('app.facility.index')->with('success', 'Sarana berhasil diubah.');
     }
@@ -89,7 +92,11 @@ class FacilityController extends Controller
     public function destroy(Facility $facility)
     {
         $this->authorize('delete facility');
-
+        
+        $rc = RoomFacility::where('facility_id', $facility->id);
+        if($rc->exists()){
+            $rc->delete();
+        }
         $facility->delete();
 
         return redirect()->route('app.facility.index')->with('success', 'Sarana berhasil dihapus.');

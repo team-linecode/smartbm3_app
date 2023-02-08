@@ -9,6 +9,7 @@
     <h3>
         Hai👋<br />
         Silahkan klik tautan dibawah ini untuk reset password kamu ya. <br /><br />
+        i want to go home
     </h3>
 
     <p>

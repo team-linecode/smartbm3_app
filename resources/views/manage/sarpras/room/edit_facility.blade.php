@@ -41,18 +41,19 @@
         </div>
         <hr class="my-0">
         <div class="card-body">
-            <form action="{{ route('app.room.update_facility', [$room->id, $facility->id]) }}" method="post">
+            <form action="{{ route('app.room.update_facility', [$room->id, $rf->id]) }}" method="post">
+            <div class="card-body">
                 @csrf
-                @method('put')
-                <div class="row">
-                    <div class="col-lg-3">
+                @method('PUT')
+                <div class="row mb-3">
+                    <div class="col-lg-4">
                         <div class="mb-3 mb-md-0 mb-lg-0">
                             <label for="facility" class="form-label">Sarana</label>
                             <select class="form-select select2 @error('facility') is-invalid @enderror" name="facility"
-                                id="facility">
+                                id="facility" disabled>
                                 <option value="" hidden>Pilih Sarana</option>
-                                @foreach ($facilities as $f)
-                                    <option value="{{ $f->id }}" {{ select_old($f->id, old('facility'), true, $facility->id) }}>{{ $f->name }}</option>
+                                @foreach ($facilities as $facility)
+                                    <option value="{{ $facility->id }}" {{ $rf->facility->id == $facility->id ? 'selected' : '' }}>{{ $facility->name }}</option>
                                 @endforeach
                             </select>
                             @error('facility')
@@ -60,22 +61,72 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-4">
                         <div class="mb-3 mb-md-0 mb-lg-0">
-                            <label for="amount" class="form-label">Jumlah</label>
-                            <input type="number" class="form-control @error('amount') is-invalid @enderror" name="amount"
-                                id="amount" value="{{ old('amount') ?? $room->facilities()->where('facility_id', $facility->id)->first()->pivot->amount }}">
-                            @error('amount')
+                            <label for="procurement_year" class="form-label">Tahun Pengadaan</label>
+                            <input type="number" class="form-control @error('procurement_year') is-invalid @enderror" name="procurement_year"
+                                id="procurement_year" value="{{ old('procurement_year') ?? $rf->procurement_year }}">
+                            @error('procurement_year')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                    <div class="col-lg-2">
-                        <label class="d-none d-md-block d-lg-block d-xl-block">&nbsp;</label>
-                        <button class="btn btn-primary">Simpan</button>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="divider">
+                            <span class="fw-bold">Jumlah & Kondisi Barang</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="mb-3 mb-md-0 mb-lg-0">
+                            <label for="good" class="form-label">Baik</label>
+                            <input type="number" class="form-control @error('good') is-invalid @enderror" name="good"
+                                id="good" value="{{ old('good') ?? $rf->good }}">
+                            @error('good')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="mb-3 mb-md-0 mb-lg-0">
+                            <label for="bad" class="form-label">Kurang Baik</label>
+                            <input type="number" class="form-control @error('bad') is-invalid @enderror" name="bad"
+                                id="bad" value="{{ old('bad') ?? $rf->bad }}">
+                            @error('bad')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="mb-3 mb-md-0 mb-lg-0">
+                            <label for="broken_can_repaired" class="form-label">Rusak Dapat Diperbaiki</label>
+                            <input type="number" class="form-control @error('broken_can_repaired') is-invalid @enderror"
+                                name="broken_can_repaired" id="broken_can_repaired"
+                                value="{{ old('broken_can_repaired') ?? $rf->broken_can_repaired }}">
+                            @error('broken_can_repaired')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="mb-3 mb-md-0 mb-lg-0">
+                            <label for="broken_cant_repaired" class="form-label">Rusak Tidak Dapat Diperbaiki</label>
+                            <input type="number" class="form-control @error('broken_cant_repaired') is-invalid @enderror"
+                                name="broken_cant_repaired" id="broken_cant_repaired"
+                                value="{{ old('broken_cant_repaired') ?? $rf->broken_cant_repaired }}">
+                            @error('broken_cant_repaired')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
-            </form>
+            </div>
+            <hr class="my-0">
+            <div class="card-body text-end py-2">
+                <button class="btn btn-primary">Update Sarana</button>
+            </div>
+        </form>
         </div>
     </div>
 @stop

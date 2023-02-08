@@ -11,28 +11,42 @@ use App\Models\PenaltyCategory;
 use App\Models\UserPoint;
 use Carbon\Carbon;
 
-use function GuzzleHttp\Promise\all;
-
 class UserPointController extends Controller
 {
     public function index()
     {
+        $this->authorize('read user penalty');
+        
+        if (request()->get('penalty_point') || request()->get('from_date') || request()->get('to_date')) {
+            $user_points = UserPoint::where('penalty_id', request()->get('penalty_point') ? '=' : '!=',request()->get('penalty_point'))->whereBetween('date', [request()->get('from_date') . ' 00:00:00', request()->get('to_date') . ' 23:59:59'])->latest()->get();
+        } else {
+            $user_points = UserPoint::whereDate('date', date('Y-m-d'))->latest()->get();
+        }
+
         return view('manage.point.user_point.index', [
-            'user_points' => UserPoint::latest()->get()
+            'penalty_categories' => PenaltyCategory::orderBy('code')->get(),
+            'penalty_points' => PenaltyPoint::orderBy('code')->get(),
+            'user_points' => $user_points
         ]);
     }
 
     public function create()
     {
+        $this->authorize('create user penalty');
+
         return view('manage.point.user_point.create', [
             'penalty_categories' => PenaltyCategory::orderBy('code')->get(),
             'penalty_points' => PenaltyPoint::orderBy('code')->get(),
-            'users' => User::role('student')->get()
+            'users' => User::role('student')->whereHas('schoolyear', function($query) {
+                $query->where('graduated', '0');
+            })->get()
         ]);
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create user penalty');
+
         $rules = [
             'type' => 'required',
             'users' => 'required|array',
@@ -143,6 +157,8 @@ class UserPointController extends Controller
 
     public function edit(UserPoint $user_point)
     {
+        $this->authorize('update user penalty');
+
         return view('manage.point.user_point.edit', [
             'user_point' => $user_point,
             'penalty_points' => PenaltyPoint::all(),
@@ -152,6 +168,8 @@ class UserPointController extends Controller
 
     public function update(UserPoint $user_point, Request $request)
     {
+        $this->authorize('update user penalty');
+
         $request['type'] = $user_point->type;
 
         $rules = [
@@ -238,6 +256,8 @@ class UserPointController extends Controller
 
     public function destroy(UserPoint $user_point)
     {
+        $this->authorize('delete user penalty');
+
         if ($user_point->type == 'plus') {
             dispatch(new CountUsedUserPenalty([
                 "penalty_point_id" => $user_point->penalty_id,
@@ -248,5 +268,15 @@ class UserPointController extends Controller
 
         $user_point->delete();
         return back()->with('success', 'Poin berhasil dihapus');
+    }
+    
+    public function bulk_delete(Request $request)
+    {
+        if (!$request->user_points) {
+            return back()->with('error', 'Harap centang data yang akan dihapus');
+        }
+        dd($request->user_points);
+        
+        dd(UserPoint::whereIn('id', $request->user_points)->get());
     }
 }

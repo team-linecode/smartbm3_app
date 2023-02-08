@@ -15,7 +15,7 @@
                                 @forelse ($penalty_points->where('used', '!=', 0)->sortByDesc('used')->take(5) as $penalty_point)
                                     <tr>
                                         <td class="text-muted">{{ $penalty_point->name }}</td>
-                                        <td class="fw-medium">{{ $penalty_point->used }}&nbsp;siswa</td>
+                                        <td class="fw-medium">{{ $penalty_point->used }}x&nbsp;dilanggar</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -41,7 +41,8 @@
                                 @forelse ($top_students as $top_student)
                                     <tr>
                                         <td class="text-muted">{{ $top_student->name }}</td>
-                                        <td class="fw-medium">{{ $top_student->user_points_count }} Pelanggaran</td>
+                                        <td class="text-muted">{!! str_replace(' ', '&nbsp;', $top_student->myClass()) !!}</td>
+                                        <td class="fw-medium">{{ $top_student->user_points_count }}&nbsp;Pelanggaran</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -109,7 +110,7 @@
             </form>
         </div>
         <div class="card-body">
-            <canvas id="linechart" class="chartjs" height="100"></canvas>
+            <canvas id="linechart" class="chartjs" height="auto"></canvas>
         </div>
     </div>
 @stop
@@ -129,7 +130,7 @@
                 borderWidth: 1.5,
                 pointBackgroundColor: 'orange',
                 pointBorderColor: 'orange',
-                tension: 0.5
+                tension: 0.3
             }]
         };
         const config = {

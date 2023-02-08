@@ -1,5 +1,9 @@
 @extends('layouts.manage', ['title' => 'Gedung'])
 
+@push('include-style')
+    @include('component.datatables-style')
+@endpush
+
 @section('content')
     <div class="card">
         <div class="card-header">
@@ -14,7 +18,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive table-card">
-                <table class="table align-middle w-100 mb-0 dt-serverside">
+                <table class="table align-middle w-100 mb-0 datatables">
                     <thead class="table-light">
                         <tr>
                             <th scope="col">No.</th>
@@ -54,3 +58,7 @@
         </div>
     </div>
 @stop
+
+@push('include-script')
+    @include('component.datatables-script')
+@endpush

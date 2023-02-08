@@ -26,7 +26,9 @@ class UserTotalPointExport implements FromCollection
         $classroom_ids = $this->classrooms;
         $expertise_ids = $this->expertises;
 
-        $users = User::whereIn('classroom_id', $classroom_ids)->whereIn('expertise_id', $expertise_ids)->orderBy('classroom_id')->orderBy('expertise_id')->orderBy('name')->get();
+        $users = User::whereHas('schoolyear', function($query) {
+            $query->where('graduated', '0');
+        })->whereIn('classroom_id', $classroom_ids)->whereIn('expertise_id', $expertise_ids)->orderBy('classroom_id')->orderBy('expertise_id')->orderBy('name')->get();
 
         $objects = [
             [

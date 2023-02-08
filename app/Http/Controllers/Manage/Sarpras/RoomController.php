@@ -89,6 +89,7 @@ class RoomController extends Controller
     {
         $request->validate([
             'facility' => 'required',
+            'procurement_year' => 'numeric|min:2000|max:'.date('Y'),
             'good' => 'required|numeric|min:0',
             'bad' => 'required|numeric|min:0',
             'broken_can_repaired' => 'required|numeric|min:0',
@@ -99,35 +100,44 @@ class RoomController extends Controller
         $request['facility_id'] = $request->facility;
         $request['total'] = ($request->good + $request->bad + $request->broken_can_repaired + $request->broken_cant_repaired);
 
-        RoomFacility::create($request->all());
+        $rf = RoomFacility::where('room_id', $room->id)->where('facility_id', $request->facility)->get()->count();
+        if($rf > 0){
+            return back()->with('error', 'Sarana telah terdata pada ruangan ini!');
+        }else{
+            RoomFacility::create($request->all());
+        }
 
         return back()->with('success', 'Sarana berhasil ditambahkan');
     }
 
-    public function edit_facility(Room $room, Facility $facility)
+    public function edit_facility(Room $room, RoomFacility $facility)
     {
         return view('manage.sarpras.room.edit_facility', [
             'room' => $room,
-            'facility' => $facility,
+            'rf' => $facility,
             'facilities' => Facility::all()
         ]);
     }
 
-    public function update_facility(Room $room, Facility $facility, Request $request)
+    public function update_facility(Room $room, RoomFacility $facility, Request $request)
     {
         $request->validate([
-            'facility' => 'required',
-            'amount' => 'required|min:0'
+            'procurement_year' => 'numeric|min:2000|max:'.date('Y'),
+            'good' => 'required|numeric|min:0',
+            'bad' => 'required|numeric|min:0',
+            'broken_can_repaired' => 'required|numeric|min:0',
+            'broken_cant_repaired' => 'required|numeric|min:0',
         ]);
-
-        $room->facilities()->where('facility_id', $facility->id)->sync($facility->id, ['amount' => $request->amount]);
+        
+        $request['total'] = ($request->good + $request->bad + $request->broken_can_repaired + $request->broken_cant_repaired);
+        $facility->update($request->all());
 
         return redirect()->route('app.room.show', $room->id)->with('success', 'Sarana berhasil diubah');
     }
 
-    public function delete_facility(Room $room, Facility $facility)
+    public function delete_facility(Room $room, RoomFacility $facility)
     {
-        $room->facilities()->detach($facility->id);
+        $facility->delete();
         return back()->with('success', 'Sarana berhasil dihapus');
     }
 

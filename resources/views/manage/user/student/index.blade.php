@@ -8,6 +8,8 @@
 
     @include('component.form-error')
 
+    <a href="{{ route('app.student.alumni.index') }}" class="btn btn-primary mb-3">Input Kelulusan</a>
+
     <div class="card">
         <div class="card-header">
             <div class="d-flex flex-column flex-sm-row flex-md-row align-items-md-center justify-content-between">

@@ -10,6 +10,8 @@ class PenaltyCategoryController extends Controller
 {
     public function index()
     {
+        $this->authorize('read penalty category');
+
         return view('manage.point.penalty_category.index', [
             'penalty_categories' => PenaltyCategory::all()
         ]);
@@ -17,11 +19,15 @@ class PenaltyCategoryController extends Controller
 
     public function create()
     {
+        $this->authorize('create penalty category');
+
         return view('manage.point.penalty_category.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create penalty category');
+
         $request->validate([
             'name' => 'required|unique:penalty_categories,name',
         ]);
@@ -46,6 +52,8 @@ class PenaltyCategoryController extends Controller
 
     public function edit(PenaltyCategory $penalty_category)
     {
+        $this->authorize('update penalty category');
+
         return view('manage.point.penalty_category.edit', [
             'penalty_category' => $penalty_category
         ]);
@@ -53,17 +61,22 @@ class PenaltyCategoryController extends Controller
 
     public function update(PenaltyCategory $penalty_category, Request $request)
     {
+        $this->authorize('update penalty category');
+
         $request->validate([
-            'point' => 'required|numeric|min:1|max:100'
+            'name' => 'required|unique:penalty_categories,name,' . $penalty_category->id,
         ]);
 
-        $penalty_category->update($request->only('name', 'point'));
+        $request['name'] = ucwords($request->name);
+        $penalty_category->update($request->only('name'));
 
         return redirect()->route('app.penalty_category.index')->with('success', 'Kategori berhasil diubah');
     }
 
     public function destroy(PenaltyCategory $penalty_category)
     {
+        $this->authorize('delete penalty category');
+
         $penalty_category->delete();
         return redirect()->route('app.penalty_category.index')->with('success', 'Kategori berhasil dihapus');
     }

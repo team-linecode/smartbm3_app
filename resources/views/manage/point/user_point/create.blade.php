@@ -111,7 +111,7 @@
                                     id="users" multiple data-placeholder="Pilih Siswa/i">
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}"
-                                            {{ select_old_multiple($user->id, old('users')) }}>{{ $user->name }}
+                                            {{ select_old_multiple($user->id, old('users')) }}>{{ $user->name }} -> {!! $user->myClass() !!}
                                         </option>
                                     @endforeach
                                 </select>

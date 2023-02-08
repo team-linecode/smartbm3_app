@@ -50,8 +50,11 @@ class StudentController extends Controller
             'picture' => 'image|max:1024'
         ];
 
-        if ($request->email) {
+        if ($request->nisn) {
             $rules['nisn'] = 'unique:users,nisn';
+        }
+
+        if ($request->email) {
             $rules['email'] = 'email|unique:users,email';
         }
 
@@ -177,5 +180,14 @@ class StudentController extends Controller
         $student->update();
 
         return back()->with('success', 'Foto berhasil dihapus');
+    }
+
+    public function alumni()
+    {
+        $this->authorize('read student');
+
+        return view('manage.user.student.alumni', [
+            'schoolyears' => Schoolyear::orderBy('name')->get(),
+        ]);
     }
 }

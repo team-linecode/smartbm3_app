@@ -1,5 +1,9 @@
 @extends('layouts.manage', ['title' => 'Sarana'])
 
+@push('include-style')
+    @include('component.datatables-style')
+@endpush
+
 @section('content')
     <div class="card">
         <div class="card-header">
@@ -14,7 +18,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive table-card">
-                <table class="table align-middle w-100 mb-0 dt-serverside">
+                <table class="table align-middle w-100 mb-0 datatables">
                     <thead class="table-light">
                         <tr>
                             <th scope="col">No.</th>
@@ -32,7 +36,7 @@
                                 <td>{{ ucwords($facility->name) }}</td>
                                 <td>{{ $facility->brand }}</td>
                                 <td>{{ $facility->description ?? '-' }}</td>
-                                <td>0</td>
+                                <td>{{ $facility->f_total() }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <div class="edit">
@@ -63,3 +67,7 @@
         </div>
     </div>
 @stop
+
+@push('include-script')
+    @include('component.datatables-script')
+@endpush
