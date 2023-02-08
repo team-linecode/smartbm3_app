@@ -44,6 +44,7 @@ class StaffController extends Controller
             'password' => 'required|min:4|same:re-password',
             're-password' => 'required',
             'roles' => 'required|array',
+            'last_educations' => 'required|array',
             'last_education' => 'required',
             'entry_date' => 'required|date',
             'status' => 'required',
@@ -54,7 +55,11 @@ class StaffController extends Controller
         ];
 
         if ($request->nip) {
+        if ($request->nip) {
             $rules['nip'] = 'unique:users,nip';
+        }
+
+        if ($request->email) {
         }
 
         if ($request->email) {
@@ -80,6 +85,8 @@ class StaffController extends Controller
 
         $request['no_encrypt'] = $request->password;
         $request['password'] = bcrypt($request->password);
+        $request['role_id'] = 4;
+        $request['last_education_id'] = $request->last_education;
         $request['role_id'] = 4;
         $request['last_education_id'] = $request->last_education;
 
@@ -121,6 +128,7 @@ class StaffController extends Controller
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $staff->id,
             'roles' => 'required|array',
+            'roles' => 'required|array',
             'entry_date' => 'required|date',
             'status' => 'required',
             'gender' => 'required',
@@ -158,6 +166,7 @@ class StaffController extends Controller
         $request->validate($rules);
 
         $request['role_id'] = 4;
+        $request['role_id'] = 4;
         $request['last_education_id'] = $request->last_education ?? NULL;
 
         if ($request->hasFile('picture')) {
@@ -165,6 +174,7 @@ class StaffController extends Controller
             $request['image'] = $request->file('picture')->store('users', 'public');
         }
 
+        $staff->syncRoles($request->roles);
         $staff->syncRoles($request->roles);
         $staff->update($request->all());
 
