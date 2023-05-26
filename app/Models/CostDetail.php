@@ -15,6 +15,11 @@ class CostDetail extends Model
         return $this->belongsTo(Classroom::class);
     }
 
+    public function category()
+    {
+        return $this->cost->cost_category;
+    }
+
     public function group()
     {
         return $this->belongsTo(Group::class);

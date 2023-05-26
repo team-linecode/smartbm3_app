@@ -25,12 +25,23 @@ class TransactionController extends Controller
         ]);
     }
 
+    public function show(Transaction $transaction)
+    {
+        $this->authorize('read transaction');
+
+        return view('manage.finance.transaction.show', [
+            'users' => User::role('student')->get(),
+            'transaction' => $transaction
+        ]);
+    }
+
     public function create()
     {
         $this->authorize('create transaction');
 
         return view('manage.finance.transaction.create', [
             'users' => User::role('student')->get(),
+            'payment_methods' => PaymentMethod::all()
         ]);
     }
 
@@ -78,15 +89,16 @@ class TransactionController extends Controller
         return back()->with('success', 'Transaksi berhasil disimpan');
     }
 
-    public function create_detail(Transaction $transaction)
+    public function create_detail(User $user)
     {
         $this->authorize('create transaction');
 
-        return view('manage.finance.transaction.create_detail', [
-            'cost_spp' => Cost::where('schoolyear_id', $transaction->user->schoolyear_id)->whereHas('cost_category', function ($query) {
+        return view('manage.finance.transaction.create', [
+            'user' => $user,
+            'users' => User::role('student')->get(),
+            'cost_spp' => Cost::where('schoolyear_id', $user->schoolyear_id)->whereHas('cost_category', function ($query) {
                 $query->where('slug', 'spp');
             })->first(),
-            'trans' => $transaction,
             'months' => Month::all(),
             'payment_methods' => PaymentMethod::where('status', 'active')->get()
         ]);
@@ -97,47 +109,68 @@ class TransactionController extends Controller
         $this->authorize('create transaction');
 
         $request->validate([
-            'cost_id' => 'required',
-            'amount' => 'required'
+            'user' => 'required',
+            'note' => 'max:255',
+            'status' => 'required',
+            'date' => 'required|date',
+            'payment_method' => 'required'
         ]);
 
-        // membuat variabel yang dibutuhkan
-        $cost = Cost::find($request->cost_id);
-        $transaction = Transaction::findOrFail($request->transaction_id);
-
-        // modify request data
-        $request['amount'] = cleanCurrency($request->amount);
-        $request['date'] = $request->date;
-        $request['transaction_id'] = $request->transaction_id;
-        // jika cost category sama dengan gedung maka isi sesuai gelombangnya
-        if ($cost->cost_category->slug == 'gedung') {
-            $request['cost_detail_id'] = $cost->get_detail_by_group($transaction->user->group_id)->id;
-        } else if ($cost->cost_category->slug == 'lain-lain') {
-            $request['cost_detail_id'] = $cost->details->first()->cost_id;
+        if (!$request->costs) {
+            return back()->with('error', 'Silahkan pilih pembayaran');
         }
 
-        // check transaction detail
-        $check_trx_detail = TransactionDetail::where('cost_detail_id', $request->cost_detail_id)
-            ->where('transaction_id', $request->transaction_id)
-            ->first();
-        // jika detail transaksi ada dan pembayaran sama dengan 'spp'
-        if ($check_trx_detail && $cost->cost_category->slug == 'spp') {
-            // jika tanggalnya sama maka transaksi tidak dapat dibuat
-            if (date('F Y', strtotime($request->date)) == date('F Y', strtotime($check_trx_detail->date))) {
-                return back()->with('alert-error', 'Data transaksi sudah ada');
+        // get user
+        $user = User::where('username', $request->user)->firstOrFail();
+        // end get user
+
+        // create transaction
+        $current_trx = !is_null($trx = Transaction::latest()->first()) ? $trx->invoice_no : 0;
+        $trx = Transaction::create([
+            'invoice_no' => (str_pad((int) $current_trx + 1, 4, '0', STR_PAD_LEFT)),
+            'invoice_id' => 'BMM' . rand(11111111, 99999999),
+            'status' => $request->status,
+            'date' => $request->date,
+            'note' => $request->note ?? null,
+            'user_id' => $user->id,
+            'payment_method_id' => $request->payment_method ?? null,
+        ]);
+        // end create transaction
+
+        // create transaction detail
+        $total = 0;
+        foreach ($request->costs as $i => $cost) {
+            // declare variable
+            $cost_category = $i;
+
+            foreach ($cost as $j => $detail) {
+                if ($cost_category == 'ujian' || $cost_category == 'daftar-ulang' || $cost_category == 'gedung' || $cost_category == 'lain-lain') {
+                    $total += cleanCurrency($detail['amount']);
+                    TransactionDetail::create([
+                        'amount' => cleanCurrency($detail['amount']),
+                        'cost_detail_id' => $detail['cost_detail_id'],
+                        'transaction_id' => $trx->id
+                    ]);
+                }
+
+                if ($cost_category == 'spp') {
+                    foreach ($detail as $month => $d) {
+                        $total += cleanCurrency($d['amount']);
+                        TransactionDetail::create([
+                            'amount' => cleanCurrency($d['amount']),
+                            'month' => getSPPdate($j, $user->schoolyear_id, $month),
+                            'cost_detail_id' => $d['cost_detail_id'],
+                            'transaction_id' => $trx->id
+                        ]);
+                    }
+                }
             }
-        } else if ($check_trx_detail) {
-            return back()->with('alert-error', 'Data transaksi sudah ada');
         }
+        $trx->total = $total;
+        $trx->update();
+        // end create transaction detail
 
-        // update transaction total
-        $transaction = Transaction::find($request->transaction_id);
-        $transaction->total += $request->amount;
-        $transaction->update();
-
-        TransactionDetail::create($request->all());
-
-        return back()->with('alert-success', 'Data transaksi berhasil disimpan');
+        return back()->with('success', 'Transaksi berhasil disimpan');
     }
 
     public function detail_destroy(TransactionDetail $transaction_detail)
@@ -164,7 +197,24 @@ class TransactionController extends Controller
             ->with('expertise')
             ->with('schoolyear')
             ->first();
-        return response()->json($user);
+
+        $cost_options = '<option value="" hidden>Pilih Biaya</option>';
+
+        foreach ($user->schoolyear->costs as $cost) {
+            $cost_options .= '<option value="' . $cost->id . '">' . $cost->name . '</option>';
+        }
+
+        return response()->json([
+            'user' => $user,
+            'costs' => $cost_options
+        ]);
+    }
+
+    public function get_cost_schoolyear(Request $request)
+    {
+        $this->authorize('read transaction');
+
+        return response()->json(['status' => 200]);
     }
 
     public function get_cost_detail(Request $request)

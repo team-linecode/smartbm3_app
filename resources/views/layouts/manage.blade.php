@@ -17,6 +17,9 @@
         href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
 
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="/vendor/manage/assets/libs/magnific-popup/dist/magnific-popup.css">
+
     @stack('include-style')
 
     <!-- Layout config Js -->
@@ -46,19 +49,19 @@
                         <div class="navbar-brand-box horizontal-logo">
                             <a href="{{ route('app.dashboard.index') }}" class="logo logo-dark">
                                 <span class="logo-sm">
-                                    <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="22">
+                                    <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="40">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="{{ Storage::url('logo/logo-dark.png') }}" alt="" height="17">
+                                    <img src="{{ Storage::url('logo/logo-dark.png') }}" alt="" height="30">
                                 </span>
                             </a>
 
                             <a href="{{ route('app.dashboard.index') }}" class="logo logo-light">
                                 <span class="logo-sm">
-                                    <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="22">
+                                    <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="40">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="{{ Storage::url('logo/logo-light.png') }}" alt="" height="17">
+                                    <img src="{{ Storage::url('logo/logo-light.png') }}" alt="" height="30">
                                 </span>
                             </a>
                         </div>
@@ -162,19 +165,19 @@
                 <!-- Dark Logo-->
                 <a href="{{ route('app.dashboard.index') }}" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="22">
+                        <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="40">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ Storage::url('logo/logo-dark.png') }}" alt="" height="17">
+                        <img src="{{ Storage::url('logo/logo-dark.png') }}" alt="" height="30">
                     </span>
                 </a>
                 <!-- Light Logo-->
                 <a href="{{ route('app.dashboard.index') }}" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="22">
+                        <img src="{{ Storage::url('icon/favicon.png') }}" alt="" height="40">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ Storage::url('logo/logo-light.png') }}" alt="" height="17">
+                        <img src="{{ Storage::url('logo/logo-light.png') }}" alt="" height="30">
                     </span>
                 </a>
                 <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
@@ -395,6 +398,24 @@
                             <li class="menu-title"><span data-key="t-menu">Keuangan</span></li>
                         @endif
 
+                        @can('student read transaction')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.my.transaction*') }}"
+                                    href="{{ route('app.transaction.create') }}">
+                                    <i class="ri-exchange-line"></i> <span data-key="t-landing">Pembayaran</span>
+                                </a>
+                            </li>
+                        @endcan
+
+                        @can('student read transaction')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app/my/transaction*']) }}"
+                                    href="{{ route('app.transaction.index') }}">
+                                    <i class="ri-exchange-line"></i> <span data-key="t-landing">Riwayat Pembayaran</span>
+                                </a>
+                            </li>
+                        @endcan
+
                         @can('create transaction')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active('app.finance.transaction*') }}"
@@ -449,6 +470,26 @@
                                         </li>
                                     </ul>
                                 </div>
+                            </li>
+                        @endcan
+
+                        @if (auth()->user()->hasAnyPermission(['read loan member', 'read loan']))
+                            <li class="menu-title"><span data-key="t-menu">Peminjaman</span></li>
+                        @endif
+                        @can('read loan member')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.loan_member*']) }}"
+                                    href="{{ route('app.loan_member.index') }}">
+                                    <i class="ri-group-line"></i> <span data-key="t-landing">Anggota</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('read loan')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.loan.*']) }}"
+                                    href="{{ route('app.loan.index') }}">
+                                    <i class="ri-key-line"></i> <span data-key="t-landing">Peminjaman</span>
+                                </a>
                             </li>
                         @endcan
 
@@ -606,6 +647,9 @@
     {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
     {{-- <script src="/vendor/manage/assets/js/pages/select2.init.js"></script> --}}
 
+    <!-- Magnific Popup core JS file -->
+    <script src="/vendor/manage/assets/libs/magnific-popup/dist/jquery.magnific-popup.min.js"></script>
+
     <!-- Function js -->
     <script src="/vendor/manage/assets/js/function.js"></script>
 
@@ -614,24 +658,26 @@
 
     <!-- App js -->
     <script src="/vendor/manage/assets/js/app.js"></script>
+    <script src="{{ mix('js/app.js') }}"></script>
 
     <script>
         // select2
         $(".select2").select2({
             theme: "bootstrap-5",
+            // dropdownParent: $(".modal")
         });
-        
-        $(document).on("keypress",".select2",function(event){
+
+        $(document).on("keypress", ".select2", function(event) {
             if (event.ctrlKey || event.metaKey) {
-                var id =$(this).parents("div[class*='select2-container']").attr("id").replace("s2id_","");
-                var element =$("#"+id);
-                if (event.which == 97){
+                var id = $(this).parents("div[class*='select2-container']").attr("id").replace("s2id_", "");
+                var element = $("#" + id);
+                if (event.which == 97) {
                     var selected = [];
-                    element.find("option").each(function(i,e){
-                        selected[selected.length]=$(e).attr("value");
+                    element.find("option").each(function(i, e) {
+                        selected[selected.length] = $(e).attr("value");
                     });
                     element.select2("val", selected);
-                } else if (event.which == 100){
+                } else if (event.which == 100) {
                     element.select2("val", "");
                 }
             }

@@ -18,7 +18,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive table-card">
-                <table class="table align-middle w-100 mb-0 datatables">
+                <table class="table align-middle w-100 mb-0 buttons-datatables">
                     <thead class="table-light">
                         <tr>
                             <th scope="col">No.</th>

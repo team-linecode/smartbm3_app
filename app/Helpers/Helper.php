@@ -3,6 +3,7 @@
 use App\Models\LastEducation;
 use App\Models\PenaltyCategory;
 use App\Models\PenaltyPoint;
+use App\Models\Schoolyear;
 use App\Models\User;
 
 setlocale(LC_ALL, 'IND');
@@ -331,19 +332,19 @@ function monthID(int $month)
         case '7':
             return "Juli";
             break;
-        case '7':
+        case '8':
             return "Agustus";
             break;
-        case '7':
+        case '9':
             return "September";
             break;
-        case '7':
+        case '10':
             return "Oktober";
             break;
-        case '7':
+        case '11':
             return "November";
             break;
-        case '7':
+        case '12':
             return "Desember";
             break;
         default:
@@ -354,12 +355,42 @@ function monthID(int $month)
 
 function status_attend($s)
 {
-    if($s == 's'){
+    if ($s == 's') {
         $r = 'Sakit';
-    }elseif($s == 'i'){
+    } elseif ($s == 'i') {
         $r = 'Izin';
-    }elseif($s == 'a'){
+    } elseif ($s == 'a') {
         $r = 'Alfa';
     }
     return $r;
+}
+
+function getSPPdate($classroom_id, $schoolyear_id, $month)
+{
+    if ($month < 10) {
+        $month = '0' . $month;
+    }
+
+    $schoolyear = Schoolyear::findOrFail($schoolyear_id);
+    $explode_schoolyear = explode('-', $schoolyear->slug);
+
+    $years = range($explode_schoolyear[0], $explode_schoolyear[1]);
+    $july_to_december = ['7', '8', '9', '10', '11', '12'];
+    $january_to_june = ['1', '2', '3', '4', '5', '6'];
+
+    if ($classroom_id == '1' && in_array($month, $july_to_december)) {
+        return $years[0] . '-' . $month;
+    } else if ($classroom_id == '1' && in_array($month, $january_to_june)) {
+        return $years[1] . '-' . $month;
+    } else if ($classroom_id == '2' && in_array($month, $july_to_december)) {
+        return $years[1] . '-' . $month;
+    } else if ($classroom_id == '2' && in_array($month, $january_to_june)) {
+        return $years[2] . '-' . $month;
+    } else if ($classroom_id == '3' && in_array($month, $july_to_december)) {
+        return $years[2] . '-' . $month;
+    } else if ($classroom_id == '3' && in_array($month, $january_to_june)) {
+        return $years[3] . '-' . $month;
+    } else {
+        return "1997-01";
+    }
 }

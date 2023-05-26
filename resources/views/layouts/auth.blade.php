@@ -47,9 +47,9 @@
                     <div class="col-lg-12">
                         <div class="text-center mt-sm-5 mb-4 text-white-50">
                             <div>
-                                <a href="/vendor/manage/index.html" class="d-inline-block auth-logo">
-                                    <img src="/vendor/manage/assets/images/logo-light.png" alt=""
-                                        height="20">
+                                <a href="{{ route('landing.ppdb') }}" class="d-inline-block auth-logo">
+                                    <img src="{{ Storage::url('logo/logo-light.png') }}" alt=""
+                                        height="40">
                                 </a>
                             </div>
                             <p class="mt-3 fs-15 fw-medium">Managed by SMK BINA MANDIRI MULTIMEDIA</p>

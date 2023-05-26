@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TransactionDetail extends Model
 {
     use HasFactory;
-    protected $fillable = ['amount', 'date', 'cost_detail_id', 'transaction_id'];
+    protected $fillable = ['amount', 'month', 'cost_detail_id', 'transaction_id'];
 
     public function cost_detail()
     {

@@ -113,7 +113,7 @@ class User extends Authenticatable
     {
         return ($this->alumni == 0
             ? ($alias ? $this->classroom->alias . ' ' . $this->expertise->alias : $this->classroom->name . ' ' . $this->expertise->name)
-            : '<span class="text-warning">Alumni</span>');
+            : 'Alumni');
     }
 
     public function total_all_cost()

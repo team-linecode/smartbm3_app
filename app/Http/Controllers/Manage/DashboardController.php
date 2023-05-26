@@ -7,20 +7,23 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserPoint;
 use App\Models\PenaltyPoint;
-use App\Http\Controllers\Controller;
 use App\Models\PenaltyCategory;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->hasPermissionTo('dashboard student')) {
-            $point = auth()->user()->total_points();
+        $user = User::findOrFail(auth()->user()->id);
+
+        if ($user->hasPermissionTo('dashboard student')) {
+            $point = $user->total_points();
             return view('manage.dashboard.dashboard-student', [
                 'point' => $point,
-                'user_points' => UserPoint::where('user_id', auth()->user()->id)->latest()->get()
+                'user_points' => UserPoint::where('user_id', $user->id)->latest()->get()
             ]);
-        } else if (auth()->user()->hasPermissionTo('dashboard gac')) {
+        } else if ($user->hasPermissionTo('dashboard gac')) {
             $chart = [];
 
             // mengambil data dari url (method: get)
@@ -71,7 +74,7 @@ class DashboardController extends Controller
                 'penalty_points' => PenaltyPoint::all(),
                 'chart' => $chart
             ]);
-        } else if (auth()->user()->hasPermissionTo('dashboard gatekeeper')) {
+        } else if ($user->hasPermissionTo('dashboard gatekeeper')) {
             return view('manage.dashboard.dashboard-gatekeeper');
         } else {
             return view('manage.dashboard.index');

@@ -165,4 +165,61 @@ class CostController extends Controller
 
         return redirect(route('app.finance.cost.show', $schoolyear->slug))->with('success', 'Data berhasil dihapus');
     }
+
+    public function _get_roles(Request $request)
+    {
+        $schoolyear = Schoolyear::where('slug', $request->schoolyear)->first();
+        $schoolyears = Schoolyear::where('slug', '!=', $schoolyear->slug)->get();
+
+        $options1 = '<option value="' . $schoolyear->slug . '">' . $schoolyear->name . '</option>';
+        $options2 = '';
+
+        foreach ($schoolyears as $sch_year) {
+            $options2 .= '<option value="' . $sch_year->slug . '">' . $sch_year->name . '</option>';
+        }
+
+        if ($schoolyear) {
+            return response()->json([
+                'code' => 200,
+                'data' => [
+                    'options1' => $options1,
+                    'options2' => $options2
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'code' => 404,
+                'data' => []
+            ]);
+        }
+
+        return "ok";
+    }
+
+    public function duplicate(Request $request)
+    {
+        $schoolyear = Schoolyear::where('slug', $request->schoolyear)->firstOrFail();
+        $destination = Schoolyear::where('slug', $request->destination)->firstOrFail();
+
+        foreach ($schoolyear->costs as $cost) {
+            $create_cost = Cost::create([
+                'name' => $cost->name,
+                'slug' => Str::slug($cost->name),
+                'schoolyear_id' => $destination->id,
+                'cost_category_id' => $cost->cost_category_id
+            ]);
+
+            foreach ($cost->details as $cost_detail) {
+                CostDetail::create([
+                    'amount' => $cost_detail->amount,
+                    'cost_id' => $create_cost->id,
+                    'classroom_id' => $cost_detail->classroom_id,
+                    'group_id' => $cost_detail->group_id,
+                    'semester_id' => $cost_detail->semester_id
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Data berhasil di duplikat');
+    }
 }

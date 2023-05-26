@@ -23,6 +23,8 @@ class CreateTransactionsTable extends Migration
             $table->string('note')->nullable();
             $table->foreignId('user_id');
             $table->foreignId('payment_method_id')->nullable();
+            $table->integer('bill_id')->nullable();
+            $table->string('bill_url')->nullable();
             $table->timestamps();
         });
     }

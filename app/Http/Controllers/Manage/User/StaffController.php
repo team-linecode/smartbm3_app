@@ -55,7 +55,6 @@ class StaffController extends Controller
         ];
 
         if ($request->nip) {
-        if ($request->nip) {
             $rules['nip'] = 'unique:users,nip';
         }
 

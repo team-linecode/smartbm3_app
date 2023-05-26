@@ -11,19 +11,25 @@ function getDetailUser(url, data) {
         success: (res) => {
             stopLoading();
 
-            $("#displayName").html(res.name);
-            res.nisn != null
-                ? $("#displayNis").html(res.nisn)
+            $("#displayName").html(res.user.name);
+            res.user.nisn != null
+                ? $("#displayNis").html(res.user.nisn)
                 : $("#displayNis").html("___");
-            $("#displayClass").html(res.classroom.alias);
-            $("#displayExpertise").html(res.expertise.alias);
-            $("#displaySchoolyear").html(res.schoolyear.name);
+            $("#displayClass").html(res.user.classroom.alias);
+            $("#displayExpertise").html(res.user.expertise.alias);
+            $("#displaySchoolyear").html(res.user.schoolyear.name);
             $("#btnNext").removeClass("disabled");
+
+            $("#selectCost").html(res.costs)
         },
     });
 }
 
-function getCostDetail(url, data) {
+function getCostDetail(obj, url, data) {
+    let costDetail = obj.parent().parent().next().find('.selectCostDetail');
+    let date = obj.parent().parent().next().next().find('.amount');
+    let amount = obj.parent().parent().next().next().next().find('.amount');
+
     $.ajax({
         url: url,
         data: data,
@@ -31,29 +37,31 @@ function getCostDetail(url, data) {
         dataType: "json",
         beforeSend: () => {
             showLoading();
-            $('#selectCostDetail').html('');
-            $("#amount").val('');
+            costDetail.html('');
+            amount.val('');
         },
         success: (res) => {
             stopLoading();
 
-            $("#selectCostDetail").removeAttr("disabled");
+            costDetail.removeAttr("disabled");
 
             if (res.cost_category == "gedung" || res.cost_category == "ujian") {
-                $("input[name=date]").attr("disabled", "disabled").val('');
+                date.attr("disabled", "disabled").val('');
             }
 
             if (res.cost_category == "lain-lain" || res.cost_category == "gedung") {
-                $('#selectCostDetail').attr("disabled", "disabled");
-                $('#amount').removeAttr("disabled");
+                costDetail.attr("disabled", "disabled");
+                amount.removeAttr("disabled");
             } else {
-                $("#selectCostDetail").html(res.el);
+                costDetail.html(res.el);
             }
         },
     });
 }
 
-function getCostAmount(url, data) {
+function getCostAmount(obj, url, data) {
+    let sibling = obj.parent().parent().next().next().find('.amount')
+
     $.ajax({
         url: url,
         data: data,
@@ -65,8 +73,8 @@ function getCostAmount(url, data) {
         success: (res) => {
             stopLoading();
 
-            $("#amount").removeAttr("disabled");
-            $("#amount").val(res.amount);
+            sibling.removeAttr("disabled");
+            sibling.val(res.amount);
         },
     });
 }

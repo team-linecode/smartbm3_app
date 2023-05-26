@@ -4,12 +4,15 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Landing\LandingPPDBController;
 use App\Http\Controllers\Manage\BillController;
 use App\Http\Controllers\Manage\CostController;
 use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\ReportController;
 use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
+use App\Http\Controllers\Manage\LoanManage\LoanController;
+use App\Http\Controllers\Manage\LoanManage\LoanMemberController;
 use App\Http\Controllers\Manage\PermissionController;
 use App\Http\Controllers\Manage\User\StaffController;
 use App\Http\Controllers\Manage\Osis\AbsentController;
@@ -35,6 +38,7 @@ use App\Http\Controllers\Manage\Point\PenaltyPointController;
 use App\Http\Controllers\Manage\Sarpras\SubmissionController;
 use App\Http\Controllers\Manage\Salary\LastEducationController;
 use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
+use App\Http\Controllers\Manage\StudentTransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,7 +132,7 @@ use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
 //             'expertise_id' => $expertise,
 //             'schoolyear_id' => '7'
 //         ]);
-//         $user->assignRole('student');
+        // $user->assignRole('student');
 //     }
 // });
 
@@ -137,8 +141,12 @@ Route::get('/cron/6cd6ba9b-8162-47df-b90b-c3aea03442fc', function () {
     Log::info("Cron dieksekusi dari server lain");
 });
 
+// PPDB
+Route::get('/ppdb', [LandingPPDBController::class, 'index'])->name('landing.ppdb');
+// Auth
 Route::get('/', [AuthController::class, 'login'])->name('auth.login');
-Route::post('/', [AuthController::class, 'post_login'])->name('auth.post_login');
+Route::get('/auth/login', [AuthController::class, 'login'])->name('auth.login');
+Route::post('/auth/login', [AuthController::class, 'post_login'])->name('auth.post_login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::get('/forgot', [AuthController::class, 'forgot'])->name('auth.forgot');
 Route::post('/forgot', [AuthController::class, 'post_forgot'])->name('auth.forgot.post');
@@ -193,15 +201,24 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::resource('/salary/position', PositionController::class)->except('show');
     Route::delete('/salary/position/{position:slug}/{user}/destroy_user', [PositionController::class, 'destroy_user'])->name('position.destroy_user');
 
+    // Student -> Transaction
+    Route::resource('/my/transaction', StudentTransactionController::class)->except('show');
+    Route::delete('/my/transaction/item/{transaction_item}/destroy', [StudentTransactionController::class, 'delete_item'])->name('transaction.delete_item');
+    Route::post('/my/transaction/payment', [StudentTransactionController::class, 'payment'])->name('transaction.payment');
+    Route::post('/my/transaction/payment/confirm', [StudentTransactionController::class, 'payment'])->name('transaction.payment.confirm');
+
     // Finance -> Transaction
     Route::get('/finance/transaction', [TransactionController::class, 'index'])->name('finance.transaction.index');
     Route::get('/finance/transaction/create', [TransactionController::class, 'create'])->name('finance.transaction.create');
-    Route::post('/finance/transaction/create', [TransactionController::class, 'store'])->name('finance.transaction.store');
+    Route::get('/finance/transaction/create/{user:username}', [TransactionController::class, 'create_detail'])->name('finance.transaction.create_detail');
+    Route::get('/finance/transaction/{transaction:invoice_id}/detail', [TransactionController::class, 'show'])->name('finance.transaction.show');
+    Route::post('/finance/transaction/store', [TransactionController::class, 'store'])->name('finance.transaction.store');
     Route::post('/finance/transaction/create/save_transaction', [TransactionController::class, 'save_transaction'])->name('finance.transaction.save_transaction');
     Route::put('/finance/transaction/create/{transaction}/update_transaction', [TransactionController::class, 'update_transaction'])->name('finance.transaction.update_transaction');
-    Route::get('/finance/transaction/create_detail/{transaction}', [TransactionController::class, 'create_detail'])->name('finance.transaction.create_detail');
+    // Route::get('/finance/transaction/create_detail/{transaction}', [TransactionController::class, 'create_detail'])->name('finance.transaction.create_detail');
     Route::delete('/finance/transaction/create_detail/{transaction_detail}/destroy', [TransactionController::class, 'detail_destroy'])->name('finance.transaction.detail.destroy');
     Route::post('/finance/transaction/get_user', [TransactionController::class, 'get_user'])->name('finance.transaction.get_user');
+    Route::post('/finance/transaction/get_cost_schoolyear', [TransactionController::class, 'get_cost_schoolyear'])->name('finance.transaction.get_cost_schoolyear');
     Route::post('/finance/transaction/get_cost_detail', [TransactionController::class, 'get_cost_detail'])->name('finance.transaction.get_cost_detail');
     Route::post('/finance/transaction/get_cost_amount', [TransactionController::class, 'get_cost_amount'])->name('finance.transaction.get_cost_amount');
     Route::post('/finance/transaction/get_account_number', [TransactionController::class, 'get_account_number'])->name('finance.transaction.get_account_number');
@@ -222,6 +239,8 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::get('/finance/cost/edit/ta/{schoolyear:slug}/biaya/{cost:slug}', [CostController::class, 'edit'])->name('finance.cost.edit');
     Route::put('/finance/cost/edit/ta/{schoolyear:slug}/biaya/{cost:slug}', [CostController::class, 'update'])->name('finance.cost.update');
     Route::delete('/finance/cost/ta/{schoolyear:slug}/biaya/{cost:slug}/destroy', [CostController::class, 'destroy'])->name('finance.cost.destroy');
+    Route::post('/finance/cost/get_roles', [CostController::class, '_get_roles'])->name('finance.cost._get_roles');
+    Route::post('/finance/cost/duplicate', [CostController::class, 'duplicate'])->name('finance.cost.duplicate');
 
     // Finance -> Report -> Transaction
     Route::get('/finance/report/{type}', [ReportController::class, 'index'])->name('finance.report.index');
@@ -283,6 +302,16 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::post('/picket_report/export_monthly', [PicketReportController::class, 'export_monthly'])->name('picket_report.export_monthly');
     // Student Apprenticeship
     Route::resource('/student_apprenticeship', StudentApprenticeshipController::class)->except('show');
+
+    // Lab Manage
+    // Member
+    Route::resource('/loan_member', LoanMemberController::class)->except('show');
+    // Loan
+    Route::resource('/loan', LoanController::class)->except('show');
+    Route::post('/loan/find_members_by_scan', [LoanController::class, 'find_members_by_scan'])->name('loan.find_members_by_scan');
+    Route::post('/loan/find_users_by_class', [LoanController::class, 'find_users_by_class'])->name('loan.find_users_by_class');
+    Route::post('/loan/find_facilities_by_room', [LoanController::class, 'find_facilities_by_room'])->name('loan.find_facilities_by_room');
+    Route::post('/loan/get_detail', [LoanController::class, 'get_detail'])->name('loan.get_detail');
 });
 // End Route
 

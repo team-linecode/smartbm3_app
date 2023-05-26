@@ -34,7 +34,7 @@
                         <label class="form-label">Tipe Pendaftaran</label>
                     </div>
                     <div class="col-lg-8">
-                        <p>{{ $user->group->alias }}</p>
+                        <p>{{ $user->group->alias ?? '' }}</p>
                     </div>
                 </div>
                 <div class="row">
