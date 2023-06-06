@@ -36,12 +36,10 @@ function cb_old($value, $old_value, $edit = false, $edited_value = null)
 
 function select_old($value, $old_value = null, $edit = false, $edited_value = null)
 {
-    if (!is_null($old_value)) {
+    if (!$edit) {
         return ($value == $old_value ? 'selected' : '');
     } else {
-        if ($edit) {
-            return ($value == $edited_value ? 'selected' : '');
-        }
+        return ($value == $edited_value ? 'selected' : '');
     }
 }
 

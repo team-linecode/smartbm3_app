@@ -1,33 +1,32 @@
 <?php
 
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use GuzzleHttp\Exception\RequestException;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Landing\LandingPPDBController;
 use App\Http\Controllers\Manage\BillController;
 use App\Http\Controllers\Manage\CostController;
 use App\Http\Controllers\Manage\RoleController;
 use App\Http\Controllers\Manage\ReportController;
 use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
-use App\Http\Controllers\Manage\LoanManage\LoanController;
-use App\Http\Controllers\Manage\LoanManage\LoanMemberController;
 use App\Http\Controllers\Manage\PermissionController;
 use App\Http\Controllers\Manage\User\StaffController;
 use App\Http\Controllers\Manage\Osis\AbsentController;
-use App\Http\Controllers\Manage\Picket\PicketAbsentController;
-use App\Http\Controllers\Manage\Picket\PicketReportController;
-use App\Http\Controllers\Manage\Picket\PicketScheduleController;
-use App\Http\Controllers\Manage\Picket\StudentApprenticeshipController;
-use App\Http\Controllers\Manage\Picket\TeacherAbsentController;
 use App\Http\Controllers\Manage\TransactionController;
+use App\Http\Controllers\Landing\LandingPPDBController;
+use App\Http\Controllers\Manage\AchievementController;
 use App\Http\Controllers\Manage\Sarpras\RoomController;
 use App\Http\Controllers\Manage\User\StudentController;
 use App\Http\Controllers\Manage\User\TeacherController;
 use App\Http\Controllers\Manage\Salary\SalaryController;
+use App\Http\Controllers\Manage\LoanManage\LoanController;
+use App\Http\Controllers\Manage\Operator\LetterController;
 use App\Http\Controllers\Manage\Point\UserPointController;
 use App\Http\Controllers\Manage\Salary\PositionController;
+use App\Http\Controllers\Manage\Sarpras\ServiceController;
 use App\Http\Controllers\Manage\Salary\AllowanceController;
 use App\Http\Controllers\Manage\Salary\SalaryCutController;
 use App\Http\Controllers\Manage\Sarpras\BuildingController;
@@ -36,9 +35,16 @@ use App\Http\Controllers\Manage\Point\ReportPointController;
 use App\Http\Controllers\Manage\Salary\SalarySlipController;
 use App\Http\Controllers\Manage\Point\PenaltyPointController;
 use App\Http\Controllers\Manage\Sarpras\SubmissionController;
-use App\Http\Controllers\Manage\Salary\LastEducationController;
-use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
 use App\Http\Controllers\Manage\StudentTransactionController;
+use App\Http\Controllers\Manage\Picket\PicketAbsentController;
+use App\Http\Controllers\Manage\Picket\PicketReportController;
+use App\Http\Controllers\Manage\Picket\TeacherAbsentController;
+use App\Http\Controllers\Manage\Salary\LastEducationController;
+use App\Http\Controllers\Manage\LoanManage\LoanMemberController;
+use App\Http\Controllers\Manage\Picket\PicketScheduleController;
+use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
+use App\Http\Controllers\Manage\Operator\LetterCategoryController;
+use App\Http\Controllers\Manage\Picket\StudentApprenticeshipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -132,7 +138,7 @@ use App\Http\Controllers\Manage\StudentTransactionController;
 //             'expertise_id' => $expertise,
 //             'schoolyear_id' => '7'
 //         ]);
-        // $user->assignRole('student');
+// $user->assignRole('student');
 //     }
 // });
 
@@ -205,7 +211,6 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::resource('/my/transaction', StudentTransactionController::class)->except('show');
     Route::delete('/my/transaction/item/{transaction_item}/destroy', [StudentTransactionController::class, 'delete_item'])->name('transaction.delete_item');
     Route::post('/my/transaction/payment', [StudentTransactionController::class, 'payment'])->name('transaction.payment');
-    Route::post('/my/transaction/payment/confirm', [StudentTransactionController::class, 'payment'])->name('transaction.payment.confirm');
 
     // Finance -> Transaction
     Route::get('/finance/transaction', [TransactionController::class, 'index'])->name('finance.transaction.index');
@@ -270,6 +275,9 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::post('/sarpras/submission/plus_input', [SubmissionController::class, 'plus_input'])->name('submission.plus_input');
     Route::post('/sarpras/submission/minus_input', [SubmissionController::class, 'minus_input'])->name('submission.minus_input');
     Route::get('/sarpras/submission/invoice/{submission}', [SubmissionController::class, 'invoice'])->name('submission.invoice');
+    // Service
+    Route::resource('/sarpras/service', ServiceController::class)->except('show');
+    Route::post('/sarpras/service/get_facility', [ServiceController::class, '_get_facility'])->name('service._get_facility');
 
     // Penalty Point
     Route::resource('/point/penalty_point', PenaltyPointController::class);
@@ -303,6 +311,12 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Student Apprenticeship
     Route::resource('/student_apprenticeship', StudentApprenticeshipController::class)->except('show');
 
+    // Operator
+    // Letter
+    Route::resource('/operator/letter', LetterController::class)->except('show');
+    // LetterCategory
+    Route::resource('/operator/letter_category', LetterCategoryController::class)->except('show');
+
     // Lab Manage
     // Member
     Route::resource('/loan_member', LoanMemberController::class)->except('show');
@@ -312,8 +326,14 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::post('/loan/find_users_by_class', [LoanController::class, 'find_users_by_class'])->name('loan.find_users_by_class');
     Route::post('/loan/find_facilities_by_room', [LoanController::class, 'find_facilities_by_room'])->name('loan.find_facilities_by_room');
     Route::post('/loan/get_detail', [LoanController::class, 'get_detail'])->name('loan.get_detail');
+
+    // Achievment
+    Route::resource('achievement', AchievementController::class);
+    Route::get('/achievement/attachment/{achievement_attachment}/destroy', [AchievementController::class, 'attachment_destroy'])->name('achievement.attachment.destroy');
 });
 // End Route
+
+Route::get('/app/my/transaction/payment/confirm', [StudentTransactionController::class, 'confirm'])->name('app.transaction.payment.confirm');
 
 // Route [auth]
 Route::group(['middleware' => ['auth']], function () {

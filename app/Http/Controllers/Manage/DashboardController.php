@@ -10,6 +10,7 @@ use App\Models\PenaltyPoint;
 use App\Models\PenaltyCategory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\StudentAttend;
 
 class DashboardController extends Controller
 {
@@ -21,7 +22,10 @@ class DashboardController extends Controller
             $point = $user->total_points();
             return view('manage.dashboard.dashboard-student', [
                 'point' => $point,
-                'user_points' => UserPoint::where('user_id', $user->id)->latest()->get()
+                'user_points' => UserPoint::where('user_id', $user->id)->latest()->get(),
+                's' => StudentAttend::where('user_id', $user->id)->where('status', 's')->count(),
+                'i' => StudentAttend::where('user_id', $user->id)->where('status', 'i')->count(),
+                'a' => StudentAttend::where('user_id', $user->id)->where('status', 'a')->count()
             ]);
         } else if ($user->hasPermissionTo('dashboard gac')) {
             $chart = [];

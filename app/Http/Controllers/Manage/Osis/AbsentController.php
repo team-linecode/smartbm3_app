@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manage\Osis;
 
 use Carbon\Carbon;
 use App\Models\User;
+use GuzzleHttp\Client;
 use App\Models\UserPoint;
 use App\Models\PenaltyPoint;
 use Illuminate\Http\Request;
@@ -12,6 +13,15 @@ use App\Http\Controllers\Controller;
 
 class AbsentController extends Controller
 {
+    private $secret_key;
+    private $wagate_apikey;
+
+    public function __construct()
+    {
+        $this->secret_key = env('FLIP_SECRET_KEY');
+        $this->wagate_apikey = env('WAGATE_APIKEY');
+    }
+
     public function index()
     {
         return view('manage.osis.absent.index', [
@@ -25,7 +35,7 @@ class AbsentController extends Controller
 
         return view('manage.osis.absent.create', [
             'penalty_point' => PenaltyPoint::where('code', 'C.1')->first(),
-            'users' => User::role('student')->whereHas('schoolyear', function($query) {
+            'users' => User::role('student')->whereHas('schoolyear', function ($query) {
                 $query->where('graduated', '0');
             })->get()
         ]);
@@ -67,8 +77,8 @@ class AbsentController extends Controller
                 $insertPoints[$i]['user_id'] = $user;
                 $insertPoints[$i]['type'] = $request->type;
                 $insertPoints[$i]['date'] = $request->date;
-                $insertPoints[$i]['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
-                $insertPoints[$i]['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');
+                $insertPoints[$i]['created_at'] = date('Y-m-d H:i:s', strtotime($request->date));
+                $insertPoints[$i]['updated_at'] = date('Y-m-d H:i:s', strtotime($request->date));
 
                 // jika tipenya penambahan poin maka isi variabel penalty_id dengan pelanggaran yang dipilih
                 // mengosongkan keterangan dan juga poin
@@ -83,6 +93,8 @@ class AbsentController extends Controller
                     $insertPoints[$i]['point'] = null;
 
                     $point = PenaltyPoint::find($request->penalty_point)->point;
+
+                    $this->sendWa($model_user, $request->date, '6285156465410');
                 } else if ($request->type == 'minus') {
                     $insertPoints[$i]['description'] = $request->description;
                     $insertPoints[$i]['point'] = $request->point;
@@ -120,5 +132,32 @@ class AbsentController extends Controller
 
             return redirect()->route('app.absent.create')->with('success', 'Data berhasil ditambahkan');
         }
+    }
+
+    public function sendWa($user, $date, $receiver)
+    {
+        // Notifikasi Whatsapp
+        $url = 'https://wagate.biz.id/app/api/send-message';
+        $apiKey = $this->wagate_apikey;
+        $sender = '62881026026420';
+        $receiver = $receiver;
+        $message = "Laporan keterlambatan siswa\n\n";
+        $message .= "Kami informasikan bahwa siswa " . $user->name . " terlambat masuk sekolah pada pukul *" . date('H:i', strtotime($date)) . "*\n\n";
+        $message .= "cc: Guru Piket SMK BM3";
+
+        $client = new Client();
+        $responseWa = $client->request('GET', $url, [
+            'query' => [
+                'apikey' => $apiKey,
+                'sender' => $sender,
+                'receiver' => $receiver,
+                'message' => $message,
+            ],
+        ]);
+
+        if ($responseWa->getStatusCode() != 200) {
+            $responseWa;
+        }
+        // End Notifikasi WhatsApp
     }
 }

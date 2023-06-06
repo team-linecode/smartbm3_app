@@ -10,21 +10,25 @@ use Illuminate\Http\Request;
 use App\Models\TransactionItem;
 use App\Models\TransactionDetail;
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Exception\RequestException;
 
 class StudentTransactionController extends Controller
 {
     private $secret_key;
+    private $wagate_apikey;
 
     public function __construct()
     {
         $this->secret_key = env('FLIP_SECRET_KEY');
+        $this->wagate_apikey = env('WAGATE_APIKEY');
     }
 
     public function index()
     {
         return view('manage.student_transaction.index', [
             'transactions' => Transaction::where('user_id', auth()->user()->id)
-                ->orderByRaw("FIELD(status, 'pending') DESC")
+                // ->orderByRaw("FIELD(status, 'pending') DESC")
+                ->orderByDesc('created_at')
                 ->get()
         ]);
     }
@@ -137,7 +141,7 @@ class StudentTransactionController extends Controller
             $trx = Transaction::create([
                 'invoice_no' => (str_pad((int) $current_trx + 1, 4, '0', STR_PAD_LEFT)),
                 'invoice_id' => 'BMM' . rand(11111111, 99999999),
-                'status' => 'Pending',
+                'status' => 'Unpaid',
                 'date' => Carbon::now()->format('Y-m-d H:i:s'),
                 'user_id' => $user->id
             ]);
@@ -162,15 +166,98 @@ class StudentTransactionController extends Controller
             TransactionItem::where('user_id', auth()->user()->id)->delete();
             // end delete items
 
+            // Notifikasi Whatsapp
+            $url = 'https://wagate.biz.id/app/api/send-message';
+            $apiKey = $this->wagate_apikey;
+            $sender = '62881026026420';
+            $receiver = '6285156465410';
+            $message = "Hai " . $user->name . ", pembayaran berhasil dibuat.\n";
+            $message .= "Lakukan pembayaran melalui tautan berikut :\n";
+            $message .= "https://" . $trx->bill_url . "\n\n\n";
+            $message .= "note:\nHati-hati modus penipuan!\nharap abaikan pesan ini jika tidak merasa melakukan pembayaran ini\n\n";
+            $message .= "pesan ini hanya dikirim dari whatsapp staff keuangan SMK Bina Mandiri Multimedia";
+
+            $responseWa = $client->request('GET', $url, [
+                'query' => [
+                    'apikey' => $apiKey,
+                    'sender' => $sender,
+                    'receiver' => $receiver,
+                    'message' => $message,
+                ],
+            ]);
+            if ($responseWa->getStatusCode() != 200) {
+                $responseWa;
+            }
+            // End Notifikasi WhatsApp
+            
+            // Notifikasi Email
+            $urlEmail = 'https://mailportal.biz.id/api/sendmail';
+            $responseMail = $client->post($urlEmail, [
+                'form_params' => [
+                    'from_email' => 'noreply@wellco.id',
+                    'from_name' => 'SmartBM3',
+                    'to_email' => 'rioadrian646@gmail.com',
+                    'subject' => 'Pembayaran Sekolah',
+                    // 'files' => [
+                    //     'https://puriamalaasri.site/files/brosur-puriamalaasri.pdf'
+                    // ],
+                    'body' => view('emails.paymentLink', [
+                        'data' => [
+                            'name' => $user->name,
+                            'link' => 'https://' . $trx->bill_url
+                        ]
+                    ])->render(),
+                    'key' => 'b803b755b26e0d171c6037ba6187ee36395ee59371c52c8633b30f5105764316',
+                ],
+            ]);
+            if ($responseMail->getStatusCode() != 200) {
+                $responseMail;
+            }
+            // End Notifikasi Email
+            
             return redirect()->away('https://' . $trx->bill_url);
         } else {
             return redirect()->route('app.transaction.create')->with('error', 'Sedang tidak dapat melakukan transaksi, Silahkan coba beberapa waktu lagi');
         }
     }
 
-    public function confirm()
+    public function confirm(Request $request)
     {
+        // Proses data callback yang diterima
+        $data = json_decode($request->all()['data']);
+
+        if ($data->status == 'SUCCESSFUL') {
+            $trx = Transaction::where('bill_id', $data->bill_link_id)->first();
+            $trx->status = 'Paid';
+            $trx->update();
+        }
         
+        // Notifikasi Whatsapp
+        $url = 'https://wagate.biz.id/app/api/send-message';
+        $apiKey = $this->wagate_apikey;
+        $sender = '62881026026420';
+        $receiver = '6285156465410';
+        $message = "Hai " . $data->sender_name . ", pembayaran telah kami terima.\n";
+        $message .= "Terimakasih telah melakukan pembayaran.\n";
+        $message .= "Jangan lupa untuk melakukan pembayaran tepat waktu.\n";
+        $message .= "note:\nHati-hati modus penipuan!\nharap abaikan pesan ini jika tidak merasa melakukan pembayaran ini\n\n";
+        $message .= "pesan ini hanya dikirim dari whatsapp staff keuangan SMK Bina Mandiri Multimedia";
+
+        $client = new Client();
+        $responseWa = $client->request('GET', $url, [
+            'query' => [
+                'apikey' => $apiKey,
+                'sender' => $sender,
+                'receiver' => $receiver,
+                'message' => $message,
+            ],
+        ]);
+        if ($responseWa->getStatusCode() != 200) {
+            $responseWa;
+        }
+        // End Notifikasi WhatsApp
+
+        return redirect()->route('app.transaction.index');
     }
 
     public function get_items()

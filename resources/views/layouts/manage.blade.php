@@ -275,6 +275,16 @@
                             </li>
                         @endif
 
+                        @if (auth()->user()->is_hometeacher == '1' || auth()->user()->hasAnyPermission(['read achievement']))
+                            <li class="menu-title"><span data-key="t-menu">WALAS</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.achievement*']) }}"
+                                    href="{{ route('app.achievement.index') }}">
+                                    <i class="ri-medal-line"></i> <span data-key="t-landing">Prestasi</span>
+                                </a>
+                            </li>
+                        @endif
+
                         @if (auth()->user()->hasAnyPermission(['create absent', 'read absent']))
                             <li class="menu-title"><span data-key="t-point">Absen</span></li>
                         @endif
@@ -400,7 +410,7 @@
 
                         @can('student read transaction')
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.my.transaction*') }}"
+                                <a class="nav-link menu-link {{ set_active('app.transaction.create*') }}"
                                     href="{{ route('app.transaction.create') }}">
                                     <i class="ri-exchange-line"></i> <span data-key="t-landing">Pembayaran</span>
                                 </a>
@@ -409,7 +419,7 @@
 
                         @can('student read transaction')
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/my/transaction*']) }}"
+                                <a class="nav-link menu-link {{ set_active('app.transaction.index*') }}"
                                     href="{{ route('app.transaction.index') }}">
                                     <i class="ri-exchange-line"></i> <span data-key="t-landing">Riwayat Pembayaran</span>
                                 </a>

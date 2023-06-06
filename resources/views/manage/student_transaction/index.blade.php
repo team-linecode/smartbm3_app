@@ -32,9 +32,15 @@
                                 </td>
                                 <td>Rp{{ number_format($trans->total) }}</td>
                                 <td>{!! $trans->status() !!}</td>
-                                <td>{{ strftime('%d %B %Y', strtotime($trans->date)) }}</td>
+                                <td>{{ strftime('%d %B %Y | %H:%M', strtotime($trans->date)) }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
+                                        @if ($trans->status == 'Pending' || $trans->status == 'Unpaid' && $trans->bill_url != null)
+                                            <div class="pay">
+                                                <a href="https://{{ $trans->bill_url }}"
+                                                    class="btn btn-sm btn-primary">Bayar</a>
+                                            </div>
+                                        @endif
                                         <div class="edit">
                                             <a href="{{ route('app.finance.transaction.show', $trans->invoice_id) }}"
                                                 class="btn btn-sm btn-success">Detail</a>

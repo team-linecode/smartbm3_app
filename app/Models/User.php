@@ -64,6 +64,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function achievements()
+    {
+        return $this->hasMany(Achievement::class, 'student_id');
+    }
+
     public function lessons()
     {
         return $this->belongsToMany(Lesson::class, 'lesson_teacher')->withPivot('hours');

@@ -200,6 +200,7 @@ class CostController extends Controller
     {
         $schoolyear = Schoolyear::where('slug', $request->schoolyear)->firstOrFail();
         $destination = Schoolyear::where('slug', $request->destination)->firstOrFail();
+        $destination->costs()->delete();
 
         foreach ($schoolyear->costs as $cost) {
             $create_cost = Cost::create([

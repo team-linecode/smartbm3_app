@@ -2,23 +2,33 @@
 
 namespace App\Http\Controllers\Manage\Point;
 
+use Carbon\Carbon;
 use App\Models\User;
+use GuzzleHttp\Client;
+use App\Models\UserPoint;
 use App\Models\PenaltyPoint;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Jobs\CountUsedUserPenalty;
 use App\Models\PenaltyCategory;
-use App\Models\UserPoint;
-use Carbon\Carbon;
+use App\Jobs\CountUsedUserPenalty;
+use App\Http\Controllers\Controller;
 
 class UserPointController extends Controller
 {
+    private $secret_key;
+    private $wagate_apikey;
+
+    public function __construct()
+    {
+        $this->secret_key = env('FLIP_SECRET_KEY');
+        $this->wagate_apikey = env('WAGATE_APIKEY');
+    }
+
     public function index()
     {
         $this->authorize('read user penalty');
-        
+
         if (request()->get('penalty_point') || request()->get('from_date') || request()->get('to_date')) {
-            $user_points = UserPoint::where('penalty_id', request()->get('penalty_point') ? '=' : '!=',request()->get('penalty_point'))->whereBetween('date', [request()->get('from_date') . ' 00:00:00', request()->get('to_date') . ' 23:59:59'])->latest()->get();
+            $user_points = UserPoint::where('penalty_id', request()->get('penalty_point') ? '=' : '!=', request()->get('penalty_point'))->whereBetween('date', [request()->get('from_date') . ' 00:00:00', request()->get('to_date') . ' 23:59:59'])->latest()->get();
         } else {
             $user_points = UserPoint::whereDate('date', date('Y-m-d'))->latest()->get();
         }
@@ -37,7 +47,7 @@ class UserPointController extends Controller
         return view('manage.point.user_point.create', [
             'penalty_categories' => PenaltyCategory::orderBy('code')->get(),
             'penalty_points' => PenaltyPoint::orderBy('code')->get(),
-            'users' => User::role('student')->whereHas('schoolyear', function($query) {
+            'users' => User::role('student')->whereHas('schoolyear', function ($query) {
                 $query->where('graduated', '0');
             })->get()
         ]);
@@ -109,7 +119,10 @@ class UserPointController extends Controller
                     $insertPoints[$i]['description'] = null;
                     $insertPoints[$i]['point'] = null;
 
+                    $penalty_point = PenaltyPoint::find($request->penalty_point);
                     $point = PenaltyPoint::find($request->penalty_point)->point;
+
+                    $this->sendWa($model_user, $penalty_point, '6285156465410');
                 } else if ($request->type == 'minus') {
                     $insertPoints[$i]['description'] = $request->description;
                     $insertPoints[$i]['point'] = $request->point;
@@ -269,14 +282,42 @@ class UserPointController extends Controller
         $user_point->delete();
         return back()->with('success', 'Poin berhasil dihapus');
     }
-    
+
     public function bulk_delete(Request $request)
     {
         if (!$request->user_points) {
             return back()->with('error', 'Harap centang data yang akan dihapus');
         }
         dd($request->user_points);
-        
+
         dd(UserPoint::whereIn('id', $request->user_points)->get());
+    }
+
+    public function sendWa($user, $penalty_point, $receiver)
+    {
+        // Notifikasi Whatsapp
+        $url = 'https://wagate.biz.id/app/api/send-message';
+        $apiKey = $this->wagate_apikey;
+        $sender = '62881026026420';
+        $receiver = $receiver;
+        $message = "Informasi pelanggaran siswa\n\n";
+        $message .= "Kami informasikan bahwa siswa " . $user->name . " melakukan pelanggaran berikut :\n\n";
+        $message .= $penalty_point->name . "\n\n\n";
+        $message .= "cc: Guru BK SMK BM3";
+
+        $client = new Client();
+        $responseWa = $client->request('GET', $url, [
+            'query' => [
+                'apikey' => $apiKey,
+                'sender' => $sender,
+                'receiver' => $receiver,
+                'message' => $message,
+            ],
+        ]);
+
+        if ($responseWa->getStatusCode() != 200) {
+            $responseWa;
+        }
+        // End Notifikasi WhatsApp
     }
 }
