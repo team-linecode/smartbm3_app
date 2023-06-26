@@ -209,6 +209,9 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
 
     // Student -> Transaction
     Route::resource('/my/transaction', StudentTransactionController::class)->except('show');
+    Route::get('/my/transaction/success_saved', [StudentTransactionController::class, 'success_saved'])->name('transaction.success_saved');
+    Route::get('/my/transaction/detail', [StudentTransactionController::class, 'detail'])->name('transaction.detail');
+    Route::get('/my/transaction/create/{cost:slug}', [StudentTransactionController::class, 'create_step2'])->name('transaction.create.step2');
     Route::delete('/my/transaction/item/{transaction_item}/destroy', [StudentTransactionController::class, 'delete_item'])->name('transaction.delete_item');
     Route::post('/my/transaction/payment', [StudentTransactionController::class, 'payment'])->name('transaction.payment');
 
@@ -308,6 +311,7 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Picket Report
     Route::resource('/picket_report', PicketReportController::class)->except('show');
     Route::post('/picket_report/export_monthly', [PicketReportController::class, 'export_monthly'])->name('picket_report.export_monthly');
+    Route::post('/picket_report/export_custom', [PicketReportController::class, 'export_custom'])->name('picket_report.export_custom');
     // Student Apprenticeship
     Route::resource('/student_apprenticeship', StudentApprenticeshipController::class)->except('show');
 

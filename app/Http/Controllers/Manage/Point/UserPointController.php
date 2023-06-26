@@ -14,15 +14,6 @@ use App\Http\Controllers\Controller;
 
 class UserPointController extends Controller
 {
-    private $secret_key;
-    private $wagate_apikey;
-
-    public function __construct()
-    {
-        $this->secret_key = env('FLIP_SECRET_KEY');
-        $this->wagate_apikey = env('WAGATE_APIKEY');
-    }
-
     public function index()
     {
         $this->authorize('read user penalty');
@@ -296,8 +287,7 @@ class UserPointController extends Controller
     public function sendWa($user, $penalty_point, $receiver)
     {
         // Notifikasi Whatsapp
-        $url = 'https://wagate.biz.id/app/api/send-message';
-        $apiKey = $this->wagate_apikey;
+        $url = 'https://wagate.biz.id/send-message';
         $sender = '62881026026420';
         $receiver = $receiver;
         $message = "Informasi pelanggaran siswa\n\n";
@@ -305,15 +295,7 @@ class UserPointController extends Controller
         $message .= $penalty_point->name . "\n\n\n";
         $message .= "cc: Guru BK SMK BM3";
 
-        $client = new Client();
-        $responseWa = $client->request('GET', $url, [
-            'query' => [
-                'apikey' => $apiKey,
-                'sender' => $sender,
-                'receiver' => $receiver,
-                'message' => $message,
-            ],
-        ]);
+        $responseWa = wagate($url, $sender, $receiver, $message);
 
         if ($responseWa->getStatusCode() != 200) {
             $responseWa;

@@ -13,15 +13,6 @@ use App\Http\Controllers\Controller;
 
 class AbsentController extends Controller
 {
-    private $secret_key;
-    private $wagate_apikey;
-
-    public function __construct()
-    {
-        $this->secret_key = env('FLIP_SECRET_KEY');
-        $this->wagate_apikey = env('WAGATE_APIKEY');
-    }
-
     public function index()
     {
         return view('manage.osis.absent.index', [
@@ -137,24 +128,14 @@ class AbsentController extends Controller
     public function sendWa($user, $date, $receiver)
     {
         // Notifikasi Whatsapp
-        $url = 'https://wagate.biz.id/app/api/send-message';
-        $apiKey = $this->wagate_apikey;
+        $url = 'https://wagate.biz.id/send-message';
         $sender = '62881026026420';
         $receiver = $receiver;
         $message = "Laporan keterlambatan siswa\n\n";
         $message .= "Kami informasikan bahwa siswa " . $user->name . " terlambat masuk sekolah pada pukul *" . date('H:i', strtotime($date)) . "*\n\n";
         $message .= "cc: Guru Piket SMK BM3";
 
-        $client = new Client();
-        $responseWa = $client->request('GET', $url, [
-            'query' => [
-                'apikey' => $apiKey,
-                'sender' => $sender,
-                'receiver' => $receiver,
-                'message' => $message,
-            ],
-        ]);
-
+        $responseWa = wagate($url, $sender, $receiver, $message);
         if ($responseWa->getStatusCode() != 200) {
             $responseWa;
         }

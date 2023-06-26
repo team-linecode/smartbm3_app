@@ -13,15 +13,6 @@ use Facade\FlareClient\Http\Response;
 
 class PicketAbsentController extends Controller
 {
-    private $secret_key;
-    private $wagate_apikey;
-
-    public function __construct()
-    {
-        $this->secret_key = env('FLIP_SECRET_KEY');
-        $this->wagate_apikey = env('WAGATE_APIKEY');
-    }
-
     public function index()
     {
         if (request()->get('classroom') && request()->get('expertise')) {
@@ -77,8 +68,7 @@ class PicketAbsentController extends Controller
     public function sendWa($attend, $receiver)
     {
         // Notifikasi Whatsapp
-        $url = 'https://wagate.biz.id/app/api/send-message';
-        $apiKey = $this->wagate_apikey;
+        $url = 'https://wagate.biz.id/send-message';
         $sender = '62881026026420';
         $receiver = $receiver;
         $message = "Laporan kehadiran siswa\n\n";
@@ -86,16 +76,7 @@ class PicketAbsentController extends Controller
         $message .= "Jika informasi ini tidak sesuai, harap menghubungi Wali Kelas agar dapat dilakukan tindak lanjut.\n\n\n";
         $message .= "cc: Guru Piket SMK BM3";
 
-        $client = new Client();
-        $responseWa = $client->request('GET', $url, [
-            'query' => [
-                'apikey' => $apiKey,
-                'sender' => $sender,
-                'receiver' => $receiver,
-                'message' => $message,
-            ],
-        ]);
-        
+        $responseWa = wagate($url, $sender, $receiver, $message);
         if ($responseWa->getStatusCode() != 200) {
             $responseWa;
         }

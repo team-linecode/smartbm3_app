@@ -1,10 +1,11 @@
 <?php
 
+use App\Models\User;
+use GuzzleHttp\Client;
+use App\Models\Schoolyear;
+use App\Models\PenaltyPoint;
 use App\Models\LastEducation;
 use App\Models\PenaltyCategory;
-use App\Models\PenaltyPoint;
-use App\Models\Schoolyear;
-use App\Models\User;
 
 setlocale(LC_ALL, 'IND');
 
@@ -391,4 +392,20 @@ function getSPPdate($classroom_id, $schoolyear_id, $month)
     } else {
         return "1997-01";
     }
+}
+
+function wagate($url, $sender, $receiver, $message)
+{
+    $client = new Client();
+
+    $response = $client->request('GET', $url, [
+        'query' => [
+            'apikey' => env('WAGATE_APIKEY'),
+            'sender' => $sender,
+            'number' => $receiver,
+            'message' => $message,
+        ],
+    ]);
+
+    return $response;
 }

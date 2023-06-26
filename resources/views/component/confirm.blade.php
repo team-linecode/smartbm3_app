@@ -17,4 +17,27 @@
             }
         })
     });
+
+    $("body").on("click", ".c-payment", function(e) {
+        e.preventDefault()
+
+        let form = $(this).closest('form');
+
+        Swal.fire({
+            title: 'Total Transaksi Sudah Benar?',
+            text: "Harap cek kembali sebelum menuju pembayaran",
+            icon: 'question',
+            showCancelButton: !0,
+            confirmButtonClass: "btn btn-primary w-xs me-2 mb-1",
+            confirmButtonText: "Benar! Lanjutkan",
+            cancelButtonClass: "btn btn-outline-danger w-xs mb-1",
+            cancelButtonText: "Sebentar! Saya Cek Lagi",
+            buttonsStyling: !1,
+            showCloseButton: !0,
+        }).then((res) => {
+            if (res.isConfirmed) {
+                form.submit()
+            }
+        })
+    });
 </script>

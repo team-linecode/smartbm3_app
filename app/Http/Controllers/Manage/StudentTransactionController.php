@@ -10,17 +10,16 @@ use Illuminate\Http\Request;
 use App\Models\TransactionItem;
 use App\Models\TransactionDetail;
 use App\Http\Controllers\Controller;
+use App\Models\Cost;
 use GuzzleHttp\Exception\RequestException;
 
 class StudentTransactionController extends Controller
 {
     private $secret_key;
-    private $wagate_apikey;
 
     public function __construct()
     {
         $this->secret_key = env('FLIP_SECRET_KEY');
-        $this->wagate_apikey = env('WAGATE_APIKEY');
     }
 
     public function index()
@@ -36,6 +35,30 @@ class StudentTransactionController extends Controller
     public function create()
     {
         return view('manage.student_transaction.create', [
+            'user' => User::find(auth()->user()->id),
+            'items' => TransactionItem::where('user_id', auth()->user()->id)->get()
+        ]);
+    }
+
+    public function create_step2(Cost $cost)
+    {
+        $where = [];
+        if ($cost->cost_category->slug == 'ujian') {
+            $where['key'] = 'semester_id';
+            $where['value'] = $cost->getSemesterByClass();
+        } else if ($cost->cost_category->slug == 'spp') {
+            $classroom = auth()->user()->classroom->alias;
+            $where['key'] = 'classroom_id';
+            $where['value'] = $classroom == '10' ? [1] : ($classroom == '11' ? [1, 2] : [1, 2, 3]);
+        } else if ($cost->cost_category->slug == 'daftar-ulang') {
+            $classroom = auth()->user()->classroom->alias;
+            $where['key'] = 'classroom_id';
+            $where['value'] = $classroom == '10' ? [] : ($classroom == '11' ? [1, 2] : [1, 2, 3]);
+        }
+
+        return view('manage.student_transaction.create_step2', [
+            'where' => $where,
+            'cost' => $cost,
             'user' => User::find(auth()->user()->id),
             'items' => TransactionItem::where('user_id', auth()->user()->id)->get()
         ]);
@@ -90,7 +113,19 @@ class StudentTransactionController extends Controller
         }
         // end create transaction detail
 
-        return back()->with('success', 'Item berhasil disimpan. Silahkan lanjutkan pembayaran');
+        return redirect()->route('app.transaction.success_saved')->with('success', 'Item berhasil disimpan. Silahkan lanjutkan pembayaran');
+    }
+
+    public function success_saved()
+    {
+        return view('manage.student_transaction.success_saved');
+    }
+
+    public function detail()
+    {
+        return view('manage.student_transaction.detail', [
+            'items' => TransactionItem::where('user_id', auth()->user()->id)->get()
+        ]);
     }
 
     public function delete_item(TransactionItem $transaction_item)
@@ -167,8 +202,7 @@ class StudentTransactionController extends Controller
             // end delete items
 
             // Notifikasi Whatsapp
-            $url = 'https://wagate.biz.id/app/api/send-message';
-            $apiKey = $this->wagate_apikey;
+            $url = 'https://wagate.biz.id/send-message';
             $sender = '62881026026420';
             $receiver = '6285156465410';
             $message = "Hai " . $user->name . ", pembayaran berhasil dibuat.\n";
@@ -177,19 +211,12 @@ class StudentTransactionController extends Controller
             $message .= "note:\nHati-hati modus penipuan!\nharap abaikan pesan ini jika tidak merasa melakukan pembayaran ini\n\n";
             $message .= "pesan ini hanya dikirim dari whatsapp staff keuangan SMK Bina Mandiri Multimedia";
 
-            $responseWa = $client->request('GET', $url, [
-                'query' => [
-                    'apikey' => $apiKey,
-                    'sender' => $sender,
-                    'receiver' => $receiver,
-                    'message' => $message,
-                ],
-            ]);
+            $responseWa = wagate($url, $sender, $receiver, $message);
             if ($responseWa->getStatusCode() != 200) {
                 $responseWa;
             }
             // End Notifikasi WhatsApp
-            
+
             // Notifikasi Email
             $urlEmail = 'https://mailportal.biz.id/api/sendmail';
             $responseMail = $client->post($urlEmail, [
@@ -214,7 +241,7 @@ class StudentTransactionController extends Controller
                 $responseMail;
             }
             // End Notifikasi Email
-            
+
             return redirect()->away('https://' . $trx->bill_url);
         } else {
             return redirect()->route('app.transaction.create')->with('error', 'Sedang tidak dapat melakukan transaksi, Silahkan coba beberapa waktu lagi');
@@ -231,10 +258,9 @@ class StudentTransactionController extends Controller
             $trx->status = 'Paid';
             $trx->update();
         }
-        
+
         // Notifikasi Whatsapp
-        $url = 'https://wagate.biz.id/app/api/send-message';
-        $apiKey = $this->wagate_apikey;
+        $url = 'https://wagate.biz.id/send-message';
         $sender = '62881026026420';
         $receiver = '6285156465410';
         $message = "Hai " . $data->sender_name . ", pembayaran telah kami terima.\n";
@@ -243,15 +269,7 @@ class StudentTransactionController extends Controller
         $message .= "note:\nHati-hati modus penipuan!\nharap abaikan pesan ini jika tidak merasa melakukan pembayaran ini\n\n";
         $message .= "pesan ini hanya dikirim dari whatsapp staff keuangan SMK Bina Mandiri Multimedia";
 
-        $client = new Client();
-        $responseWa = $client->request('GET', $url, [
-            'query' => [
-                'apikey' => $apiKey,
-                'sender' => $sender,
-                'receiver' => $receiver,
-                'message' => $message,
-            ],
-        ]);
+        $responseWa = wagate($url, $sender, $receiver, $message);
         if ($responseWa->getStatusCode() != 200) {
             $responseWa;
         }

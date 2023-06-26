@@ -104,6 +104,29 @@ class User extends Authenticatable
         return $this->belongsTo(Schoolyear::class);
     }
 
+    public function schoolyearsForSPP($type, $classroom)
+    {
+        $schoolyears = [];
+        $types = [];
+
+        foreach (range(explode('-', auth()->user()->schoolyear->slug)[0], explode('-', auth()->user()->schoolyear->slug)[1]) as $schoolyear) {
+            $schoolyears[] = $schoolyear;
+        }
+
+        if ($classroom == '10') {
+            $types['a'] = $schoolyears[0];
+            $types['b'] = $schoolyears[1];
+        } else if ($classroom == '11') {
+            $types['a'] = $schoolyears[1];
+            $types['b'] = $schoolyears[2];
+        } else if ($classroom == '12') {
+            $types['a'] = $schoolyears[2];
+            $types['b'] = $schoolyears[3];
+        }
+
+        return $types[$type];
+    }
+
     public function group()
     {
         return $this->belongsTo(Group::class);
@@ -298,29 +321,29 @@ class User extends Authenticatable
             return false;
         }
     }
-    
+
     public function checkAbsentStatus($date)
     {
         $date = date('Y-m-d', strtotime($date));
-        
+
         $student_attend = StudentAttend::where('user_id', $this->id)->whereDate('created_at', $date)->first();
-        
+
         if ($student_attend) {
             return $student_attend->status;
         } else {
             return '';
         }
     }
-    
+
     public function checkAbsentStatusColor($date)
     {
         $date = date('Y-m-d', strtotime($date));
-        
+
         $student_attend = StudentAttend::where('user_id', $this->id)->whereDate('created_at', $date)->first();
-        
+
         if ($student_attend) {
             if ($student_attend->status == 's') {
-                return 'lightskyblue';   
+                return 'lightskyblue';
             } else if ($student_attend->status == 'i') {
                 return 'yellow';
             } else {
@@ -330,12 +353,12 @@ class User extends Authenticatable
             return 'transparent';
         }
     }
-    
+
     public function getTotalAbsentByStatus($status, $date)
     {
         return StudentAttend::where('user_id', $this->id)->where('status', $status)->whereMonth('created_at', date('m-Y', strtotime($date)))->count();
     }
-    
+
     public function getTotalAbsent($date)
     {
         return StudentAttend::where('user_id', $this->id)->whereMonth('created_at', date('m-Y', strtotime($date)))->count();

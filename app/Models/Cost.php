@@ -30,6 +30,19 @@ class Cost extends Model
         return $this->hasMany(CostDetail::class);
     }
 
+    public function getSemesterByClass()
+    {
+        $user = User::findOrFail(auth()->user()->id);
+
+        if ($user->classroom->alias == '10') {
+            return ['1', '2'];
+        } else if ($user->classroom->alias == '11') {
+            return ['1', '2', '3', '4'];
+        } else if ($user->classroom->alias == '12') {
+            return ['1', '2', '3', '4', '5', '6'];
+        }
+    }
+
     public function cost_groups($group_id)
     {
         return CostDetail::where('cost_id', $this->id)

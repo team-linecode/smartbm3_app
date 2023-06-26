@@ -24,6 +24,7 @@
                             <th scope="col">No.</th>
                             <th scope="col">Nama</th>
                             <th scope="col">Jumlah Tingkat</th>
+                            <th scope="col">Jumlah Ruangan</th>
                             <th scope="col">Opsi</th>
                         </tr>
                     </thead>
@@ -32,7 +33,8 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ ucwords($building->name) }}</td>
-                                <td>{{ $building->stage ?? '' }}</td>
+                                <td>{{ $building->stage }}</td>
+                                <td>{{ $building->r_total() }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <div class="edit">

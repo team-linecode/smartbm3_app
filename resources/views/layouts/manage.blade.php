@@ -539,6 +539,15 @@
                                 </a>
                             </li>
                         @endcan
+                        
+                        @can('read facility')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.service*']) }}"
+                                    href="{{ route('app.service.index') }}">
+                                    <i class="ri-customer-service-2-fill"></i> <span data-key="t-landing">Service</span>
+                                </a>
+                            </li>
+                        @endcan
 
                         @if (auth()->user()->hasAnyPermission(['read picket schedule']))
                             <li class="menu-title"><span data-key="t-menu">Admin Piket</span></li>

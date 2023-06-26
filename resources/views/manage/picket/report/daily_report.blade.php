@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Laporan Ketidakhadiran | {{ dayID(date('N')) }}, {{ date('d F Y') }}</title>
+    <title>Laporan Ketidakhadiran | {{ dayID(date('N', strtotime($data['date']))) }}, {{ date('d F Y', strtotime($data['date'])) }}</title>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -55,7 +55,7 @@
     <div style="overflow: auto">
         <div style="text-align: center;">
             <b>Laporan Ketidakhadiran</b><br>
-            {{ dayID(date('N')) }}, {{ date('d') }} {{ monthID(date('m')) }} {{ date('Y') }}
+            {{ dayID(date('N', strtotime($data['date']))) }}, {{ date('d', strtotime($data['date'])) }} {{ monthID(date('m', strtotime($data['date']))) }} {{ date('Y', strtotime($data['date'])) }}
         </div>
         <br>
         <table border="1" cellpadding="5" cellspacing="0" width="100%">

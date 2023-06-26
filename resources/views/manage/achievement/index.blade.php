@@ -51,18 +51,22 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <div class="edit">
-                                            <a href="{{ route('app.achievement.edit', $achievement->id) }}"
-                                                class="btn btn-sm btn-success">Edit</a>
-                                        </div>
-                                        <div class="remove">
-                                            <form action="{{ route('app.achievement.destroy', $achievement->id) }}"
-                                                method="post">
-                                                @csrf
-                                                @method('delete')
-                                                <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>
-                                            </form>
-                                        </div>
+                                        <!--@if($achievement->teacher->id == auth()->user()->id)-->
+                                        <!--<div class="edit">-->
+                                        <!--    <a href="{{ route('app.achievement.edit', $achievement->id) }}"-->
+                                        <!--        class="btn btn-sm btn-success">Edit</a>-->
+                                        <!--</div>-->
+                                        <!--<div class="remove">-->
+                                        <!--    <form action="{{ route('app.achievement.destroy', $achievement->id) }}"-->
+                                        <!--        method="post">-->
+                                        <!--        @csrf-->
+                                        <!--        @method('delete')-->
+                                        <!--        <button type="button" class="btn btn-sm btn-danger c-delete">Hapus</button>-->
+                                        <!--    </form>-->
+                                        <!--</div>-->
+                                        <!--@else-->
+                                        <!--<button type="button" class="btn btn-sm btn-light" disabled><i class="ri-forbid-line"></i></button>-->
+                                        <!--@endif-->
                                     </div>
                                 </td>
                             </tr>
