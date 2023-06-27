@@ -409,3 +409,20 @@ function wagate($url, $sender, $receiver, $message)
 
     return $response;
 }
+
+function schedule_message($message)
+{   
+    $client = new Client();
+    $telp = ['6281319499900','6281818122257','6285966244278', '6285692686660', '6281283625303', '6281287577202'];
+    // $telp = ['6289601271842','6285156465410', '6285156146724'];
+    foreach ($telp as $no) {
+        $response = $client->request('GET', 'https://wagate.biz.id/send-message', [
+            'query' => [
+                'api_key' => 'Re9c3tRgrB3hIumZ1rAQD28yCAaEmHOY',
+                'sender' => '6281311596411',
+                'number' => $no,
+                'message' => $message,
+            ],
+        ]);
+    }
+}

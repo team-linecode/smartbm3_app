@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manage\Operator;
 use App\Models\Sarpras\Facility;
 use App\Models\RoomFacility;
 use App\Http\Controllers\Controller;
+use App\Models\LetterCategory;
 use Illuminate\Http\Request;
 
 class LetterController extends Controller
@@ -13,12 +14,10 @@ class LetterController extends Controller
     {
         $this->authorize('read letter');
 
-        // $facilities = Facility::all();
-        // $rc = RoomFacility::all();
-        // return view('manage.sarpras.facility.index', [
-        //     'facilities' => $facilities,
-        //     'rc' => $rc
-        // ]);
+        return view('manage.operator.letter_category.index', [
+            'letter_categories' => LetterCategory::orderBy('name')->get()
+        ]);
+
         return view('manage.operator.letter.index');
     }
 
