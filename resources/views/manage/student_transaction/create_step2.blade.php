@@ -1,16 +1,6 @@
 @extends('layouts.manage', ['title' => 'Pembayaran'])
-
-@push('include-style')
-    <style>
-        .hover-card:hover {
-            background-color: rgba(0, 0, 0, 0.03);
-            transition: 0.3s;
-        }
-    </style>
-@endpush
-
 @section('content')
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
@@ -33,11 +23,13 @@
                                                 <input class="form-check-input form-check-readonly mt-0"
                                                     style="width: 1.9rem; height: 100%;" type="checkbox"
                                                     name="costs[{{ $cost_detail->category()->slug }}][{{ $cost_detail->id }}][cost_detail_id]"
-                                                    value="{{ $cost_detail->id }}">
+                                                    value="{{ $cost_detail->id }}"
+                                                    {{ auth()->user()->transaction_history($cost_detail->id)['is_paid']? 'disabled checked': '' }}>
                                             </div>
                                             <input type="text" class="form-control currency amount"
                                                 name="costs[{{ $cost_detail->category()->slug }}][{{ $cost_detail->id }}][amount]"
-                                                placeholder="Jumlah Bayar" value="{{ number_format($cost_detail->amount) }}"
+                                                placeholder="Jumlah Bayar"
+                                                value="{{ number_format(auth()->user()->transaction_history($cost_detail->id)['remaining']) }}"
                                                 disabled required>
                                         </div>
                                     </div>
@@ -117,7 +109,8 @@
                                             <input type="text" class="form-control currency amount"
                                                 name="costs[{{ $cost_detail->category()->slug }}][{{ $cost_detail->classroom_id }}][amount]"
                                                 placeholder="Jumlah Bayar"
-                                                value="{{ number_format($cost_detail->amount) }}" disabled>
+                                                value="{{ number_format(auth()->user()->transaction_history($cost_detail->id)['remaining']) }}"
+                                                disabled>
                                         </div>
                                         @include('manage.student_transaction.component.percentages')
                                     </div>
@@ -137,7 +130,8 @@
                                             <input type="text" class="form-control currency amount"
                                                 name="costs[{{ $cost_detail->category()->slug }}][{{ $cost_detail->group_id }}][amount]"
                                                 placeholder="Jumlah Bayar"
-                                                value="{{ number_format($cost_detail->amount) }}" disabled>
+                                                value="{{ number_format(auth()->user()->transaction_history($cost_detail->id)['remaining']) }}"
+                                                disabled>
                                         </div>
                                         @include('manage.student_transaction.component.percentages')
                                     </div>
@@ -157,7 +151,8 @@
                                             <input type="text" class="form-control currency amount"
                                                 name="costs[{{ $cost_detail->category()->slug }}][{{ $cost_detail->id }}][amount]"
                                                 placeholder="Jumlah Bayar"
-                                                value="{{ number_format($cost_detail->amount) }}" disabled>
+                                                value="{{ number_format(auth()->user()->transaction_history($cost_detail->id)['remaining']) }}"
+                                                disabled>
                                         </div>
                                         @include('manage.student_transaction.component.percentages')
                                     </div>
@@ -169,17 +164,16 @@
                                     </div>
                                 </div>
                             @endforelse
-                        </div>
 
-                        <div class="mt-5 text-end">
-                            <button class="btn btn-primary">Simpan Pembayaran</button>
+                            @if ($cost->details->whereIn($where['key'] ?? '', $where['value'] ?? '')->count() > 0)
+                                <div class="mt-5 text-end">
+                                    <button class="btn btn-primary">Simpan Pembayaran</button>
+                                </div>
+                            @endif
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-4">
-            @include('manage.student_transaction.component.detail')
         </div>
     </div>
 @stop

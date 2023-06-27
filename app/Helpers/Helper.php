@@ -400,7 +400,7 @@ function wagate($url, $sender, $receiver, $message)
 
     $response = $client->request('GET', $url, [
         'query' => [
-            'apikey' => env('WAGATE_APIKEY'),
+            'api_key' => env('WAGATE_APIKEY'),
             'sender' => $sender,
             'number' => $receiver,
             'message' => $message,

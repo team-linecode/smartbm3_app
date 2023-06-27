@@ -363,4 +363,38 @@ class User extends Authenticatable
     {
         return StudentAttend::where('user_id', $this->id)->whereMonth('created_at', date('m-Y', strtotime($date)))->count();
     }
+
+    public function transaction_history($cost_detail_id)
+    {
+        $data = [];
+
+
+        $cost_detail = CostDetail::findOrFail($cost_detail_id);
+        $transaction_detail = TransactionDetail::whereHas('transaction', function ($query) {
+            $query->where('user_id', $this->id);
+        })->where('cost_detail_id', $cost_detail_id)->first();
+        $transaction_item = TransactionItem::where('user_id', auth()->user()->id)
+            ->where('cost_detail_id', $cost_detail_id)->get();
+
+        if ($transaction_detail) {
+            $remaining = ($cost_detail->amount - $transaction_detail->amount);
+
+            if ($remaining == 0) {
+                $data['remaining'] = $cost_detail->amount;
+            } else {
+                $data['remaining'] = $remaining;
+            }
+
+            $data['is_paid'] = $remaining == 0 ? true : false;
+        } else {
+            $data['remaining'] = $cost_detail->amount;
+            $data['is_paid'] = false;
+        }
+
+        if ($transaction_item) {
+            $data['remaining'] = $data['remaining'] - $transaction_item->sum('amount');
+        }
+
+        return $data;
+    }
 }

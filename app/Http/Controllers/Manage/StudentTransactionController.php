@@ -60,7 +60,7 @@ class StudentTransactionController extends Controller
             'where' => $where,
             'cost' => $cost,
             'user' => User::find(auth()->user()->id),
-            'items' => TransactionItem::where('user_id', auth()->user()->id)->get()
+            'items' => TransactionItem::where('user_id', auth()->user()->id)->get(),
         ]);
     }
 

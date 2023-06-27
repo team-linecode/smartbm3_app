@@ -1,8 +1,8 @@
 @extends('layouts.manage', ['title' => 'Pembayaran'])
 
 @section('content')
-    <div class="row">
-        <div class="col-lg-8 @if ($items->count() == 0) justify-content-center @endif">
+    <div class="row @if ($items->count() == 0) justify-content-center @endif">
+        <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="ri-exchange-box-line align-middle"></i> Pilih Pembayaran</h5>
