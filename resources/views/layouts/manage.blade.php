@@ -592,6 +592,21 @@
                                 </a>
                             </li>
                         @endcan
+                        @if (auth()->user()->hasAnyPermission(['read letter']))
+                            <li class="menu-title"><span data-key="t-menu">Operator</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.letter_category*']) }}"
+                                    href="{{ route('app.letter_category.index') }}">
+                                    <i class="ri-file-copy-2-line"></i> <span data-key="t-landing">Kategori Surat</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active(['app.letter*']) }}"
+                                    href="{{ route('app.letter.index') }}">
+                                    <i class="ri-file-list-3-line"></i> <span data-key="t-landing">Surat</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 <!-- Sidebar -->
