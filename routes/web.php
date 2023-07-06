@@ -210,6 +210,7 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Student -> Transaction
     Route::resource('/my/transaction', StudentTransactionController::class)->except('show');
     Route::get('/my/transaction/success_saved', [StudentTransactionController::class, 'success_saved'])->name('transaction.success_saved');
+    Route::get('/my/transaction/maintenance', [StudentTransactionController::class, 'maintenance'])->name('transaction.maintenance');
     Route::get('/my/transaction/detail', [StudentTransactionController::class, 'detail'])->name('transaction.detail');
     Route::get('/my/transaction/create/{cost:slug}', [StudentTransactionController::class, 'create_step2'])->name('transaction.create.step2');
     Route::delete('/my/transaction/item/{transaction_item}/destroy', [StudentTransactionController::class, 'delete_item'])->name('transaction.delete_item');
@@ -337,7 +338,7 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
 });
 // End Route
 
-Route::get('/app/my/transaction/payment/confirm', [StudentTransactionController::class, 'confirm'])->name('app.transaction.payment.confirm');
+Route::post('/app/my/transaction/payment/confirm', [StudentTransactionController::class, 'confirm'])->name('app.transaction.payment.confirm');
 
 // Route [auth]
 Route::group(['middleware' => ['auth']], function () {

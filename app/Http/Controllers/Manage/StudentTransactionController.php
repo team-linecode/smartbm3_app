@@ -118,7 +118,21 @@ class StudentTransactionController extends Controller
 
     public function success_saved()
     {
+        $items = TransactionItem::where('user_id', auth()->user()->id)->get();
+        if ($items->count() < 1) {
+            return redirect()->route('app.transaction.create')->with('error', 'Silahkan tambahkan transaksi');
+        }
+
         return view('manage.student_transaction.success_saved');
+    }
+
+    public function maintenance()
+    {
+        if (!$this->is_maintenance()) {
+            return redirect()->route('app.transaction.create')->with('success', 'Transaksi Normal! Silahkan Melakukan Pembayaran');
+        }
+
+        return view('manage.student_transaction.maintenance');
     }
 
     public function detail()
@@ -141,12 +155,15 @@ class StudentTransactionController extends Controller
 
     public function payment()
     {
+        if ($this->is_maintenance()) {
+            return redirect()->route('app.transaction.maintenance');
+        }
+
         if ($this->get_items()['all']->isEmpty()) {
             return redirect()->route('app.transaction.create')->with('error', 'Silahkan pilih pembayaran');
         }
 
         $user = User::findOrFail(auth()->user()->id);
-        $client = new Client();
 
         // $response = $client->post('https://bigflip.id/api/v2/pwf/bill', [
         $response = $client->post('https://bigflip.id/big_sandbox_api/v2/pwf/bill', [
@@ -156,7 +173,7 @@ class StudentTransactionController extends Controller
                 'amount' => $this->get_items()['total'],
                 'type' => 'SINGLE',
                 'expired_date' => date('Y-m-d H:i', time() + (60 * 60 * 48)), // 2 days
-                'redirect_url' => 'https://smartbm3.com/',
+                'redirect_url' => 'https://smartbm3.com/app/my/transaction',
                 'is_address_required' => 0,
                 'is_phone_number_required' => 0,
                 'step' => 2,
@@ -294,5 +311,18 @@ class StudentTransactionController extends Controller
                 'max' => $transaction_items->max('amount'),
             ];
         }
+    }
+
+    private function is_maintenance()
+    {
+        $client = new Client();
+        $response = $client->get('https://bigflip.id/api/v2/general/maintenance', [
+            'auth' => [$this->secret_key . ':', ''],
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ]
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true)['maintenance'];
     }
 }
