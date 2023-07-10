@@ -9,6 +9,6 @@ class LetterCategory extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = ['name', 'slug'];
     public $timestamps = false;
 }

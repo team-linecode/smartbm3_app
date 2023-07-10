@@ -8,6 +8,7 @@ use App\Models\Sarpras\Building;
 use App\Models\Sarpras\Facility;
 use App\Http\Controllers\Controller;
 use App\Models\LetterCategory;
+use Illuminate\Support\Str;
 
 class LetterCategoryController extends Controller
 {
@@ -24,6 +25,8 @@ class LetterCategoryController extends Controller
             'name' => 'required|unique:letter_categories,name',
         ]);
 
+        $request['slug'] = Str::slug($request->name);
+
         LetterCategory::create($request->all());
 
         return back()->with('success', 'Kategori Surat berhasil ditambahkan');
@@ -39,9 +42,10 @@ class LetterCategoryController extends Controller
     public function update(LetterCategory $letter_category, Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:letter_categories,name',
+            'name' => 'required',
         ]);
-
+        $request['slug'] = Str::slug($request->name);
+        // dd($request->all());
         $letter_category->update($request->all());
 
         return redirect()->route('app.letter_category.index')->with('success', 'Kategori Surat berhasil diubah');

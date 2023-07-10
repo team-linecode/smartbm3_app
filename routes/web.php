@@ -45,6 +45,7 @@ use App\Http\Controllers\Manage\Picket\PicketScheduleController;
 use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
 use App\Http\Controllers\Manage\Operator\LetterCategoryController;
 use App\Http\Controllers\Manage\Picket\StudentApprenticeshipController;
+use App\Models\LetterCategory;
 
 /*
 |--------------------------------------------------------------------------
@@ -317,7 +318,9 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
 
     // Operator
     // Letter
-    Route::resource('/operator/letter', LetterController::class)->except('show');
+    Route::resource('/operator/letter', LetterController::class)->except('create', 'show');
+    Route::get('/operator/letter/{letter_category:slug}', [LetterController::class, 'create'])->name('letter');
+    Route::post('/operator/letter/{letter_category:slug}/show', [LetterController::class, 'show'])->name('letter.show');
     // LetterCategory
     Route::resource('/operator/letter_category', LetterCategoryController::class)->except('show');
 
