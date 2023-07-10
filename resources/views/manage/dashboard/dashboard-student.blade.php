@@ -48,12 +48,6 @@
                                     class="d-none d-md-inline-block">Poin Saya</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link fs-14" data-bs-toggle="tab" href="#achievement-tab" role="tab">
-                                <i class="ri-airplay-fill d-inline-block d-md-none"></i> <span
-                                    class="d-none d-md-inline-block">Prestasi</span>
-                            </a>
-                        </li>
                     </ul>
                     <div class="flex-shrink-0">
                         <a href="#" class="btn btn-success disabled"><i class="ri-edit-box-line align-bottom"></i>
@@ -262,28 +256,6 @@
                             </div>
                         </div>
                         <!--end row-->
-                    </div>
-                    <div class="tab-pane" id="achievement-tab" role="tabpanel">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title mb-5">Prestasi yang Diraih</h5>
-                                        @if (auth()->user()->achievements->count() == 0)
-                                            <div class="row justify-content-center text-center">
-                                                <div class="col-lg-6">
-                                                    <img src="{{ Storage::url('background/trophy.jpg') }}"
-                                                        width="200">
-                                                    <h5>Jangan pernah meragukan potensimu, karena kamu mampu mencapai
-                                                        prestasi
-                                                        yang luar biasa.</h5>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <!--end tab-content-->

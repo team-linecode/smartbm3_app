@@ -368,23 +368,23 @@ class User extends Authenticatable
     {
         $data = [];
 
-
         $cost_detail = CostDetail::findOrFail($cost_detail_id);
         $transaction_detail = TransactionDetail::whereHas('transaction', function ($query) {
-            $query->where('user_id', $this->id);
-        })->where('cost_detail_id', $cost_detail_id)->first();
+            $query->where('user_id', $this->id)->where('status', 'Paid');
+        })->where('cost_detail_id', $cost_detail_id)->get();
         $transaction_item = TransactionItem::where('user_id', auth()->user()->id)
             ->where('cost_detail_id', $cost_detail_id)->get();
 
         if ($transaction_detail) {
-            $remaining = ($cost_detail->amount - $transaction_detail->amount);
+            $remaining = ($cost_detail->amount - $transaction_detail->sum('amount'));
 
-            if ($remaining == 0) {
-                $data['remaining'] = $cost_detail->amount;
-            } else {
-                $data['remaining'] = $remaining;
-            }
-
+            // if ($remaining == 0) {
+            //     $data['remaining'] = $cost_detail->amount;
+            // } else {
+            //     $data['remaining'] = $remaining;
+            // }
+            
+            $data['remaining'] = $remaining;
             $data['is_paid'] = $remaining == 0 ? true : false;
         } else {
             $data['remaining'] = $cost_detail->amount;

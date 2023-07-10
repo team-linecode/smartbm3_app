@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'https://smartbm3.com/app/my/transaction/payment/confirm'
     ];
 }
