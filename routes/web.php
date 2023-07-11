@@ -148,6 +148,9 @@ Route::get('/cron/6cd6ba9b-8162-47df-b90b-c3aea03442fc', function () {
     Log::info("Cron dieksekusi dari server lain");
 });
 
+// Check Pending Submission
+Route::get('/check_pending/6cd6ba9b-8162-47df-b90b-c3aea03442fc', [SubmissionController::class, 'check_pending'])->name('check_pending');
+
 // PPDB
 Route::get('/ppdb', [LandingPPDBController::class, 'index'])->name('landing.ppdb');
 // Auth
