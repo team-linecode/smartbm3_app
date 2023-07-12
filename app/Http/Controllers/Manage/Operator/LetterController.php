@@ -6,6 +6,7 @@ use App\Models\Sarpras\Facility;
 use App\Models\RoomFacility;
 use App\Http\Controllers\Controller;
 use App\Models\LetterCategory;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LetterController extends Controller
@@ -13,25 +14,33 @@ class LetterController extends Controller
     public function index()
     {
         $this->authorize('read letter');
-
-        return view('manage.operator.letter_category.index', [
+        return view('manage.operator.letter.index', [
             'letter_categories' => LetterCategory::orderBy('name')->get()
         ]);
-
-        return view('manage.operator.letter.index');
     }
 
-    public function create()
+    public function create(LetterCategory $letter_category)
     {
-        $this->authorize('create facility');
+        $this->authorize('create letter');
+        return view('manage.operator.letter.templates.'.$letter_category->slug.'.index', [
+            'users' => User::role('student')->orderBy('classroom_id')->orderBy('expertise_id')->get(),
+            'slug'  => $letter_category->slug
+        ]);
+    }
 
-        return view('manage.sarpras.facility.create');
+    public function show(LetterCategory $letter_category, Request $request)
+    {
+        $this->authorize('create letter');
+        return view('manage.operator.letter.templates.'.$letter_category->slug.'.show', [
+            'letter'            => $request->all(),
+            'letter_category'   => $letter_category
+        ]);
     }
 
     public function store(Request $request)
     {
-        $this->authorize('create facility');
-
+        $this->authorize('create letter');
+        dd($request->all());
         $rules = [
             'name' => 'required',
             'brand' => 'required',

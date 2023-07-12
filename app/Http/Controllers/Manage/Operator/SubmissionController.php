@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Sarpras\Submission;
 use App\Models\Sarpras\SubmissionDetail;
 use App\Models\Sarpras\Room;
+use Illuminate\Support\Facades\Log;
 use Pdf;
 
 class SubmissionController extends Controller
@@ -15,7 +16,7 @@ class SubmissionController extends Controller
     public function index()
     {
         $this->authorize('read submission');
-        if(auth()->user()->hasRole('FI') or auth()->user()->hasRole('principal') or auth()->user()->hasRole('HOF') or auth()->user()->hasRole('finance')){
+        if(auth()->user()->hasRole('FI') or auth()->user()->hasRole('principal') or auth()->user()->hasRole('HOF')){
             $submissions = Submission::all();
         }else{
             $submissions = Submission::where('user_id', auth()->user()->id)->get();
@@ -267,7 +268,6 @@ class SubmissionController extends Controller
 
     public function invoice(Submission $submission)
     {
-        $this->authorize('read invoice');
         
         $total_price = SubmissionDetail::where('submission_id', $submission->id)->get()->sum('total_price');
         // $submission['total_price'] = $total_price;
@@ -279,5 +279,16 @@ class SubmissionController extends Controller
             'submission' => $submission,
             'total_price' => $total_price
         ]);
+    }
+
+    public function check_pending()
+    {
+        $submission = Submission::where('status', 'pending')->count();
+        $submission_fi = Submission::where('status', 'pending')->where('step', 1)->count();
+        $submission_principal = Submission::where('status', 'pending')->where('step', 2)->count();
+        $submission_hof = Submission::where('status', 'pending')->where('step', 3)->count();
+
+        schedule_message("Pengajuan terdapat $submission data yang pending, \n- Terdapat $submission_fi data menunggu persetujuan Sarpras.\n- Terdapat $submission_principal data menunggu persetujuan Kepala Sekolah.\n- Terdapat $submission_hof data menunggu persetujuan Yayasan.\n\nPengajuan dapat dilihat melalui website https://smartbm3.com di bagian Pengajuan.\n\n*[_Pesan Otomatis_]*");
+        Log::info("Pengajuan terdapat $submission data yang pending, \n- Terdapat $submission_fi data menunggu persetujuan Sarpras.\n- Terdapat $submission_principal data menunggu persetujuan Kepala Sekolah.\n- Terdapat $submission_hof data menunggu persetujuan Yayasan.\n\nPengajuan dapat dilihat melalui website https://smartbm3.com di bagian Pengajuan.\n\n*[_Pesan Otomatis_]*");
     }
 }

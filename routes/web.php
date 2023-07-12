@@ -1,12 +1,8 @@
 <?php
 
-use App\Models\User;
-use GuzzleHttp\Client;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
-use GuzzleHttp\Exception\RequestException;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Manage\BillController;
 use App\Http\Controllers\Manage\CostController;
@@ -51,8 +47,6 @@ use App\Http\Controllers\Manage\ValueCriteriaController;
 use App\Http\Controllers\Manage\WorkProgramCategoryController;
 use App\Http\Controllers\Manage\WorkProgramController;
 use App\Http\Controllers\Manage\WorkProgramDefaultController;
-use App\Models\Position;
-use App\Models\WorkProgramCategory;
 
 /*
 |--------------------------------------------------------------------------
@@ -165,6 +159,9 @@ Route::get('/cron/6cd6ba9b-8162-47df-b90b-c3aea03442fc', function () {
     Artisan::call('queue:work --daemon --stop-when-empty');
     Log::info("Cron dieksekusi dari server lain");
 });
+
+// Check Pending Submission
+Route::get('/check_pending/6cd6ba9b-8162-47df-b90b-c3aea03442fc', [SubmissionController::class, 'check_pending'])->name('check_pending');
 
 // PPDB
 Route::get('/ppdb', [LandingPPDBController::class, 'index'])->name('landing.ppdb');
@@ -338,7 +335,9 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
 
     // Operator
     // Letter
-    Route::resource('/operator/letter', LetterController::class)->except('show');
+    Route::resource('/operator/letter', LetterController::class)->except('create', 'show');
+    Route::get('/operator/letter/{letter_category:slug}', [LetterController::class, 'create'])->name('letter');
+    Route::post('/operator/letter/{letter_category:slug}/show', [LetterController::class, 'show'])->name('letter.show');
     // LetterCategory
     Route::resource('/operator/letter_category', LetterCategoryController::class)->except('show');
 
