@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\User;
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -14,10 +16,10 @@ use App\Http\Controllers\Manage\DashboardController;
 use App\Http\Controllers\Manage\DatatableController;
 use App\Http\Controllers\Manage\PermissionController;
 use App\Http\Controllers\Manage\User\StaffController;
+use App\Http\Controllers\Manage\AchievementController;
 use App\Http\Controllers\Manage\Osis\AbsentController;
 use App\Http\Controllers\Manage\TransactionController;
 use App\Http\Controllers\Landing\LandingPPDBController;
-use App\Http\Controllers\Manage\AchievementController;
 use App\Http\Controllers\Manage\Sarpras\RoomController;
 use App\Http\Controllers\Manage\User\StudentController;
 use App\Http\Controllers\Manage\User\TeacherController;
@@ -45,6 +47,12 @@ use App\Http\Controllers\Manage\Picket\PicketScheduleController;
 use App\Http\Controllers\Manage\Point\PenaltyCategoryController;
 use App\Http\Controllers\Manage\Operator\LetterCategoryController;
 use App\Http\Controllers\Manage\Picket\StudentApprenticeshipController;
+use App\Http\Controllers\Manage\ValueCriteriaController;
+use App\Http\Controllers\Manage\WorkProgramCategoryController;
+use App\Http\Controllers\Manage\WorkProgramController;
+use App\Http\Controllers\Manage\WorkProgramDefaultController;
+use App\Models\Position;
+use App\Models\WorkProgramCategory;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +64,17 @@ use App\Http\Controllers\Manage\Picket\StudentApprenticeshipController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+// assign role
+// Route::get('assign_role', function(){
+//     $ps = Position::where('slug', '!=', 'wali-kelas')->get();
+//     foreach ($ps as $p) {
+//         foreach ($p->users as $u) {
+//             $u->assignRole('staff');
+//             echo $u->name . ' -> ' . $u->roles->pluck('name')->implode(', ') . '<br>';
+//         }
+//     }
+// });
 
 // update user
 // Route::get('update_user', function () {
@@ -208,13 +227,14 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::delete('/salary/position/{position:slug}/{user}/destroy_user', [PositionController::class, 'destroy_user'])->name('position.destroy_user');
 
     // Student -> Transaction
-    Route::resource('/my/transaction', StudentTransactionController::class)->except('show');
-    Route::get('/my/transaction/success_saved', [StudentTransactionController::class, 'success_saved'])->name('transaction.success_saved');
-    Route::get('/my/transaction/maintenance', [StudentTransactionController::class, 'maintenance'])->name('transaction.maintenance');
-    Route::get('/my/transaction/detail', [StudentTransactionController::class, 'detail'])->name('transaction.detail');
-    Route::get('/my/transaction/create/{cost:slug}', [StudentTransactionController::class, 'create_step2'])->name('transaction.create.step2');
-    Route::delete('/my/transaction/item/{transaction_item}/destroy', [StudentTransactionController::class, 'delete_item'])->name('transaction.delete_item');
-    Route::post('/my/transaction/payment', [StudentTransactionController::class, 'payment'])->name('transaction.payment');
+    Route::resource('/transaction', StudentTransactionController::class)->except('show');
+    Route::get('/transaction/choose_student', [StudentTransactionController::class, 'choose_student'])->name('transaction.choose_student');
+    Route::get('/transaction/success_saved', [StudentTransactionController::class, 'success_saved'])->name('transaction.success_saved');
+    Route::get('/transaction/maintenance', [StudentTransactionController::class, 'maintenance'])->name('transaction.maintenance');
+    Route::get('/transaction/detail', [StudentTransactionController::class, 'detail'])->name('transaction.detail');
+    Route::get('/transaction/create/{cost:slug}', [StudentTransactionController::class, 'create_step2'])->name('transaction.create.step2');
+    Route::delete('/transaction/item/{transaction_item}/destroy', [StudentTransactionController::class, 'delete_item'])->name('transaction.delete_item');
+    Route::post('/transaction/payment', [StudentTransactionController::class, 'payment'])->name('transaction.payment');
 
     // Finance -> Transaction
     Route::get('/finance/transaction', [TransactionController::class, 'index'])->name('finance.transaction.index');
@@ -335,10 +355,23 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     // Achievment
     Route::resource('achievement', AchievementController::class);
     Route::get('/achievement/attachment/{achievement_attachment}/destroy', [AchievementController::class, 'attachment_destroy'])->name('achievement.attachment.destroy');
+
+    // Work Program (Program Kerja)
+    Route::resource('work_program', WorkProgramController::class)->except('show');
+
+    // Work Program Default (Program Kerja)
+    Route::resource('work_program_default', WorkProgramDefaultController::class)->except('show');
+
+    // Work Program Category (Program Kerja)
+    Route::resource('work_program_category', WorkProgramCategoryController::class)->except('show');
+    
+    // Value Criteria
+    Route::resource('value_criteria', ValueCriteriaController::class)->except('show');
+    Route::post('value_criteria/status/update', [ValueCriteriaController::class, 'update_status'])->name('app.value_criteria.update_status');
 });
 // End Route
 
-Route::post('/app/my/transaction/payment/confirm', [StudentTransactionController::class, 'confirm'])->name('app.transaction.payment.confirm');
+Route::post('/app/transaction/payment/confirm', [StudentTransactionController::class, 'confirm'])->name('app.transaction.payment.confirm');
 
 // Route [auth]
 Route::group(['middleware' => ['auth']], function () {
@@ -348,4 +381,5 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/datatable.student_absent_json/{classroom_id}/{expertise_id}', [DatatableController::class, 'student_absent_json'])->name('datatable.student_absent_json');
     Route::get('/datatable.teacher_json', [DatatableController::class, 'teacher_json'])->name('datatable.teacher_json');
     Route::get('/datatable.staff_json', [DatatableController::class, 'staff_json'])->name('datatable.staff_json');
+    Route::get('/datatable.choose_student_json', [DatatableController::class, 'choose_student_json'])->name('datatable.choose_student_json');
 });

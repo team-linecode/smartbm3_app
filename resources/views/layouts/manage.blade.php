@@ -275,7 +275,8 @@
                             </li>
                         @endif
 
-                        @if (auth()->user()->is_hometeacher == '1' || auth()->user()->hasAnyPermission(['read achievement']))
+                        @if (auth()->user()->is_hometeacher == '1' ||
+                                auth()->user()->hasAnyPermission(['read achievement']))
                             <li class="menu-title"><span data-key="t-menu">WALAS</span></li>
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.achievement*']) }}"
@@ -403,6 +404,42 @@
                             </li>
                         @endrole
 
+                        @can('read work program category')
+                            <li class="menu-title"><span data-key="t-menu">Program Kerja</span></li>
+                        @endcan
+                        @can('read work program')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.work_program*') }}"
+                                    href="{{ route('app.work_program.index') }}">
+                                    <i class="ri-file-settings-line"></i> <span data-key="t-landing">Proker Saya</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('read work program default')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.work_program_default*') }}"
+                                    href="{{ route('app.work_program_default.index') }}">
+                                    <i class="ri-home-line"></i> <span data-key="t-landing">Proker Default</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('read work program category')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.work_program_category*') }}"
+                                    href="{{ route('app.work_program_category.index') }}">
+                                    <i class="ri-list-check"></i> <span data-key="t-landing">Kategori Proker</span>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('read value criteria')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link {{ set_active('app.value_criteria*') }}"
+                                    href="{{ route('app.value_criteria.index') }}">
+                                    <i class="ri-sort-asc"></i> <span data-key="t-landing">Kriteria Penilaian</span>
+                                </a>
+                            </li>
+                        @endcan
+
                         {{-- @can('finance access') --}}
                         @if (auth()->user()->hasAnyPermission(['read bill', 'read cost', 'read transaction']))
                             <li class="menu-title"><span data-key="t-menu">Keuangan</span></li>
@@ -428,8 +465,8 @@
 
                         @can('create transaction')
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active('app.finance.transaction*') }}"
-                                    href="{{ route('app.finance.transaction.create') }}">
+                                <a class="nav-link menu-link {{ set_active('app.transaction*') }}"
+                                    href="{{ route('app.transaction.create') }}">
                                     <i class="ri-exchange-line"></i> <span data-key="t-landing">Pembayaran</span>
                                 </a>
                             </li>
@@ -446,7 +483,7 @@
 
                         @can('read bill')
                             <li class="nav-item">
-                                <a class="nav-link menu-link {{ set_active(['app/finance/bill', 'app/finance/bill/*']) }}"
+                                <a class="nav-link menu-link {{ set_active('app.finance.bill*') }}"
                                     href="{{ route('app.finance.bill.index') }}">
                                     <i class="ri-funds-line"></i> <span data-key="t-landing">Tagihan Siswa/i</span>
                                 </a>
@@ -539,7 +576,7 @@
                                 </a>
                             </li>
                         @endcan
-                        
+
                         @can('read facility')
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.service*']) }}"
@@ -597,7 +634,8 @@
                             <li class="nav-item">
                                 <a class="nav-link menu-link {{ set_active(['app.letter_category*']) }}"
                                     href="{{ route('app.letter_category.index') }}">
-                                    <i class="ri-file-copy-2-line"></i> <span data-key="t-landing">Kategori Surat</span>
+                                    <i class="ri-file-copy-2-line"></i> <span data-key="t-landing">Kategori
+                                        Surat</span>
                                 </a>
                             </li>
                             <li class="nav-item">

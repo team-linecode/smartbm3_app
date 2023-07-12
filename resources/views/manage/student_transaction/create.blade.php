@@ -12,7 +12,8 @@
                         <div class="card-body">
                             <h4 class="text-danger fw-bold">Masih ada biaya yang belum dibayar nih!</h4>
                             <p class="card-text">Ayo cek sisa pembayaran dengan menekan tombol dibawah ini ya.</p>
-                            <a href="#" class="btn btn-primary">Cek Tagihan <i class="ri ri-arrow-right-line align-middle"></i></a>
+                            <a href="#" class="btn btn-primary">Cek Tagihan <i
+                                    class="ri ri-arrow-right-line align-middle"></i></a>
                         </div>
                     </div>
                 </div>
@@ -26,7 +27,7 @@
                     <div class="row g-3">
                         @foreach ($user->schoolyear->costs as $costIdx => $cost)
                             <div class="col-12 col-lg-6">
-                                <a href="{{ route('app.transaction.create.step2', $cost->slug) }}"
+                                <a href="{{ route('app.transaction.create.step2', $cost->slug . (request()->get('uuid') ? '?uuid=' . request()->get('uuid') : '')) }}"
                                     class="btn btn-light border w-100" type="button">
                                     <div class="d-flex justify-content-between">
                                         <div>{{ $cost->name }}</div>

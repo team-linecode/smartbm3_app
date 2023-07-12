@@ -35,11 +35,19 @@ class PositionController extends Controller
         $request->validate([
             'user' => 'array|min:1',
             'name' => 'required|unique:positions,name',
-            'salary' => 'required'
+            'salary' => 'required',
+            'staff_internal' => 'required'
         ]);
 
         $request['slug'] = Str::slug($request->name);
         $request['salary'] = cleanCurrency($request->salary);
+        
+        if ($request->staff_internal == 'y') {
+            foreach ($request->user as $uid) {
+                $user = User::find($uid);
+                $user->assignRole('staff');
+            }
+        }
 
         $position = Position::create($request->all());
         $position->users()->attach($request->user);
@@ -80,6 +88,12 @@ class PositionController extends Controller
     public function destroy(Position $position)
     {
         $this->authorize('delete position');
+
+        foreach ($position->users as $user) {
+            if ($user->hasRole('staff')) {
+                $user->removeRole('staff');
+            }
+        }
 
         $position->delete();
         $position->users()->detach();

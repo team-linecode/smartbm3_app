@@ -32,7 +32,11 @@ class Cost extends Model
 
     public function getSemesterByClass()
     {
-        $user = User::findOrFail(auth()->user()->id);
+        if (auth()->user()->hasRole('finance')) {
+            $user = User::where('uuid', request()->get('uuid'))->firstOrFail();
+        } else {
+            $user = User::findOrFail(auth()->user()->id);
+        }
 
         if ($user->classroom->alias == '10') {
             return ['1', '2'];

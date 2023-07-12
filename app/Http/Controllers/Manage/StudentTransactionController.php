@@ -32,16 +32,69 @@ class StudentTransactionController extends Controller
         ]);
     }
 
+    public function choose_student()
+    {
+        return view('manage.student_transaction.choose_student');
+    }
+
     public function create()
     {
+        // jika rolenya finance
+        if (auth()->user()->hasRole('finance')) {
+            // jika tidak ada request get uuid
+            if (!request()->get('uuid')) {
+                // alihkan ke route choose_student
+                return redirect()->route('app.transaction.choose_student');
+            }
+            // ambil user dari data uuid
+            $user = User::where('uuid', request()->get('uuid'))->first();
+            // jika tidak ditemukan
+            if (!$user) {
+                // alihkan ke route choose_student
+                return redirect()->route('app.transaction.choose_student')->with('error', 'Siswa tidak ditemukan');
+            }
+        } else {
+            // ambil data user dari login saat ini
+            $user = User::find(auth()->user()->id);
+            // jika tidak ditemukan
+            if (!$user) {
+                // alihkan ke route choose_student
+                return redirect()->route('app.transaction.choose_student')->with('error', 'Siswa tidak ditemukan');
+            }
+        }
+
         return view('manage.student_transaction.create', [
-            'user' => User::find(auth()->user()->id),
-            'items' => TransactionItem::where('user_id', auth()->user()->id)->get()
+            'user' => $user,
+            'items' => TransactionItem::where('user_id', $user->id)->get()
         ]);
     }
 
     public function create_step2(Cost $cost)
     {
+        // jika rolenya finance
+        if (auth()->user()->hasRole('finance')) {
+            // jika tidak ada request get uuid
+            if (!request()->get('uuid')) {
+                // alihkan ke route choose_student
+                return redirect()->route('app.transaction.choose_student');
+            }
+            // ambil user dari data uuid
+            $user = User::where('uuid', request()->get('uuid'))->first();
+            // jika tidak ditemukan
+            if (!$user) {
+                // alihkan ke route choose_student
+                return redirect()->route('app.transaction.choose_student')->with('error', 'Siswa tidak ditemukan');
+            }
+        } else {
+            // ambil data user dari login saat ini
+            $user = User::find(auth()->user()->id);
+            // jika tidak ditemukan
+            if (!$user) {
+                // alihkan ke route choose_student
+                return redirect()->route('app.transaction.choose_student')->with('error', 'Siswa tidak ditemukan');
+            }
+        }
+
         $where = [];
         if ($cost->cost_category->slug == 'ujian') {
             $where['key'] = 'semester_id';
@@ -59,7 +112,7 @@ class StudentTransactionController extends Controller
         return view('manage.student_transaction.create_step2', [
             'where' => $where,
             'cost' => $cost,
-            'user' => User::find(auth()->user()->id),
+            'user' => $user,
             'items' => TransactionItem::where('user_id', auth()->user()->id)->get(),
         ]);
     }

@@ -24,9 +24,11 @@
                                 <label for="user" class="form-label">Staff/Guru</label>
                             </div>
                             <div class="col-sm-9">
-                                <select class="form-control" data-choices data-choices-removeItem multiple name="user[]" id="user">
+                                <select class="form-control" data-choices data-choices-removeItem multiple name="user[]"
+                                    id="user">
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" {{ select_old_multiple($user->id, old('user')) }}>
+                                        <option value="{{ $user->id }}"
+                                            {{ select_old_multiple($user->id, old('user')) }}>
                                             {{ $user->name }}
                                         </option>
                                     @endforeach
@@ -64,6 +66,31 @@
                                     class="form-control currency @error('salary') is-invalid @enderror" id="salary"
                                     value="{{ old('salary') }}">
                                 @error('salary')
+                                    <div class="invalid-feedback">
+                                        <strong>{{ $message }}</strong>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <label for="internal" class="form-label">Staff Internal</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="staff_internal" id="staff_internal_y" value="y">
+                                    <label class="form-check-label" for="staff_internal_y">
+                                        Ya
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="staff_internal" id="staff_internal_n" value="n">
+                                    <label class="form-check-label" for="staff_internal_n">
+                                        Tidak
+                                    </label>
+                                </div>
+                                @error('staff_internal')
                                     <div class="invalid-feedback">
                                         <strong>{{ $message }}</strong>
                                     </div>

@@ -228,4 +228,29 @@ class DatatableController extends Controller
             ->rawColumns(['name', 'password', 'action'])
             ->toJson();
     }
+
+    public function choose_student_json()
+    {
+        $this->authorize('read bill');
+
+        return DataTables::of(User::role('student')->with('classroom')->with('expertise')->select('users.*')->limit(1))
+            ->addIndexColumn()
+            ->editColumn('name', function ($row) {
+                return $row->name . '<br />
+                    <small class="text-muted">
+                        Nisn: ' . (!is_null($row->nisn) ? $row->nisn : '<span class="text-danger">tidak ada</span>') .
+                    '</small>';
+            })
+            ->addColumn('action', function ($row) {
+                $btn = '<div class="d-flex gap-2">
+                            <div class="edit">
+                                <a href="' . route("app.transaction.create") . '?uuid=' . $row->uuid . '" class="btn btn-primary">Bayar</a>
+                            </div>
+                        </div>';
+
+                return $btn;
+            })
+            ->rawColumns(['name', 'password', 'action'])
+            ->toJson();
+    }
 }
